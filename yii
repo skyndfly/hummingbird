@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Yii console bootstrap file.
+ *
+ * @link https://www.yiiframework.com/
+ * @copyright Copyright (c) 2008 Yii Software LLC
+ * @license https://www.yiiframework.com/license/
+ */
+
+use Dotenv\Dotenv;
+
+defined('YII_DEBUG') or define('YII_DEBUG', true);
+defined('YII_ENV') or define('YII_ENV', 'dev');
+
+require __DIR__ . '/vendor/autoload.php';
+$dotenv = Dotenv::createImmutable(__DIR__); // __DIR__ = корень проекта
+$dotenv->load(); // загружает переменные из .env
+
+// принудительно установить переменные в getenv(), $_ENV и $_SERVER
+foreach ($_ENV as $key => $value) {
+    putenv("$key=$value");
+    $_SERVER[$key] = $value;
+}
+require __DIR__ . '/vendor/yiisoft/yii2/Yii.php';
+
+$config = require __DIR__ . '/config/console.php';
+
+$application = new yii\console\Application($config);
+$exitCode = $application->run();
+exit($exitCode);

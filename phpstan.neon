@@ -1,0 +1,20 @@
+includes:
+    - vendor/yii2-extensions/phpstan/extension.neon
+
+parameters:
+    level: 6
+
+    paths:
+        - auth
+        - controllers
+        #- models
+        - repositories
+        - services
+    tmpDir: %currentWorkingDirectory%/runtime
+    bootstrapFiles:
+            - phpstan-bootstrap.php
+    yii2:
+        config_path: config/phpstan-config.php
+        component_generics:
+            user: identityClass      # Built-in (already configured)
+            repository: modelClass   # Custom generic component
