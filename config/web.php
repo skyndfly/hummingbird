@@ -44,6 +44,9 @@ $config = [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
+                    'logFile' => '@runtime/logs/app.log',
+                    'maxFileSize' => 1024 * 10, // 10 MB
+                    'maxLogFiles' => 10,
                 ],
             ],
         ],
@@ -60,7 +63,9 @@ $config = [
                 'POST users/impersonate' => 'users/login-as-user',
                 'POST site/return-to-user' => 'site/return-to-user',
 
-                'GET manager/add-code/create' => 'manager/code/create',
+                'GET manager/add-code/create' => 'code/create',
+                'GET manager/add-code/search' => 'code/search',
+                'POST manager/add-code/store' => 'code/store',
             ],
         ],
 
@@ -72,6 +77,9 @@ $config = [
         'users' => [
             'class' => app\controllers\Owner\UsersController::class,
         ],
+        'code' => [
+            'class' => app\controllers\Manager\CodeController::class,
+        ]
     ],
     'params' => $params,
 ];

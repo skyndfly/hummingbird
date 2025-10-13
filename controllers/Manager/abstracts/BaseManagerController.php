@@ -1,6 +1,6 @@
 <?php
 
-namespace app\controllers\Owner\abstracts;
+namespace app\controllers\Manager\abstracts;
 
 use Yii;
 use yii\filters\AccessControl;
@@ -8,10 +8,11 @@ use yii\web\Controller;
 use yii\web\IdentityInterface;
 
 /**
- * Базовый контроллер для всех контроллеров, требующих роль 'owner'
+ * Базовый контроллер для всех контроллеров, требующих роль 'manager'
  */
-class BaseOwnerController extends Controller
+class BaseManagerController extends Controller
 {
+
     public function behaviors(): array
     {
         return [
@@ -20,7 +21,7 @@ class BaseOwnerController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['owner'],
+                        'roles' => ['manager'],
                     ]
                 ],
                 'denyCallback' => function($rule, $action) {
@@ -36,5 +37,9 @@ class BaseOwnerController extends Controller
     public function getIdentity(): IdentityInterface
     {
         return Yii::$app->user->identity;
+    }
+    public function getViewPath(): false|string|null
+    {
+        return Yii::getAlias('@app/views/manager/code');
     }
 }

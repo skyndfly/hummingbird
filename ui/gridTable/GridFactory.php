@@ -15,6 +15,8 @@ class GridFactory
         string $gridClass,
         int $pageSize = 20
     ): string {
+
+
         $dataProvider = new ArrayDataProvider([
             'allModels' => $models,
             'pagination' => [

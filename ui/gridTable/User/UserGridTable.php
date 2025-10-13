@@ -11,7 +11,7 @@ class UserGridTable extends AbstractGridTable
     #[GridColumn(label: 'Имя пользователя')]
     public string $username;
 
-    #[GridColumn(label: 'Имя пользователя', formatter: 'idFormatter', sortable: true)]
+    #[GridColumn(label: 'ID', formatter: 'idFormatter', sortable: true)]
     public string $id;
     #[GridColumn('Действия', formatter: 'actionButtons')]
     public string $actions;

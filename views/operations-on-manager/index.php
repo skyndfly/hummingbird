@@ -1,12 +1,9 @@
 <?php
+
+use app\filters\User\ManagerFilter;
+
 /** @var string $grid */
 /** @var ManagerFilter $filterModel */
-
-/** @var UserIdentityDto[] $model */
-
-
-use app\auth\dto\UserIdentityDto;
-use app\filters\User\ManagerFilter;
 
 $this->title = 'Менеджеры по продажам';
 ?>

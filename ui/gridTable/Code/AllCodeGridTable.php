@@ -1,26 +1,44 @@
 <?php
 
-namespace app\ui\gridTable\Courses;
+namespace app\ui\gridTable\Code;
 
-use app\auth\dto\UserIdentityDto;
+use app\repositories\Code\dto\CodeDto;
 use app\ui\gridTable\AbstractGridTable;
 use app\ui\gridTable\GridColumn;
+use DateTimeImmutable;
 
-class CoursesGridTable extends AbstractGridTable
+class AllCodeGridTable extends AbstractGridTable
 {
-    #[GridColumn(label: 'Название')]
-    public string $title;
-    #[GridColumn(label: 'Описание')]
-    public string $description;
-    #[GridColumn(label: 'Активен')]
-    public bool $isActive;
-    #[GridColumn(label: 'Стоимость урока')]
-    public int $pricePerLesson;
-
+    #[GridColumn(label: 'Код заказа')]
+    public string $code;
+    #[GridColumn(label: 'Дата прихода', formatter: 'dateFormatter', sortable: true)]
+    public string $createdAt;
+    #[GridColumn(label: 'Место хранения')]
+    public string $place;
+    #[GridColumn(label: 'Цена', formatter: 'priceFormatter')]
+    public string $price;
+    #[GridColumn(label: 'Комментарий')]
+    public string $comment;
+    #[GridColumn(label: 'ID', formatter: 'idFormatter', sortable: true)]
+    public string $id;
     #[GridColumn('Действия', formatter: 'actionButtons')]
     public string $actions;
 
-    public static function actionButtons(UserIdentityDto $model): string
+    public static function idFormatter(CodeDto $dto): string
+    {
+        return '#' . $dto->id;
+    }
+
+    public static function priceFormatter(CodeDto $dto): string
+    {
+        return '<strong>'.($dto->price / 100) . ' ₽</strong>';
+    }
+    public static function dateFormatter(CodeDto $dto): string
+    {
+        return new DateTimeImmutable($dto->createdAt)->format('d.m.Y');
+    }
+
+    public static function actionButtons(CodeDto $model): string
     {
         return <<<HTML
             <div class="dropdown">
@@ -36,7 +54,7 @@ class CoursesGridTable extends AbstractGridTable
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                               <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                             </svg>
-                            Просмотреть
+                            Провести
                         </a>
                      </li>
                      <li>

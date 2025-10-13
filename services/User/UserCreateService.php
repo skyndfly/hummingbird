@@ -31,7 +31,9 @@ class UserCreateService
                 throw new DomainException('Пользователь существует');
             }
             $user = $this->userRepository->store($dto);
-            //TODO добавить лог таблицу для пользователей
+            $auth = Yii::$app->getAuthManager();
+            $role = $auth->getRole($dto->type->value);
+            $auth->assign($role, $user->id);
             return $user;
         } catch (Exception $e) {
             Yii::error([

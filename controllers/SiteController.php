@@ -3,8 +3,13 @@
 namespace app\controllers;
 
 use app\auth\UserIdentity;
+use app\forms\Code\CreateCodeForm;
+use app\repositories\Code\CodeRepository;
 use app\repositories\User\UserRepository;
+use app\ui\gridTable\Code\AllCodeGridTable;
+use app\ui\gridTable\GridFactory;
 use DomainException;
+use Throwable;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -16,15 +21,18 @@ use app\models\ContactForm;
 class SiteController extends Controller
 {
     private UserRepository $userRepository;
+    private CodeRepository $codeRepository;
 
     public function __construct(
         $id,
         $module,
         UserRepository $userRepository,
+        CodeRepository $codeRepository,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
         $this->userRepository = $userRepository;
+        $this->codeRepository = $codeRepository;
     }
 
     public function behaviors(): array
@@ -66,7 +74,31 @@ class SiteController extends Controller
 
     public function actionIndex(): string
     {
-        return $this->render('index');
+        $formModel = new CreateCodeForm();
+        try {
+            $codes = $this->codeRepository->getAll();
+
+            $grid = GridFactory::createGrid(
+                models: $codes,
+                gridClass: AllCodeGridTable::class,
+                pageSize: 5
+            );
+
+            return $this->render(view: 'index', params: [
+                'formModel' => $formModel,
+                'grid' => $grid,
+            ]);
+        }catch (Throwable $e){
+            Yii::error([
+                'type' => 'SiteControllerError',
+                'exception' => $e,
+            ]);
+            file_put_contents('log.txt', $e);
+            Yii::$app->getSession()->setFlash('error', $e->getMessage());
+            return $this->render('index', params: [
+                'formModel' => $formModel
+            ]);
+        }
     }
 
     public function actionLogin(): Response|string

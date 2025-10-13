@@ -10,7 +10,7 @@ class UserStoreDto
         public string $username,
         public string $password,
         public UserTypeEnum $type,
-        public UserInfoDto $userInfo
+        public UserInfoDto $userInfo,
     )
     {
     }
