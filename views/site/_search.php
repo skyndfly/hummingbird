@@ -21,7 +21,8 @@ $form = ActiveForm::begin([
         </div>
         <div class="form-group">
             <?= Html::submitButton('Искать', ['class' => 'btn btn-primary']) ?>
-            <?= Html::resetButton('Сбросить', ['class' => 'btn btn-default']) ?>
+<!--            --><?php //= Html::resetButton('Сбросить', ['class' => 'btn btn-default']) ?>
+            <?= Html::a('Очистить', ['index'], ['class' => 'btn btn-outline-secondary']) ?>
         </div>
     </div>
 

@@ -12,6 +12,8 @@ $this->title = 'КолибриCRM';
 ?>
 <section>
     <h2>Все кода</h2>
+    <hr>
+    <h4>Добавить код</h4>
     <?php $form = ActiveForm::begin([
             'method' => 'post',
             'action' => ['manager/add-code/store'],
@@ -30,7 +32,7 @@ $this->title = 'КолибриCRM';
     <?php if (isset($filterModel)): ?>
     <?= $this->render(view: '_search', params: ['filterModel' => $filterModel]); ?>
     <?php endif; ?>
-
+    <hr>
     <h2 class="mt-5">Список кодов</h2>
     <?php if (isset($grid)): ?>
         <?= $grid ?>
