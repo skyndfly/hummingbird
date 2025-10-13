@@ -3,8 +3,10 @@
 namespace app\controllers;
 
 use app\auth\UserIdentity;
+use app\filters\Code\CodeFilter;
 use app\forms\Code\CreateCodeForm;
 use app\repositories\Code\CodeRepository;
+use app\repositories\Code\dto\CodeSearchDto;
 use app\repositories\User\UserRepository;
 use app\ui\gridTable\Code\AllCodeGridTable;
 use app\ui\gridTable\GridFactory;
@@ -76,7 +78,17 @@ class SiteController extends Controller
     {
         $formModel = new CreateCodeForm();
         try {
-            $codes = $this->codeRepository->getAll();
+            $getParams = Yii::$app->request->getQueryParams();
+            $filter = new CodeFilter();
+            $filter->load($getParams);
+
+
+
+            $codes = $this->codeRepository->getAll(new CodeSearchDto(
+                code: $filter->code,
+                place: $filter->place,
+                date: $filter->date,
+            ));
 
             $grid = GridFactory::createGrid(
                 models: $codes,
@@ -86,6 +98,7 @@ class SiteController extends Controller
 
             return $this->render(view: 'index', params: [
                 'formModel' => $formModel,
+                'filterModel' => $filter,
                 'grid' => $grid,
             ]);
         }catch (Throwable $e){
@@ -93,7 +106,6 @@ class SiteController extends Controller
                 'type' => 'SiteControllerError',
                 'exception' => $e,
             ]);
-            file_put_contents('log.txt', $e);
             Yii::$app->getSession()->setFlash('error', $e->getMessage());
             return $this->render('index', params: [
                 'formModel' => $formModel

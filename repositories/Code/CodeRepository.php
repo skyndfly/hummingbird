@@ -4,6 +4,7 @@ namespace app\repositories\Code;
 
 use app\repositories\BaseRepository;
 use app\repositories\Code\dto\CodeDto;
+use app\repositories\Code\dto\CodeSearchDto;
 use app\repositories\Code\enums\CodeStatusEnum;
 
 class CodeRepository extends BaseRepository
@@ -11,19 +12,21 @@ class CodeRepository extends BaseRepository
     public const string TABLE_NAME = 'code';
 
     /**
-     * @param array $filters
      * @return CodeDto[]
      */
-    public function getAll(array $filters = []): array
+    public function getAll(CodeSearchDto $dto): array
     {
         $query = $this->getQuery()
             ->from(self::TABLE_NAME);
 
-        if(!empty($filters['code'])){
-            $query->andWhere(['code' => $filters['code']]);
+        if(!empty($dto->code)){
+            $query->andWhere(['code' => $dto->code]);
         }
-        if(!empty($filters['created_at'])){
-            $query->andWhere(['DATE(created_at)' => $filters['created_at']]);
+        if(!empty($dto->place)){
+            $query->andWhere(['LOWER(place)' => mb_strtolower($dto->place)]);
+        }
+        if(!empty($dto->date)){
+            $query->andWhere(['DATE(created_at)' => $dto->date]);
         }
 
         return array_map(
