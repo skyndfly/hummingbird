@@ -64,8 +64,9 @@ $config = [
                 'POST site/return-to-user' => 'site/return-to-user',
 
                 'GET manager/add-code/create' => 'code/create',
-                'GET manager/add-code/search' => 'code/search',
+                'GET manager/search' => 'code/search',
                 'POST manager/add-code/store' => 'code/store',
+                'POST manager/code/issued' => 'code/issued',
             ],
         ],
 

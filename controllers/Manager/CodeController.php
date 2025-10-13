@@ -4,6 +4,7 @@ namespace app\controllers\Manager;
 
 use app\controllers\Manager\abstracts\BaseManagerController;
 use app\forms\Code\CreateCodeForm;
+use app\forms\Code\IssuedCodeForm;
 use app\repositories\Code\CodeRepository;
 use app\repositories\Code\enums\CodeStatusEnum;
 use app\ui\gridTable\Code\AllCodeGridTable;
@@ -30,6 +31,22 @@ class CodeController extends BaseManagerController
         return $this->render('create', [
             'formModel' => $formModel,
         ]);
+    }
+
+    public function actionIssued(): Response
+    {
+
+        try {
+            $modelForm = new IssuedCodeForm();
+            $post = Yii::$app->request->post();
+            if ($modelForm->load($post) && $modelForm->validate()) {
+                $this->repository->updateStatus(CodeStatusEnum::from($modelForm->status), (int) $modelForm->id);
+                Yii::$app->session->setFlash('success', 'Код выдан');
+            }
+        } catch (Exception $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(Yii::$app->request->getReferrer());
     }
 
     public function actionStore(): Response

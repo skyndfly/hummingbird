@@ -2,6 +2,8 @@
 
 namespace app\repositories\Code\dto;
 
+use app\repositories\Code\enums\CodeStatusEnum;
+
 class CodeDto
 {
     public function __construct(
@@ -11,6 +13,7 @@ class CodeDto
         public string $place,
         public string $comment,
         public string $createdAt,
+        public CodeStatusEnum $status
     )
     {
     }
@@ -23,6 +26,7 @@ class CodeDto
      *     place: string,
      *     comment: string,
      *     created_at: string,
+     *     status: string,
      * } $record
      */
     public static function fromDbRecord(array $record): self
@@ -34,6 +38,7 @@ class CodeDto
             place: $record['place'],
             comment: $record['comment'],
             createdAt: $record['created_at'],
+            status: CodeStatusEnum::from($record['status']),
         );
     }
 }

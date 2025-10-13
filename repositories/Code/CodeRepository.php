@@ -32,6 +32,17 @@ class CodeRepository extends BaseRepository
         );
     }
 
+    public function updateStatus(CodeStatusEnum $status, int $id): void
+    {
+        $this->getCommand()
+            ->update(
+                table: self::TABLE_NAME,
+                columns: ['status' => $status->value],
+                condition: ['id' => $id],
+            )
+            ->execute();
+    }
+
     public function create(
         int $code,
         int $user_id,
