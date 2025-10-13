@@ -40,8 +40,13 @@ class CodeController extends BaseManagerController
             $modelForm = new IssuedCodeForm();
             $post = Yii::$app->request->post();
             if ($modelForm->load($post) && $modelForm->validate()) {
-                $this->repository->updateStatus(CodeStatusEnum::from($modelForm->status), (int) $modelForm->id);
+                $this->repository->issuedCode(
+                    status: CodeStatusEnum::from($modelForm->status),
+                    id: (int) $modelForm->id,
+                    comment: $modelForm->comment
+                );
                 Yii::$app->session->setFlash('success', 'Код выдан');
+                //TODO добавить логи кто выдал заказ
             }
         } catch (Exception $e) {
             Yii::$app->session->setFlash('error', $e->getMessage());
@@ -63,6 +68,7 @@ class CodeController extends BaseManagerController
                     comment: $modelForm->comment,
                     place: $modelForm->place,
                 );
+                //TODO добавить логи кто добавил заказ
                 Yii::$app->session->setFlash('success', 'Код добавлен');
             }
         } catch (Exception $e) {

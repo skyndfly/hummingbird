@@ -21,7 +21,7 @@ class BaseManagerController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['manager'],
+                        'roles' => ['manager', 'owner'],
                     ]
                 ],
                 'denyCallback' => function($rule, $action) {

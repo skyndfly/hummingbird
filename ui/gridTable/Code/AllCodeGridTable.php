@@ -2,12 +2,16 @@
 
 namespace app\ui\gridTable\Code;
 
+use app\auth\enums\UserTypeEnum;
+use app\auth\UserIdentity;
 use app\forms\Code\IssuedCodeForm;
 use app\repositories\Code\dto\CodeDto;
 use app\repositories\Code\enums\CodeStatusEnum;
 use app\ui\gridTable\AbstractGridTable;
 use app\ui\gridTable\GridColumn;
+use DateMalformedStringException;
 use DateTimeImmutable;
+use Throwable;
 use Yii;
 
 class AllCodeGridTable extends AbstractGridTable
@@ -44,14 +48,22 @@ class AllCodeGridTable extends AbstractGridTable
         return '<strong>' . ($dto->price / 100) . ' ₽</strong>';
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public static function dateFormatter(CodeDto $dto): string
     {
         return new DateTimeImmutable($dto->createdAt)->format('d.m.Y');
     }
 
+    /**
+     * @throws Throwable
+     */
     public static function actionButtons(CodeDto $model): string
     {
-        if ($model->status !== CodeStatusEnum::NEW){
+        /** @var UserIdentity $identity */
+        $identity = Yii::$app->user->getIdentity();
+        if ($model->status !== CodeStatusEnum::NEW && $identity->user->type !== UserTypeEnum::OWNER){
             return <<<HTML
             <div class="dropdown">
                  <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">

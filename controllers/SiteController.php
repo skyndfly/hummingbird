@@ -81,7 +81,7 @@ class SiteController extends Controller
             $grid = GridFactory::createGrid(
                 models: $codes,
                 gridClass: AllCodeGridTable::class,
-                pageSize: 5
+                pageSize: 50
             );
 
             return $this->render(view: 'index', params: [

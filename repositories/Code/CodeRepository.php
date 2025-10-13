@@ -32,12 +32,16 @@ class CodeRepository extends BaseRepository
         );
     }
 
-    public function updateStatus(CodeStatusEnum $status, int $id): void
+    public function issuedCode(CodeStatusEnum $status, int $id, ?string $comment = null): void
     {
+        $columns = ['status' => $status->value];
+        if ($comment !== null){
+            $columns['comment'] = $comment;
+        }
         $this->getCommand()
             ->update(
                 table: self::TABLE_NAME,
-                columns: ['status' => $status->value],
+                columns: $columns,
                 condition: ['id' => $id],
             )
             ->execute();
