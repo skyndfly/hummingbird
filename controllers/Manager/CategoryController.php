@@ -5,6 +5,8 @@ namespace app\controllers\Manager;
 use app\controllers\Manager\abstracts\BaseManagerController;
 use app\forms\Category\CreateCategoryForm;
 use app\repositories\Category\CategoryRepository;
+use app\ui\gridTable\Category\CategoryGridTable;
+use app\ui\gridTable\GridFactory;
 use Throwable;
 use Yii;
 use yii\web\Response;
@@ -26,11 +28,16 @@ class CategoryController extends BaseManagerController
     public function actionIndex(): string
     {
         $formModel = new CreateCategoryForm();
+        $grid = GridFactory::createGrid(
+            models: $this->categoryRepository->getAll(),
+            gridClass: CategoryGridTable::class
+        );
         try {
             return $this->render(
                 view: 'category/index',
                 params: [
                     'formModel' => $formModel,
+                    'grid' => $grid,
                 ]
             );
         } catch (Throwable $exception) {
@@ -39,6 +46,7 @@ class CategoryController extends BaseManagerController
                 view: 'category/index',
                 params: [
                     'formModel' => $formModel,
+                    'grid' => $grid,
                 ]
             );
         }
