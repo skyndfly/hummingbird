@@ -6,7 +6,7 @@ use yii\bootstrap5\ActiveForm;
 ?>
 
 <?php $form = ActiveForm::begin([
-    'action' => ['category/store'],
+    'action' => ['/category/store'],
     'method' => 'post',
 ]); ?>
 
