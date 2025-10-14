@@ -38,8 +38,8 @@ class BaseManagerController extends Controller
     {
         return Yii::$app->user->identity;
     }
-    public function getViewPath(): false|string|null
+    public function getViewPath(): string
     {
-        return Yii::getAlias('@app/views/manager/code');
+        return Yii::getAlias('@app/views/manager');
     }
 }

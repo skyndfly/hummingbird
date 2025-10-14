@@ -67,6 +67,8 @@ $config = [
                 'GET manager/search' => 'code/search',
                 'POST manager/add-code/store' => 'code/store',
                 'POST manager/code/issued' => 'code/issued',
+
+                'GET category' => 'category/index',
             ],
         ],
 
@@ -80,6 +82,9 @@ $config = [
         ],
         'code' => [
             'class' => app\controllers\Manager\CodeController::class,
+        ],
+        'category' => [
+            'class' => app\controllers\Manager\CategoryController::class,
         ]
     ],
     'params' => $params,

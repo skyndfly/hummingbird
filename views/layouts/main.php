@@ -76,7 +76,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
                             <?= $this->render('owner-nav') ?>
                         <?php endif; ?>
                         <li class="list-group-item"><a href="/">Все кода</a></li>
-                        <li class="list-group-item"><a href="/manager/add-code/create">Добавить код</a></li>
+                        <li class="list-group-item"><a href="/category">Категории</a></li>
                         <?php if(Yii::$app->session->has('original_user_id')):?>
                             <li class="list-group-item">
                                 <form action="/site/return-to-user" method="post">

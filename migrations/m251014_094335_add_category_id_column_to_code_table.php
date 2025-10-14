@@ -20,7 +20,8 @@ class m251014_094335_add_category_id_column_to_code_table extends Migration
             table: self::TABLE_NAME,
             columns: 'category_id',
             refTable: 'category',
-            refColumns: 'id'
+            refColumns: 'id',
+            delete: 'RESTRICT'
         );
     }
 
