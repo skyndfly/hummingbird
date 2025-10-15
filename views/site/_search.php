@@ -1,11 +1,13 @@
 <?php
 
 use app\filters\Code\CodeFilter;
+use app\repositories\Category\dto\CategoryDto;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $filterModel CodeFilter */
+/** @var CategoryDto[] $categories */
 
 $form = ActiveForm::begin([
     'action' => ['index'],
@@ -16,7 +18,12 @@ $form = ActiveForm::begin([
     <div class="manager-search">
         <div class="row">
             <div class="col"><?= $form->field($filterModel, 'code')->textInput() ?></div>
-            <div class="col"><?= $form->field($filterModel, 'place')->textInput() ?></div>
+            <div class="col">
+                <?= $form->field($filterModel, 'categoryId')->dropDownList(
+                        $categories,
+                        ['prompt' => 'Выберите категорию...']
+                ) ?>
+            </div>
             <div class="col"><?= $form->field($filterModel, 'date')->input('date') ?></div>
         </div>
         <div class="form-group">

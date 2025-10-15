@@ -3,6 +3,7 @@
 namespace app\repositories\Code;
 
 use app\repositories\BaseRepository;
+use app\repositories\Category\CategoryRepository;
 use app\repositories\Code\dto\CodeDto;
 use app\repositories\Code\dto\CodeSearchDto;
 use app\repositories\Code\enums\CodeStatusEnum;
@@ -17,20 +18,36 @@ class CodeRepository extends BaseRepository
     public function getAll(CodeSearchDto $dto): array
     {
         $query = $this->getQuery()
-            ->from(self::TABLE_NAME);
+            ->select([
+                'code.id',
+                'code.code',
+                'code.status',
+                'code.price',
+                'code.comment',
+                'code.quantity',
+                'code.created_at',
+                'code.updated_at',
+                'category.id as category_id',
+                'category.name as category_name',
+            ])
+            ->from([self::TABLE_NAME])
+            ->leftJoin(
+                table: [CategoryRepository::TABLE_NAME],
+                on: 'category.id = code.category_id'
+            );
 
-        if(!empty($dto->code)){
+        if (!empty($dto->code)) {
             $query->andWhere(['code' => $dto->code]);
         }
-        if(!empty($dto->place)){
-            $query->andWhere(['LOWER(place)' => mb_strtolower($dto->place)]);
+        if (!empty($dto->categoryId)) {
+            $query->andWhere(['code.category_id' => $dto->categoryId]);
         }
-        if(!empty($dto->date)){
+        if (!empty($dto->date)) {
             $query->andWhere(['DATE(created_at)' => $dto->date]);
         }
 
         return array_map(
-            callback: fn ($item) => CodeDto::fromDbRecord($item),
+            callback: fn($item) => CodeDto::fromDbRecord($item),
             array: $query->all()
         );
     }
@@ -38,7 +55,7 @@ class CodeRepository extends BaseRepository
     public function issuedCode(CodeStatusEnum $status, int $id, ?string $comment = null): void
     {
         $columns = ['status' => $status->value];
-        if ($comment !== null){
+        if ($comment !== null) {
             $columns['comment'] = $comment;
         }
         $this->getCommand()
@@ -51,12 +68,13 @@ class CodeRepository extends BaseRepository
     }
 
     public function create(
-        int $code,
+        string $code,
         int $user_id,
         CodeStatusEnum $status,
         int $price,
         string $comment,
-        string $place,
+        int $categoryId,
+        int $quantity
     ): void {
         $this->getCommand()->insert(
             table: self::TABLE_NAME,
@@ -66,7 +84,8 @@ class CodeRepository extends BaseRepository
                 'status' => $status->value,
                 'price' => $price,
                 'comment' => $comment,
-                'place' => $place,
+                'category_id' => $categoryId,
+                'quantity' => $quantity,
                 'created_at' => $this->getCurrentDate(),
                 'updated_at' => $this->getCurrentDate(),
             ]

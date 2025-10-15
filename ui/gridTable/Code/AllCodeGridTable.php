@@ -20,13 +20,15 @@ class AllCodeGridTable extends AbstractGridTable
     public string $code;
     #[GridColumn(label: 'Дата прихода', formatter: 'dateFormatter', sortable: true)]
     public string $createdAt;
-    #[GridColumn(label: 'Место хранения')]
-    public string $place;
+    #[GridColumn(label: 'Количество')]
+    public string $quantity;
+    #[GridColumn(label: 'Место хранения', formatter: 'categoryFormatter')]
+    public string $category;
     #[GridColumn(label: 'Цена', formatter: 'priceFormatter')]
     public string $price;
     #[GridColumn(label: 'Статус', formatter: 'statusFormatter')]
     public string $status;
-    #[GridColumn(label: 'Комментарий')]
+    #[GridColumn(label: 'Комментарий', formatter: 'commentFormatter')]
     public string $comment;
     #[GridColumn(label: 'ID', formatter: 'idFormatter', sortable: true)]
     public string $id;
@@ -36,6 +38,16 @@ class AllCodeGridTable extends AbstractGridTable
     public static function idFormatter(CodeDto $dto): string
     {
         return '#' . $dto->id;
+    }
+
+    public static function commentFormatter(CodeDto $dto): string
+    {
+        return $dto->comment ?? '';
+    }
+
+    public static function categoryFormatter(CodeDto $dto): string
+    {
+        return $dto->category->name;
     }
 
     public static function statusFormatter(CodeDto $dto)
@@ -63,7 +75,7 @@ class AllCodeGridTable extends AbstractGridTable
     {
         /** @var UserIdentity $identity */
         $identity = Yii::$app->user->getIdentity();
-        if ($model->status !== CodeStatusEnum::NEW && $identity->user->type !== UserTypeEnum::OWNER){
+        if ($model->status !== CodeStatusEnum::NEW && $identity->user->type !== UserTypeEnum::OWNER) {
             return <<<HTML
             <div class="dropdown">
                  <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">

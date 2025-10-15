@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\auth\UserIdentity;
 use app\filters\Code\CodeFilter;
 use app\forms\Code\CreateCodeForm;
+use app\repositories\Category\CategoryRepository;
 use app\repositories\Code\CodeRepository;
 use app\repositories\Code\dto\CodeSearchDto;
 use app\repositories\User\UserRepository;
@@ -24,17 +25,20 @@ class SiteController extends Controller
 {
     private UserRepository $userRepository;
     private CodeRepository $codeRepository;
+    private CategoryRepository $categoryRepository;
 
     public function __construct(
         $id,
         $module,
         UserRepository $userRepository,
         CodeRepository $codeRepository,
+        CategoryRepository $categoryRepository,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
         $this->userRepository = $userRepository;
         $this->codeRepository = $codeRepository;
+        $this->categoryRepository = $categoryRepository;
     }
 
     public function behaviors(): array
@@ -76,20 +80,19 @@ class SiteController extends Controller
 
     public function actionIndex(): string
     {
-        $formModel = new CreateCodeForm();
         try {
+
+            $formModel = new CreateCodeForm();
             $getParams = Yii::$app->request->getQueryParams();
             $filter = new CodeFilter();
             $filter->load($getParams);
 
 
-
             $codes = $this->codeRepository->getAll(new CodeSearchDto(
                 code: $filter->code,
-                place: $filter->place,
                 date: $filter->date,
+                categoryId: $filter->categoryId,
             ));
-
             $grid = GridFactory::createGrid(
                 models: $codes,
                 gridClass: AllCodeGridTable::class,
@@ -100,16 +103,18 @@ class SiteController extends Controller
                 'formModel' => $formModel,
                 'filterModel' => $filter,
                 'grid' => $grid,
+                'categories' => $this->categoryRepository->getAllAsMap()
             ]);
-        }catch (Throwable $e){
+
+        } catch (Throwable $e) {
             Yii::error([
                 'type' => 'SiteControllerError',
                 'exception' => $e,
             ]);
-            Yii::$app->getSession()->setFlash('error', $e->getMessage());
-            return $this->render('index', params: [
-                'formModel' => $formModel
-            ]);
+            return $this->render(
+                view: 'error',
+                params: ['message' => $e->getMessage()]
+            );
         }
     }
 

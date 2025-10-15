@@ -11,7 +11,7 @@ use yii\helpers\Html;
 ?>
 
 <h4>Код: <?= $model->code ?></h4>
-<h4>Место хранения: <?= $model->place ?></h4>
+<!--<h4>Место хранения: --><?php //= $model->place ?><!--</h4>-->
 <?php $form = ActiveForm::begin([
     'action' => ['manager/code/issued'],
     'method' => 'post',

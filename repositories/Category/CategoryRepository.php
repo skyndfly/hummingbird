@@ -32,4 +32,17 @@ class CategoryRepository extends BaseRepository
             array: $all
         );
     }
+
+    /**
+     * @return array<int, string>
+     */
+    public function getAllAsMap(): array
+    {
+        $categories = $this->getAll();
+        $result = [];
+        foreach ($categories as $category) {
+            $result[$category->id] = $category->name;
+        }
+        return $result;
+    }
 }

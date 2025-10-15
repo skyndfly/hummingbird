@@ -61,12 +61,13 @@ class CodeController extends BaseManagerController
             $post = Yii::$app->request->post();
             if ($modelForm->load($post) && $modelForm->validate()) {
                 $this->repository->create(
-                    code: (int) $modelForm->code,
+                    code: $modelForm->code,
                     user_id: $this->getIdentity()->getId(),
                     status: CodeStatusEnum::NEW,
                     price: (int) $modelForm->price * 100,
                     comment: $modelForm->comment,
-                    place: $modelForm->place,
+                    categoryId: (int) $modelForm->categoryId,
+                    quantity: $modelForm->quantity
                 );
                 //TODO добавить логи кто добавил заказ
                 Yii::$app->session->setFlash('success', 'Код добавлен');

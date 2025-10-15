@@ -2,16 +2,19 @@
 
 namespace app\repositories\Code\dto;
 
+use app\repositories\Category\dto\CategoryDto;
 use app\repositories\Code\enums\CodeStatusEnum;
+use GuzzleHttp\Psr7\Response;
 
 class CodeDto
 {
     public function __construct(
-        public int $code,
+        public string $code,
         public int $id,
         public int $price,
-        public string $place,
-        public string $comment,
+        public int $quantity,
+        public CategoryDto $category,
+        public ?string $comment,
         public string $createdAt,
         public CodeStatusEnum $status
     )
@@ -20,22 +23,26 @@ class CodeDto
 
     /**
      * @param array{
-     *     code: int,
+     *     code: string,
      *     id: int,
      *     price: int,
-     *     place: string,
-     *     comment: string,
+     *     quantity: int,
+     *     category_id: int,
+     *     category_name: string,
+     *     comment: ?string,
      *     created_at: string,
      *     status: string,
      * } $record
      */
     public static function fromDbRecord(array $record): self
     {
+        $category = new CategoryDto(id: $record['category_id'],name: $record['category_name']);
         return new self(
             code: $record['code'],
             id: $record['id'],
             price: $record['price'],
-            place: $record['place'],
+            quantity: $record['quantity'],
+            category: $category,
             comment: $record['comment'],
             createdAt: $record['created_at'],
             status: CodeStatusEnum::from($record['status']),

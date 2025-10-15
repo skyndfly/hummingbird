@@ -7,7 +7,7 @@
 
 use yii\helpers\Html;
 
-$this->title = $name;
+$this->title = 'Произошла ошибка';
 ?>
 <div class="site-error">
 
@@ -18,10 +18,10 @@ $this->title = $name;
     </div>
 
     <p>
-        The above error occurred while the Web server was processing your request.
+        Извините, произошла ошибка. Сфотографируйте или скопируйте текст ошибки.
     </p>
     <p>
-        Please contact us if you think this is a server error. Thank you.
+        Не забудьте рассказать об этом Артуру.
     </p>
 
 </div>

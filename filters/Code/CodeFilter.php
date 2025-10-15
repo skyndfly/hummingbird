@@ -8,12 +8,12 @@ class CodeFilter extends Model
 {
     public ?string $code = null;
     public ?string $date = null;
-    public ?string $place = null;
+    public ?int $categoryId = null;
 
     public function rules(): array
     {
         return [
-            [['code', 'date', 'place'], 'safe'],
+            [['code', 'date', 'categoryId'], 'safe'],
         ];
     }
 
@@ -22,7 +22,7 @@ class CodeFilter extends Model
         return [
             'code' => 'Код',
             'date' => 'Дата прихода',
-            'place' => 'Место хранения',
+            'categoryId' => 'Место хранения',
         ];
     }
 }

@@ -9,14 +9,16 @@ class CreateCodeForm extends Model
     public string $code = '';
     public string $price = '';
     public string $comment = '';
-    public string $place = '';
+    public int $quantity = 1;
+    public int $categoryId = 0;
 
     public function rules(): array
     {
         return [
-            [['code', 'price', 'place'], 'required'],
-            [['code', 'price'], 'integer'],
-            [['comment'], 'string']
+            [['code', 'price', 'categoryId', 'quantity'], 'required'],
+            [['price'], 'integer'],
+            [['quantity', 'categoryId'], 'integer', 'min' => 1],
+            [['comment', 'code'], 'string']
 
         ];
     }
@@ -26,8 +28,9 @@ class CreateCodeForm extends Model
         return [
             'code' => 'Код',
             'price' => 'Стоимость',
-            'place' => 'Место хранения',
+            'categoryId' => 'Место хранения',
             'comment' => 'Комментарий (необязательное поле)',
+            'quantity' => 'Количество'
         ];
     }
 

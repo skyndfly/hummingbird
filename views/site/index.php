@@ -3,11 +3,13 @@
 
 use app\filters\Code\CodeFilter;
 use app\forms\Code\CreateCodeForm;
+use app\repositories\Category\dto\CategoryDto;
 use yii\bootstrap5\ActiveForm;
 
 /** @var yii\web\View $this */
 /** @var CodeFilter $filterModel */
 /** @var CreateCodeForm $formModel */
+/** @var CategoryDto[] $categories */
 $this->title = 'КолибриCRM';
 ?>
 <section>
@@ -23,14 +25,20 @@ $this->title = 'КолибриCRM';
         <div class="col"><?= $form->field($formModel, 'price')->input('number') ?></div>
     </div>
     <div class="row">
-        <div class="col"><?= $form->field($formModel, 'place')->textInput() ?></div>
+        <div class="col">
+            <?= $form->field($formModel, 'categoryId')->dropDownList(
+                    $categories,
+                    ['prompt' => 'Выберите категорию...']
+            ) ?>
+        </div>
+        <div class="col"><?= $form->field($formModel, 'quantity')->input('number') ?></div>
         <div class="col"><?= $form->field($formModel, 'comment')->textInput() ?></div>
     </div>
     <button class="btn btn-outline-success" type="submit">Добавить</button>
     <?php $form = ActiveForm::end(); ?>
 
     <?php if (isset($filterModel)): ?>
-    <?= $this->render(view: '_search', params: ['filterModel' => $filterModel]); ?>
+    <?= $this->render(view: '_search', params: ['filterModel' => $filterModel, 'categories' => $categories]); ?>
     <?php endif; ?>
     <hr>
     <h2 class="mt-5">Список кодов</h2>
