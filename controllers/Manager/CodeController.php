@@ -7,6 +7,7 @@ use app\forms\Code\CreateCodeForm;
 use app\forms\Code\IssuedCodeForm;
 use app\repositories\Code\CodeRepository;
 use app\repositories\Code\enums\CodeStatusEnum;
+use app\services\Code\CreateCodeService;
 use app\ui\gridTable\Code\AllCodeGridTable;
 use app\ui\gridTable\GridFactory;
 use Exception;
@@ -15,12 +16,19 @@ use yii\web\Response;
 
 class CodeController extends BaseManagerController
 {
+    private CreateCodeService $createCodeService;
     private CodeRepository $repository;
 
-    public function __construct($id, $module, CodeRepository $repository, $config = [])
-    {
+    public function __construct(
+        $id,
+        $module,
+        CreateCodeService $createCodeService,
+        CodeRepository $repository,
+        $config = []
+    ) {
         parent::__construct($id, $module, $config);
 
+        $this->createCodeService = $createCodeService;
         $this->repository = $repository;
     }
 
@@ -35,7 +43,6 @@ class CodeController extends BaseManagerController
 
     public function actionIssued(): Response
     {
-
         try {
             $modelForm = new IssuedCodeForm();
             $post = Yii::$app->request->post();
@@ -55,25 +62,16 @@ class CodeController extends BaseManagerController
     }
 
     public function actionStore(): Response
-    {
-        try {
+    {        try {
             $modelForm = new CreateCodeForm();
             $post = Yii::$app->request->post();
             if ($modelForm->load($post) && $modelForm->validate()) {
-                $this->repository->create(
-                    code: $modelForm->code,
-                    user_id: $this->getIdentity()->getId(),
-                    status: CodeStatusEnum::NEW,
-                    price: (int) $modelForm->price * 100,
-                    comment: $modelForm->comment,
-                    categoryId: (int) $modelForm->categoryId,
-                    quantity: $modelForm->quantity
-                );
-                //TODO добавить логи кто добавил заказ
+
+                $this->createCodeService->execute($modelForm, $this->getIdentity()->getId());
                 Yii::$app->session->setFlash('success', 'Код добавлен');
             }
         } catch (Exception $e) {
-            Yii::$app->session->setFlash('error', $e->getMessage());
+        Yii::$app->session->setFlash('error', $e->getMessage());
         }
         return $this->redirect(Yii::$app->request->getReferrer());
     }

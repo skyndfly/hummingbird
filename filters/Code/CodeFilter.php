@@ -8,7 +8,7 @@ class CodeFilter extends Model
 {
     public ?string $code = null;
     public ?string $date = null;
-    public ?int $categoryId = null;
+    public ?string $categoryId = null;
 
     public function rules(): array
     {

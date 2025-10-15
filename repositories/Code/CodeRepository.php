@@ -2,6 +2,7 @@
 
 namespace app\repositories\Code;
 
+use app\filters\Code\CodeFilter;
 use app\repositories\BaseRepository;
 use app\repositories\Category\CategoryRepository;
 use app\repositories\Code\dto\CodeDto;
@@ -25,6 +26,7 @@ class CodeRepository extends BaseRepository
                 'code.price',
                 'code.comment',
                 'code.quantity',
+                'code.user_id',
                 'code.created_at',
                 'code.updated_at',
                 'category.id as category_id',
@@ -93,4 +95,54 @@ class CodeRepository extends BaseRepository
 
     }
 
+    public function findCodeByIdAndCategory(string $code, int $categoryId): ?CodeDto
+    {
+        $row = $this->getQuery()
+            ->select([
+                'code.id',
+                'code.code',
+                'code.status',
+                'code.price',
+                'code.comment',
+                'code.quantity',
+                'code.user_id',
+                'code.created_at',
+                'code.updated_at',
+                'category.id as category_id',
+                'category.name as category_name',
+            ])
+            ->from(self::TABLE_NAME)
+            ->where(['code' => $code])
+            ->andWhere(['category_id' => $categoryId])
+            ->leftJoin(
+                table: [CategoryRepository::TABLE_NAME],
+                on: 'category.id = code.category_id'
+            )
+            ->one();
+
+
+        if ($row === false) {
+            return null;
+        }
+        return CodeDto::fromDbRecord($row);
+    }
+
+    public function update(CodeDto $dto): void
+    {
+        $this->getCommand()->update(
+            table: self::TABLE_NAME,
+            columns: [
+                'code' => $dto->code,
+                'user_id' => $dto->userId,
+                'status' => $dto->status->value,
+                'price' => $dto->price,
+                'comment' => $dto->comment,
+                'category_id' => $dto->category->id,
+                'quantity' => $dto->quantity,
+                'updated_at' => $this->getCurrentDate(),
+            ],
+            condition: ['id' => $dto->id]
+        )
+        ->execute();
+    }
 }

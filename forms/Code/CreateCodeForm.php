@@ -7,7 +7,7 @@ use yii\base\Model;
 class CreateCodeForm extends Model
 {
     public string $code = '';
-    public string $price = '';
+    public int $price = 0;
     public string $comment = '';
     public int $quantity = 1;
     public int $categoryId = 0;

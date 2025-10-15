@@ -113,7 +113,7 @@ class SiteController extends Controller
             ]);
             return $this->render(
                 view: 'error',
-                params: ['message' => $e->getMessage()]
+                params: ['message' => $e]
             );
         }
     }
