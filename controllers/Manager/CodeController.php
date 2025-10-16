@@ -5,12 +5,14 @@ namespace app\controllers\Manager;
 use app\controllers\Manager\abstracts\BaseManagerController;
 use app\forms\Code\CreateCodeForm;
 use app\forms\Code\IssuedCodeForm;
+use app\repositories\Category\CategoryRepository;
 use app\repositories\Code\CodeRepository;
 use app\repositories\Code\enums\CodeStatusEnum;
 use app\services\Code\CreateCodeService;
-use app\ui\gridTable\Code\AllCodeGridTable;
+use app\ui\gridTable\Code\CodeGridTableForCreatePage;
 use app\ui\gridTable\GridFactory;
 use Exception;
+use Throwable;
 use Yii;
 use yii\web\Response;
 
@@ -18,27 +20,49 @@ class CodeController extends BaseManagerController
 {
     private CreateCodeService $createCodeService;
     private CodeRepository $repository;
+    private CategoryRepository $categoryRepository;
 
     public function __construct(
         $id,
         $module,
         CreateCodeService $createCodeService,
         CodeRepository $repository,
+        CategoryRepository $categoryRepository,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
 
         $this->createCodeService = $createCodeService;
         $this->repository = $repository;
+        $this->categoryRepository = $categoryRepository;
     }
 
 
     public function actionCreate(): string
     {
-        $formModel = new CreateCodeForm();
-        return $this->render('create', [
-            'formModel' => $formModel,
-        ]);
+        try {
+
+            $formModel = new CreateCodeForm();
+
+            $codes = $this->repository->getAll();
+            $grid = GridFactory::createGrid(
+                models: $codes,
+                gridClass: CodeGridTableForCreatePage::class,
+                pageSize: 50
+            );
+            return $this->render(view: 'code/create', params: [
+                'formModel' => $formModel,
+                'grid' => $grid,
+                'categories' => $this->categoryRepository->getAllAsMap()
+            ]);
+
+        } catch (Throwable $e) {
+            Yii::error([
+                'type' => 'CodeController',
+                'exception' => $e,
+            ]);
+            return $this->renderError($e);
+        }
     }
 
     public function actionIssued(): Response
@@ -62,7 +86,8 @@ class CodeController extends BaseManagerController
     }
 
     public function actionStore(): Response
-    {        try {
+    {
+        try {
             $modelForm = new CreateCodeForm();
             $post = Yii::$app->request->post();
             if ($modelForm->load($post) && $modelForm->validate()) {
@@ -71,7 +96,7 @@ class CodeController extends BaseManagerController
                 Yii::$app->session->setFlash('success', 'Код добавлен');
             }
         } catch (Exception $e) {
-        Yii::$app->session->setFlash('error', $e->getMessage());
+            Yii::$app->session->setFlash('error', $e->getMessage());
         }
         return $this->redirect(Yii::$app->request->getReferrer());
     }

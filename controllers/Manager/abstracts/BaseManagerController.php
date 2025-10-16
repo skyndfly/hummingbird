@@ -2,6 +2,7 @@
 
 namespace app\controllers\Manager\abstracts;
 
+use Throwable;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -41,5 +42,9 @@ class BaseManagerController extends Controller
     public function getViewPath(): string
     {
         return Yii::getAlias('@app/views/manager');
+    }
+    protected function renderError(Throwable $e): string
+    {
+        return $this->render('@app/views/site/error', ['message' => $e]);
     }
 }

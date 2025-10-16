@@ -15,7 +15,7 @@ class CodeRepository extends BaseRepository
     /**
      * @return CodeDto[]
      */
-    public function getAll(CodeSearchDto $dto): array
+    public function getAll(?CodeSearchDto $dto = null): array
     {
         $query = $this->getQuery()
             ->select([

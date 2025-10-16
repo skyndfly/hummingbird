@@ -14,21 +14,19 @@ $form = ActiveForm::begin([
     'method' => 'get',
 ]); ?>
     <hr>
-    <h4>Фильтр</h4>
     <div class="manager-search">
         <div class="row">
-            <div class="col"><?= $form->field($filterModel, 'code')->textInput() ?></div>
-            <div class="col">
+            <div class="col-12 col-md-4"><?= $form->field($filterModel, 'code')->textInput() ?></div>
+            <div class="col-12 col-md-4">
                 <?= $form->field($filterModel, 'categoryId')->dropDownList(
                         $categories,
                         ['prompt' => 'Выберите категорию...']
                 ) ?>
             </div>
-            <div class="col"><?= $form->field($filterModel, 'date')->input('date') ?></div>
+            <div class="col-12 col-md-4"><?= $form->field($filterModel, 'date')->input('date') ?></div>
         </div>
         <div class="form-group">
             <?= Html::submitButton('Искать', ['class' => 'btn btn-primary']) ?>
-<!--            --><?php //= Html::resetButton('Сбросить', ['class' => 'btn btn-default']) ?>
             <?= Html::a('Очистить', ['index'], ['class' => 'btn btn-outline-secondary']) ?>
         </div>
     </div>
