@@ -64,7 +64,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 </header>
 
 <main id="main" class="flex-shrink-0 " role="main">
-    <div class="container-fluid px-3 px-md-4">
+    <div class="container-fluid ">
 
         <?php if (!empty($this->params['breadcrumbs'])): ?>
             <div class="mb-3">
