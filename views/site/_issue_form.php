@@ -10,8 +10,9 @@ use yii\helpers\Html;
 /** @var IssuedCodeForm $formModel */
 ?>
 
-<h4>Код: <?= $model->code ?></h4>
-<!--<h4>Место хранения: --><?php //= $model->place ?><!--</h4>-->
+<strong>Код:</strong> <?= $model->code ?><br>
+<strong>Место хранения:</strong> <?= $model->category->name ?><br>
+<strong>Количество:</strong> <?= $model->quantity ?>
 <?php $form = ActiveForm::begin([
     'action' => ['manager/code/issued'],
     'method' => 'post',

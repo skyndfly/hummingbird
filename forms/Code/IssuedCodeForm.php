@@ -18,7 +18,7 @@ class IssuedCodeForm extends Model
             [['id', 'status', 'code'], 'required'],
             [['comment'], 'string', 'max' => 255],
             [['code'], 'integer'],
-            [['status'], 'in', 'range' => [CodeStatusEnum::ISSUED->value, CodeStatusEnum::ISSUED_FREE->value]],
+            [['status'], 'in', 'range' => [CodeStatusEnum::ISSUED->value, CodeStatusEnum::ISSUED_FREE->value, CodeStatusEnum::LOST->value]],
         ];
     }
 
@@ -37,6 +37,7 @@ class IssuedCodeForm extends Model
         return [
             CodeStatusEnum::ISSUED->value => CodeStatusEnum::ISSUED->value,
             CodeStatusEnum::ISSUED_FREE->value => CodeStatusEnum::ISSUED_FREE->value,
+            CodeStatusEnum::LOST->value => CodeStatusEnum::LOST->value,
         ];
     }
 }

@@ -2,7 +2,6 @@
 
 namespace app\repositories\Code;
 
-use app\filters\Code\CodeFilter;
 use app\repositories\BaseRepository;
 use app\repositories\Category\CategoryRepository;
 use app\repositories\Code\dto\CodeDto;
@@ -39,7 +38,7 @@ class CodeRepository extends BaseRepository
             );
 
         if (!empty($dto->code)) {
-            $query->andWhere(['code' => $dto->code]);
+            $query->andWhere(['like', 'LOWER(code)',  mb_strtolower($dto->code)]);
         }
         if (!empty($dto->categoryId)) {
             $query->andWhere(['code.category_id' => $dto->categoryId]);

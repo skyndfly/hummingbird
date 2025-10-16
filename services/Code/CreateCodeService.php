@@ -36,7 +36,7 @@ class CreateCodeService
             //TODO добавить логи кто добавил заказ
             return;
         }
-
+        $code->price = ($modelForm->price * 100) + $code->price;
         $code->quantity = $modelForm->quantity + $code->quantity;
         if (!empty($modelForm->comment)){
             $code->comment = $modelForm->comment;
