@@ -21,18 +21,21 @@ use yii\helpers\Html;
 <?= $form->field($formModel, 'id')->hiddenInput(['value' => $model->id])->label(false) ?>
 <?= $form->field($formModel, 'code')->hiddenInput(['value' => $model->code])->label(false) ?>
 <?= $form->field($formModel, 'comment')->textInput(['value' => $model->comment]) ?>
-<?= $form->field($formModel, 'status')->radioList($formModel->getStatusOptions(), [
-        'item' => function($index, $label, $name, $checked, $value) {
-            $id = "status-{$value}";
-            $checked = $checked ? 'checked' : '';
-            return "
-            <div class='form-check'>
-                <input class='form-check-input' type='radio' name='{$name}' id='{$id}' value='{$value}' {$checked}>
-                <label class='form-check-label' for='{$id}'>{$label}</label>
+<?= $form->field($formModel, 'status')->radioList(
+        $formModel->getStatusOptions(),
+        [
+                'item' => function($index, $label, $name, $checked, $value) {
+                    $id = "status-{$value}";
+                    return "
+            <div class='form-check mb-2'>
+                <input class='form-check-input' type='radio' name='{$name}' id='{$id}' value='{$value}' " . ($checked ? 'checked' : '') . ">
+                <label class='form-check-label fw-semibold' for='{$id}'>{$label}</label>
             </div>
-        ";
-        }
-]) ?>
+            ";
+                },
+                'encode' => false,
+        ]
+) ?>
 
 <div class="form-group mt-3">
     <?= Html::submitButton('Выдать', ['class' => 'btn btn-primary']) ?>

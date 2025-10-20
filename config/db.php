@@ -2,9 +2,9 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'pgsql:host=postgres;port=5432;dbname=hummingbird',
-    'username' => 'user',
-    'password' => 'password',
+    'dsn' => getenv('DB_DSN'),
+    'username' => getenv('DB_USER'),
+    'password' => getenv('DB_PASS'),
     'charset' => 'utf8',
 
     // Schema cache options (for production environment)
