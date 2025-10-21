@@ -56,9 +56,24 @@ class RbacController extends Controller
             $auth->assign($owner, $user->id);
 
             Console::confirm('Владелец и базовые роли созданы');
-        }catch (Throwable $e){
+        } catch (Throwable $e) {
             Console::error('Ошибка инициализации:');
             Console::error($e->getMessage());
         }
+    }
+
+    public function actionCreateRole(string $name): void
+    {
+        $auth = Yii::$app->getAuthManager();
+
+        $role = $auth->createRole($name);
+        $auth->add($role);
+    }
+
+    public function actionBindToRole(int $userId, string $role): void
+    {
+        $auth = Yii::$app->getAuthManager();
+        $role = $auth->getRole($role);
+        $auth->assign($role, $userId);
     }
 }
