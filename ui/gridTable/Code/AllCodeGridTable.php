@@ -132,7 +132,7 @@ class AllCodeGridTable extends AbstractGridTable
         HTML;
     }
 
-    private static function mapBadge(CodeStatusEnum $statusEnum): string
+    public static function mapBadge(CodeStatusEnum $statusEnum): string
     {
         $badges = [
             CodeStatusEnum::NEW->name => 'text-bg-success',

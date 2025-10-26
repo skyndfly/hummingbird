@@ -7,6 +7,7 @@ use app\repositories\Category\CategoryRepository;
 use app\repositories\Code\dto\CodeDto;
 use app\repositories\Code\dto\CodeSearchDto;
 use app\repositories\Code\enums\CodeStatusEnum;
+use yii\db\Expression;
 
 class CodeRepository extends BaseRepository
 {
@@ -38,7 +39,7 @@ class CodeRepository extends BaseRepository
             );
 
         if (!empty($dto->code)) {
-            $query->andWhere(['like', 'LOWER(code)',  mb_strtolower($dto->code)]);
+            $query->andWhere(['like', 'LOWER(code)', mb_strtolower($dto->code)]);
         }
         if (!empty($dto->categoryId)) {
             $query->andWhere(['code.category_id' => $dto->categoryId]);
@@ -51,6 +52,61 @@ class CodeRepository extends BaseRepository
             callback: fn($item) => CodeDto::fromDbRecord($item),
             array: $query->all()
         );
+    }
+
+    public function findCodes(?CodeSearchDto $dto = null): array
+    {
+        $query = $this->getQuery()
+            ->select([
+                'code.code',
+                'code.status',
+                'code.price',
+                new Expression('STRING_AGG(DISTINCT code.comment, \', \' ORDER BY code.comment) AS comments'),
+                'SUM(code.quantity) as quantity',
+                'category.id as category_id',
+                'category.name as category_name',
+                new Expression('SUM(
+                    CASE
+                        WHEN code.status NOT IN (\'Выдан/Наличные\', \'Выдан/Бесплатно\')
+                        THEN code.price
+                        ELSE 0
+                    END
+                ) AS unpaid_total')
+            ])
+            ->from([self::TABLE_NAME . ' code'])
+            ->leftJoin(
+                table: [CategoryRepository::TABLE_NAME . ' category'],
+                on: 'category.id = code.category_id'
+            );
+        if (!empty($dto->code)) {
+            $query->andWhere(['like','LOWER(code.code)', mb_strtolower($dto->code)]);
+        }
+        if (!empty($dto->categoryId)) {
+            $query->andWhere(['code.category_id' => $dto->categoryId]);
+        }
+        if (!empty($dto->date)) {
+            $query->andWhere(['DATE(code.created_at)' => $dto->date]);
+        }
+
+        $query->groupBy(['code.code', 'code.status', 'code.price', 'category.id'])
+            ->orderBy(['code.code' => SORT_ASC, 'category.name' => SORT_ASC]);
+        $rows =  $query->all();
+        $grouped = [];
+        foreach ($rows as $row) {
+            $code = $row['code'];
+
+            if (!isset($grouped[$code])) {
+                $grouped[$code] = [
+                    'rows' => [],
+                    'unpaid_total' => 0
+                ];
+            }
+            $grouped[$code]['rows'][] = $row;
+            $grouped[$code]['unpaid_total'] += (int) $row['unpaid_total'];
+
+        }
+
+        return $grouped;
     }
 
     public function issuedCode(CodeStatusEnum $status, int $id, ?string $comment = null): void
@@ -142,6 +198,6 @@ class CodeRepository extends BaseRepository
             ],
             condition: ['id' => $dto->id]
         )
-        ->execute();
+            ->execute();
     }
 }

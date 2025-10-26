@@ -86,23 +86,20 @@ class SiteController extends Controller
             $getParams = Yii::$app->request->getQueryParams();
             $filter = new CodeFilter();
             $filter->load($getParams);
+            $codes = [];
+            if (!empty($filter->code)) {
 
-
-            $codes = $this->codeRepository->getAll(new CodeSearchDto(
-                code: $filter->code,
-                date: $filter->date,
-                categoryId: $filter->categoryId,
-            ));
-            $grid = GridFactory::createGrid(
-                models: $codes,
-                gridClass: AllCodeGridTable::class,
-                pageSize: 50
-            );
+                $codes = $this->codeRepository->findCodes(new CodeSearchDto(
+                    code: $filter->code,
+                    date: $filter->date,
+                    categoryId: $filter->categoryId,
+                ));
+            }
 
             return $this->render(view: 'index', params: [
                 'formModel' => $formModel,
                 'filterModel' => $filter,
-                'grid' => $grid,
+                'codes' => $codes,
                 'categories' => $this->categoryRepository->getAllAsMap()
             ]);
 
