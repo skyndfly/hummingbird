@@ -17,7 +17,7 @@ RUN groupmod -o -g 1000 www-data && \
     chown -R www-data:www-data /var/www/html && \
     chmod -R 755 /var/www/html && \
     chmod -R 775 /var/www/html/runtime /var/www/html/web/assets
-
+RUN echo "memory_limit=512M" > /usr/local/etc/php/conf.d/memory-limit.ini
 WORKDIR /var/www/html
 
 # Меняем пользователя на www-data

@@ -6,6 +6,7 @@ use app\repositories\BaseRepository;
 use app\repositories\Category\CategoryRepository;
 use app\repositories\Code\dto\CodeDto;
 use app\repositories\Code\dto\CodeSearchDto;
+use app\repositories\Code\dto\GroupedCodeDto;
 use app\repositories\Code\enums\CodeStatusEnum;
 use yii\db\Expression;
 
@@ -54,6 +55,10 @@ class CodeRepository extends BaseRepository
         );
     }
 
+    /**
+     * Группированный поиск кодов
+     * @return GroupedCodeDto[]
+     */
     public function findCodes(?CodeSearchDto $dto = null): array
     {
         $query = $this->getQuery()
@@ -71,7 +76,8 @@ class CodeRepository extends BaseRepository
                         THEN code.price
                         ELSE 0
                     END
-                ) AS unpaid_total')
+                ) AS unpaid_total'),
+                new Expression('STRING_AGG(code.id::text, \',\') as id')
             ])
             ->from([self::TABLE_NAME . ' code'])
             ->leftJoin(
@@ -90,23 +96,11 @@ class CodeRepository extends BaseRepository
 
         $query->groupBy(['code.code', 'code.status', 'code.price', 'category.id'])
             ->orderBy(['code.code' => SORT_ASC, 'category.name' => SORT_ASC]);
-        $rows =  $query->all();
-        $grouped = [];
-        foreach ($rows as $row) {
-            $code = $row['code'];
 
-            if (!isset($grouped[$code])) {
-                $grouped[$code] = [
-                    'rows' => [],
-                    'unpaid_total' => 0
-                ];
-            }
-            $grouped[$code]['rows'][] = $row;
-            $grouped[$code]['unpaid_total'] += (int) $row['unpaid_total'];
-
-        }
-
-        return $grouped;
+        return array_map(
+            callback: fn($item) => GroupedCodeDto::fromDbRecord($item),
+            array: $query->all()
+        );
     }
 
     public function issuedCode(CodeStatusEnum $status, int $id, ?string $comment = null): void

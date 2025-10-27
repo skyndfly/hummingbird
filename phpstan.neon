@@ -3,14 +3,13 @@ includes:
 
 parameters:
     level: 6
-
+    tmpDir: /tmp/phpstan
     paths:
         - auth
         - controllers
         #- models
         - repositories
         - services
-    tmpDir: %currentWorkingDirectory%/runtime
     bootstrapFiles:
             - phpstan-bootstrap.php
     yii2:

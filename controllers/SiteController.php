@@ -7,10 +7,8 @@ use app\filters\Code\CodeFilter;
 use app\forms\Code\CreateCodeForm;
 use app\repositories\Category\CategoryRepository;
 use app\repositories\Code\CodeRepository;
-use app\repositories\Code\dto\CodeSearchDto;
 use app\repositories\User\UserRepository;
-use app\ui\gridTable\Code\AllCodeGridTable;
-use app\ui\gridTable\GridFactory;
+use app\services\Code\FindCodeService;
 use DomainException;
 use Throwable;
 use Yii;
@@ -24,21 +22,21 @@ use app\models\ContactForm;
 class SiteController extends Controller
 {
     private UserRepository $userRepository;
-    private CodeRepository $codeRepository;
+    private FindCodeService $findCodeService;
     private CategoryRepository $categoryRepository;
 
     public function __construct(
         $id,
         $module,
         UserRepository $userRepository,
-        CodeRepository $codeRepository,
         CategoryRepository $categoryRepository,
+        FindCodeService $findCodeService,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
         $this->userRepository = $userRepository;
-        $this->codeRepository = $codeRepository;
         $this->categoryRepository = $categoryRepository;
+        $this->findCodeService = $findCodeService;
     }
 
     public function behaviors(): array
@@ -81,25 +79,20 @@ class SiteController extends Controller
     public function actionIndex(): string
     {
         try {
-
             $formModel = new CreateCodeForm();
             $getParams = Yii::$app->request->getQueryParams();
             $filter = new CodeFilter();
             $filter->load($getParams);
             $codes = [];
             if (!empty($filter->code)) {
-
-                $codes = $this->codeRepository->findCodes(new CodeSearchDto(
-                    code: $filter->code,
-                    date: $filter->date,
-                    categoryId: $filter->categoryId,
-                ));
+                $codes = $this->findCodeService->execute($filter);
             }
 
             return $this->render(view: 'index', params: [
                 'formModel' => $formModel,
                 'filterModel' => $filter,
                 'codes' => $codes,
+                'searchText' => empty($codes) && !empty($filter->code)? 'Код не найден 😿' : '',
                 'categories' => $this->categoryRepository->getAllAsMap()
             ]);
 
