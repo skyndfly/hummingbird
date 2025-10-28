@@ -31,7 +31,7 @@ class FindCodeService
             $code = $row->code;
 
             if (!isset($grouped[$code])) {
-                $grouped[$code] = new GroupedCodeList();
+                $grouped[$code] = new GroupedCodeList($code);
             }
             $grouped[$code]->addRows($row);
         }

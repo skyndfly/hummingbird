@@ -37,7 +37,10 @@ class CodeController extends BaseManagerController
         $this->categoryRepository = $categoryRepository;
     }
 
-
+    /**
+     * Вывод страницы добавления
+     * @http GET /code/create
+     */
     public function actionCreate(): string
     {
         try {
@@ -65,16 +68,21 @@ class CodeController extends BaseManagerController
         }
     }
 
+    /**
+     * Смена статуса коду
+     * @http POST /manager/code/issued
+     */
     public function actionIssued(): Response
     {
         try {
             $modelForm = new IssuedCodeForm();
             $post = Yii::$app->request->post();
+
+
             if ($modelForm->load($post) && $modelForm->validate()) {
                 $this->repository->issuedCode(
                     status: CodeStatusEnum::from($modelForm->status),
-                    id: (int) $modelForm->id,
-                    comment: $modelForm->comment
+                    id: $modelForm->id,
                 );
                 Yii::$app->session->setFlash('success', 'Код выдан');
                 //TODO добавить логи кто выдал заказ
@@ -85,6 +93,10 @@ class CodeController extends BaseManagerController
         return $this->redirect(Yii::$app->request->getReferrer());
     }
 
+    /**
+     * Сохранение в БД
+     * @http POST /manager/add-code/store
+     */
     public function actionStore(): Response
     {
         try {

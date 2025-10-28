@@ -7,8 +7,7 @@ use yii\base\Model;
 
 class IssuedCodeForm extends Model
 {
-    public string $id = '';
-    public string $comment = '';
+    public array $id = [];
     public string $code = '';
     public string $status = '';
 
@@ -16,9 +15,9 @@ class IssuedCodeForm extends Model
     {
         return [
             [['id', 'status', 'code'], 'required'],
-            [['comment'], 'string', 'max' => 255],
-            [['code'], 'integer'],
-            [['status'], 'in', 'range' => [CodeStatusEnum::ISSUED->value, CodeStatusEnum::ISSUED_FREE->value, CodeStatusEnum::LOST->value]],
+            [['code'], 'string', 'max' => 255],
+            [['id'], 'safe'],
+            [['status'], 'in', 'range' => [CodeStatusEnum::ISSUED->value, CodeStatusEnum::ISSUED_FREE->value]],
         ];
     }
 
@@ -26,7 +25,6 @@ class IssuedCodeForm extends Model
     {
         return [
             'id' => 'ID',
-            'comment' => 'Комментарий',
             'code' => 'Код',
             'status' => 'Статус',
         ];
@@ -37,7 +35,6 @@ class IssuedCodeForm extends Model
         return [
             CodeStatusEnum::ISSUED->value => CodeStatusEnum::ISSUED->value,
             CodeStatusEnum::ISSUED_FREE->value => CodeStatusEnum::ISSUED_FREE->value,
-            CodeStatusEnum::LOST->value => CodeStatusEnum::LOST->value,
         ];
     }
 }

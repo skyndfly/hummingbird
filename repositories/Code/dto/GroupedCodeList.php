@@ -2,6 +2,9 @@
 
 namespace app\repositories\Code\dto;
 
+use app\repositories\Category\dto\CategoryDto;
+use app\repositories\Code\enums\CodeStatusEnum;
+
 class GroupedCodeList
 {
     /** @var GroupedCodeDto[] */
@@ -9,12 +12,34 @@ class GroupedCodeList
     private int $unpaidTotal = 0;
     /** @var int[] */
     private array $ids = [];
+    private int $totalQuantity = 0;
+    private string $code;
+    /**
+     * @var string[]
+     */
+    private array $storages = [];
+
+
+    public function __construct(string $code)
+    {
+        $this->code = $code;
+    }
+
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
 
     public function addRows(GroupedCodeDto $dto): void
     {
         $this->rows[] = $dto ;
         $this->unpaidTotal += $dto->unpaidTotal;
         $this->ids[] = $dto->id;
+        if($dto->status === CodeStatusEnum::NEW){
+            $this->totalQuantity += $dto->quantity;
+        }
+        $this->storages[] = $dto->categoryName;
     }
 
     /**
@@ -34,5 +59,16 @@ class GroupedCodeList
      */
     public function getIds(): array{
         return $this->ids;
+    }
+    public function getTotalQuantity(): int{
+        return $this->totalQuantity;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getStorages():array
+    {
+        return $this->storages;
     }
 }

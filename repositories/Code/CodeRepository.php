@@ -72,7 +72,7 @@ class CodeRepository extends BaseRepository
                 'category.name as category_name',
                 new Expression('SUM(
                     CASE
-                        WHEN code.status NOT IN (\'Выдан/Наличные\', \'Выдан/Бесплатно\')
+                        WHEN code.status NOT IN (\'Выдан/Наличные\', \'Выдан/Бесплатно\', \'Не найден\')
                         THEN code.price
                         ELSE 0
                     END
@@ -103,17 +103,21 @@ class CodeRepository extends BaseRepository
         );
     }
 
-    public function issuedCode(CodeStatusEnum $status, int $id, ?string $comment = null): void
+    /**
+     * @param int[] $id
+     */
+    public function issuedCode(CodeStatusEnum $status, array $id): void
     {
         $columns = ['status' => $status->value];
-        if ($comment !== null) {
-            $columns['comment'] = $comment;
-        }
         $this->getCommand()
             ->update(
                 table: self::TABLE_NAME,
                 columns: $columns,
-                condition: ['id' => $id],
+                condition: [
+                    'and',
+                    ['id' => $id],
+                    ['status' => CodeStatusEnum::NEW->value]
+                ],
             )
             ->execute();
     }
