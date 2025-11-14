@@ -3,13 +3,15 @@
 namespace app\controllers\Manager;
 
 use app\controllers\Manager\abstracts\BaseManagerController;
+use app\filters\Code\CodeFilter;
 use app\forms\Code\CreateCodeForm;
 use app\forms\Code\IssuedCodeForm;
 use app\repositories\Category\CategoryRepository;
 use app\repositories\Code\CodeRepository;
 use app\repositories\Code\enums\CodeStatusEnum;
+use app\repositories\Company\CompanyRepository;
 use app\services\Code\CreateCodeService;
-use app\ui\gridTable\Code\CodeGridTableForCreatePage;
+use app\ui\gridTable\Code\AllCodeGridTable;
 use app\ui\gridTable\GridFactory;
 use Exception;
 use Throwable;
@@ -18,45 +20,43 @@ use yii\web\Response;
 
 class CodeController extends BaseManagerController
 {
-    private CreateCodeService $createCodeService;
-    private CodeRepository $repository;
-    private CategoryRepository $categoryRepository;
 
     public function __construct(
         $id,
         $module,
-        CreateCodeService $createCodeService,
-        CodeRepository $repository,
-        CategoryRepository $categoryRepository,
+        private readonly CreateCodeService $createCodeService,
+        private readonly CodeRepository $repository,
+        private readonly CategoryRepository $categoryRepository,
+        private readonly CompanyRepository $companyRepository,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
-
-        $this->createCodeService = $createCodeService;
-        $this->repository = $repository;
-        $this->categoryRepository = $categoryRepository;
     }
 
     /**
      * Вывод страницы добавления
-     * @http GET /code/create
      */
     public function actionCreate(): string
     {
         try {
 
             $formModel = new CreateCodeForm();
+            $getParams = Yii::$app->request->getQueryParams();
+            $filter = new CodeFilter();
+            $filter->load($getParams);
 
-            $codes = $this->repository->getAll();
+            $codes = $this->repository->getAll($filter);
             $grid = GridFactory::createGrid(
                 models: $codes,
-                gridClass: CodeGridTableForCreatePage::class,
+                gridClass: AllCodeGridTable::class,
                 pageSize: 50
             );
             return $this->render(view: 'code/create', params: [
                 'formModel' => $formModel,
                 'grid' => $grid,
-                'categories' => $this->categoryRepository->getAllAsMap()
+                'categories' => $this->categoryRepository->getAllAsMap(),
+                'filterModel' => $filter,
+                'companies' => $this->companyRepository->getAllAsMap()
             ]);
 
         } catch (Throwable $e) {
@@ -70,15 +70,12 @@ class CodeController extends BaseManagerController
 
     /**
      * Смена статуса коду
-     * @http POST /manager/code/issued
      */
     public function actionIssued(): Response
     {
         try {
             $modelForm = new IssuedCodeForm();
             $post = Yii::$app->request->post();
-
-
             if ($modelForm->load($post) && $modelForm->validate()) {
                 $this->repository->issuedCode(
                     status: CodeStatusEnum::from($modelForm->status),
@@ -95,7 +92,6 @@ class CodeController extends BaseManagerController
 
     /**
      * Сохранение в БД
-     * @http POST /manager/add-code/store
      */
     public function actionStore(): Response
     {
