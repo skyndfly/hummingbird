@@ -2,6 +2,7 @@
 
 namespace app\repositories\Code;
 
+use app\filters\Code\CodeFilter;
 use app\repositories\BaseRepository;
 use app\repositories\Category\CategoryRepository;
 use app\repositories\Code\dto\CodeDto;
@@ -17,7 +18,7 @@ class CodeRepository extends BaseRepository
     /**
      * @return CodeDto[]
      */
-    public function getAll(?CodeSearchDto $dto = null): array
+    public function getAll(?CodeFilter $dto = null): array
     {
         $query = $this->getQuery()
             ->select([
