@@ -14,7 +14,9 @@ final readonly class GroupedCodeDto
         public ?string $comments,
         public int $quantity,
         public int $categoryId,
+        public int $companyId,
         public string $categoryName,
+        public string $companyName,
         public int $unpaidTotal,
     )
     {
@@ -28,7 +30,9 @@ final readonly class GroupedCodeDto
      *     comments: ?string,
      *     quantity: int,
      *     category_id: int,
+     *     company_id: int,
      *     category_name: string,
+     *     company_name: string,
      *     unpaid_total: int,
      *     status: string,
      *
@@ -44,7 +48,9 @@ final readonly class GroupedCodeDto
             comments: $record['comments'],
             quantity: $record['quantity'],
             categoryId: $record['category_id'],
+            companyId: $record['company_id'],
             categoryName: $record['category_name'],
+            companyName: $record['company_name'],
             unpaidTotal: $record['unpaid_total'],
         );
     }

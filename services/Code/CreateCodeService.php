@@ -19,7 +19,7 @@ class CreateCodeService
     public function execute(CreateCodeForm $modelForm, int $userId): void
     {
         /**
-         * Проверяем был ли код в такой категории, если да увеличиваем количество не меняя стоимость
+         * Проверяем был ли код в такой категории, если нет то создаем его иначе обновляем стоимость и количество
          */
         $code = $this->repository->findCodeByIdAndCategory($modelForm->code, $modelForm->categoryId);
 
@@ -31,7 +31,8 @@ class CreateCodeService
                 price: (int) $modelForm->price * 100,
                 comment: $modelForm->comment,
                 categoryId: (int) $modelForm->categoryId,
-                quantity: $modelForm->quantity
+                quantity: $modelForm->quantity,
+                companyId: $modelForm->companyId,
             );
             //TODO добавить логи кто добавил заказ
             return;

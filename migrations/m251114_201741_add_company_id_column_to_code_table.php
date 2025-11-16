@@ -20,7 +20,7 @@ class m251114_201741_add_company_id_column_to_code_table extends Migration
             name: sprintf('%s-%s-%s', 'fk', self::TABLE, 'company_id' ),
             table: self::TABLE,
             columns: 'company_id',
-            refTable: 'code',
+            refTable: 'company',
             refColumns: 'id',
             delete: 'RESTRICT'
         );

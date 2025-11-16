@@ -9,6 +9,7 @@ use app\repositories\Code\dto\CodeDto;
 use app\repositories\Code\dto\CodeSearchDto;
 use app\repositories\Code\dto\GroupedCodeDto;
 use app\repositories\Code\enums\CodeStatusEnum;
+use app\repositories\Company\CompanyRepository;
 use yii\db\Expression;
 
 class CodeRepository extends BaseRepository
@@ -33,12 +34,19 @@ class CodeRepository extends BaseRepository
                 'code.updated_at',
                 'category.id as category_id',
                 'category.name as category_name',
+                'company.id as company_id',
+                'company.name as company_name',
             ])
             ->from([self::TABLE_NAME])
             ->leftJoin(
                 table: [CategoryRepository::TABLE_NAME],
                 on: 'category.id = code.category_id'
-            );
+            )
+            ->leftJoin(
+                table: [CompanyRepository::TABLE],
+                on: 'company.id = code.company_id'
+            )
+        ;
 
         if (!empty($dto->code)) {
             $query->andWhere(['like', 'LOWER(code)', mb_strtolower($dto->code)]);
@@ -71,6 +79,8 @@ class CodeRepository extends BaseRepository
                 'SUM(code.quantity) as quantity',
                 'category.id as category_id',
                 'category.name as category_name',
+                'company.id as company_id',
+                'company.name as company_name',
                 new Expression('SUM(
                     CASE
                         WHEN code.status NOT IN (\'Выдан/Наличные\', \'Выдан/Бесплатно\', \'Не найден\')
@@ -84,6 +94,10 @@ class CodeRepository extends BaseRepository
             ->leftJoin(
                 table: [CategoryRepository::TABLE_NAME . ' category'],
                 on: 'category.id = code.category_id'
+            )
+            ->leftJoin(
+                table: [CompanyRepository::TABLE],
+                on: 'company.id = code.company_id'
             );
         if (!empty($dto->code)) {
             $query->andWhere(['like','LOWER(code.code)', mb_strtolower($dto->code)]);
@@ -95,7 +109,7 @@ class CodeRepository extends BaseRepository
             $query->andWhere(['DATE(code.created_at)' => $dto->date]);
         }
 
-        $query->groupBy(['code.code', 'code.status', 'code.price', 'category.id'])
+        $query->groupBy(['code.code', 'code.status', 'code.price', 'category.id', 'company.id'])
             ->orderBy(['code.code' => SORT_ASC, 'category.name' => SORT_ASC]);
 
         return array_map(
@@ -123,6 +137,7 @@ class CodeRepository extends BaseRepository
             ->execute();
     }
 
+    //TODO вынести параметры в ДТО
     public function create(
         string $code,
         int $user_id,
@@ -130,7 +145,8 @@ class CodeRepository extends BaseRepository
         int $price,
         string $comment,
         int $categoryId,
-        int $quantity
+        int $quantity,
+        int $companyId
     ): void {
         $this->getCommand()->insert(
             table: self::TABLE_NAME,
@@ -141,6 +157,7 @@ class CodeRepository extends BaseRepository
                 'price' => $price,
                 'comment' => $comment,
                 'category_id' => $categoryId,
+                'company_id' => $companyId,
                 'quantity' => $quantity,
                 'created_at' => $this->getCurrentDate(),
                 'updated_at' => $this->getCurrentDate(),
@@ -164,6 +181,8 @@ class CodeRepository extends BaseRepository
                 'code.updated_at',
                 'category.id as category_id',
                 'category.name as category_name',
+                'company.id as company_id',
+                'company.name as company_name',
             ])
             ->from(self::TABLE_NAME)
             ->where(['code' => $code])
@@ -171,6 +190,10 @@ class CodeRepository extends BaseRepository
             ->leftJoin(
                 table: [CategoryRepository::TABLE_NAME],
                 on: 'category.id = code.category_id'
+            )
+            ->leftJoin(
+                table: [CompanyRepository::TABLE],
+                on: 'company.id = code.company_id'
             )
             ->one();
 

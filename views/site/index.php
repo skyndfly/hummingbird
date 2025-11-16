@@ -28,6 +28,7 @@ $this->title = 'КолибриCRM';
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Место хранения</th>
+                <th scope="col">Служба доставки</th>
                 <th scope="col">Количество</th>
                 <th scope="col">Статус</th>
                 <th scope="col">Цена</th>
@@ -67,6 +68,7 @@ $this->title = 'КолибриCRM';
                         </div>
 
                     </td>
+                    <td><?= $row->companyName ?></td>
                     <td><?= $row->quantity ?></td>
                     <td>
                         <span class="badge <?= AllCodeGridTable::mapBadge($row->status) ?>">
@@ -82,14 +84,14 @@ $this->title = 'КолибриCRM';
                     <?php $first = false; ?>
                 <?php endforeach; ?>
                 <tr>
-                    <td colspan="6" style="text-align: right; background-color: rgba(1,133,0,0.62); color: #fff;">
+                    <td colspan="7" style="text-align: right; background-color: rgba(1,133,0,0.62); color: #fff;">
                         <strong>Итого к оплате:</strong></td>
                     <td style="text-align: right; background-color: rgba(1,133,0,0.62); color: #fff;">
                         <strong><?= $data->getUnpaidTotal()  ?> рублей</strong></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td colspan="6"></td>
+                    <td colspan="7"></td>
                     <td style="text-align: ">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop-<?=$code ?>">
                             Выдать

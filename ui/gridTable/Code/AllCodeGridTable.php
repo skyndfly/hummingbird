@@ -22,6 +22,8 @@ class AllCodeGridTable extends AbstractGridTable
     public string $createdAt;
     #[GridColumn(label: 'Количество')]
     public string $quantity;
+    #[GridColumn(label: 'Служба доставки', formatter: 'companyFormatter')]
+    public string $company;
     #[GridColumn(label: 'Место хранения', formatter: 'categoryFormatter')]
     public string $category;
     #[GridColumn(label: 'Цена', formatter: 'priceFormatter')]
@@ -49,7 +51,10 @@ class AllCodeGridTable extends AbstractGridTable
     {
         return $dto->category->name;
     }
-
+    public static function companyFormatter(CodeDto $dto): string
+    {
+        return $dto->company->name;
+    }
     public static function statusFormatter(CodeDto $dto)
     {
         return '<span class="badge ' . self::mapBadge($dto->status) . '">' . $dto->status->value . '</span>';
@@ -68,9 +73,9 @@ class AllCodeGridTable extends AbstractGridTable
         return new DateTimeImmutable($dto->createdAt)->format('d.m.Y');
     }
 
-    /**
-     * @throws Throwable
-     */
+
+
+
 //    public static function actionButtons(CodeDto $model): string
 //    {
 //        /** @var UserIdentity $identity */
