@@ -45,8 +45,7 @@ class CodeRepository extends BaseRepository
             ->leftJoin(
                 table: [CompanyRepository::TABLE],
                 on: 'company.id = code.company_id'
-            )
-        ;
+            );
 
         if (!empty($dto->code)) {
             $query->andWhere(['like', 'LOWER(code)', mb_strtolower($dto->code)]);
@@ -96,11 +95,11 @@ class CodeRepository extends BaseRepository
                 on: 'category.id = code.category_id'
             )
             ->leftJoin(
-                table: [CompanyRepository::TABLE],
+                table: [CompanyRepository::TABLE . ' company'],
                 on: 'company.id = code.company_id'
             );
         if (!empty($dto->code)) {
-            $query->andWhere(['like','LOWER(code.code)', mb_strtolower($dto->code)]);
+            $query->andWhere(['like', 'LOWER(code.code)', mb_strtolower($dto->code)]);
         }
         if (!empty($dto->categoryId)) {
             $query->andWhere(['code.category_id' => $dto->categoryId]);

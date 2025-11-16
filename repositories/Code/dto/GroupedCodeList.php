@@ -2,7 +2,6 @@
 
 namespace app\repositories\Code\dto;
 
-use app\repositories\Category\dto\CategoryDto;
 use app\repositories\Code\enums\CodeStatusEnum;
 
 class GroupedCodeList

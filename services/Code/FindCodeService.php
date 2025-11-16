@@ -28,12 +28,12 @@ class FindCodeService
         ));
         $grouped = [];
         foreach ($groupedCodeDtos as $row) {
-            $code = $row->code;
+            $key = $row->code . '_' . $row->companyId;
 
-            if (!isset($grouped[$code])) {
-                $grouped[$code] = new GroupedCodeList($code);
+            if (!isset($grouped[$key])) {
+                $grouped[$key] = new GroupedCodeList($row->code);
             }
-            $grouped[$code]->addRows($row);
+            $grouped[$key]->addRows($row);
         }
 
         return $grouped;

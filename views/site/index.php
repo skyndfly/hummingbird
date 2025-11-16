@@ -40,7 +40,7 @@ $this->title = 'КолибриCRM';
             <tbody>
             <?php foreach ($codes as $code => $data): ?>
                 <tr>
-                <td rowspan="<?= count($data->getRows()) + 1 ?>"><?= $code ?></td>
+                <td rowspan="<?= count($data->getRows()) + 1 ?>"><?= $data->getCode() ?></td>
                 <?php $first = true; ?>
                 <?php
                 foreach ($data->getRows() as $row): ?>

@@ -78,7 +78,6 @@ class SiteController extends Controller
 
     /**
      * Группированный поиск кодов
-     * @http GET /index
      */
     public function actionIndex(): string
     {
