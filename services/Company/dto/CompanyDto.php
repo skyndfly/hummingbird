@@ -7,6 +7,7 @@ class CompanyDto
     public function __construct(
         public int $id,
         public string $name,
+        public string $commissionStrategy,
     )
     {
     }
@@ -14,7 +15,8 @@ class CompanyDto
     /**
      * @param array{
      *     id: int,
-     *     name: string
+     *     name: string,
+     *     commission_strategy: string
      * } $data
      */
     public static function fromArray(array $data): self
@@ -22,6 +24,7 @@ class CompanyDto
         return new self(
             id: $data['id'],
             name: $data['name'],
+            commissionStrategy: $data['commission_strategy'],
         );
     }
 }

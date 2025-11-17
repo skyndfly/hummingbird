@@ -62,7 +62,7 @@ use yii\helpers\Html;
             ]
     ) ?>
     <hr>
-    <h3 class="text-success fw-normal">К оплате: <?= $totalPrice ?></h3>
+    <h3 class="text-success fw-normal">К оплате: <?= $totalPrice ?> ₽</h3>
     <hr>
     <div class="form-group mt-3">
         <?= Html::submitButton('Выдать', ['class' => 'btn btn-primary']) ?>

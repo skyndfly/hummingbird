@@ -86,16 +86,14 @@ class SiteController extends Controller
             $getParams = Yii::$app->request->getQueryParams();
             $filter = new CodeFilter();
             $filter->load($getParams);
-            $codes = [];
-            if (!empty($filter->code)) {
-                $codes = $this->findCodeService->execute($filter);
-            }
+            $codes = $this->findCodeService->execute($filter);
+
 
             return $this->render(view: 'index', params: [
                 'formModel' => $formModel,
                 'filterModel' => $filter,
                 'codes' => $codes,
-                'searchText' => empty($codes) && !empty($filter->code)? 'Код не найден 😿' : '',
+                'searchText' => empty($codes) && !empty($filter->code) ? 'Код не найден 😿' : '',
                 'categories' => $this->categoryRepository->getAllAsMap()
             ]);
 

@@ -36,6 +36,7 @@ class CodeRepository extends BaseRepository
                 'category.name as category_name',
                 'company.id as company_id',
                 'company.name as company_name',
+                'company.commission_strategy as company_commission_strategy',
             ])
             ->from([self::TABLE_NAME])
             ->leftJoin(
@@ -80,6 +81,7 @@ class CodeRepository extends BaseRepository
                 'category.name as category_name',
                 'company.id as company_id',
                 'company.name as company_name',
+                'company.commission_strategy as company_commission_strategy',
                 new Expression('SUM(
                     CASE
                         WHEN code.status NOT IN (\'Выдан/Наличные\', \'Выдан/Бесплатно\', \'Не найден\')
@@ -182,6 +184,7 @@ class CodeRepository extends BaseRepository
                 'category.name as category_name',
                 'company.id as company_id',
                 'company.name as company_name',
+                'company.commission_strategy as company_commission_strategy',
             ])
             ->from(self::TABLE_NAME)
             ->where(['code' => $code])

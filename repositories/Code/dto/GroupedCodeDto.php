@@ -3,6 +3,7 @@
 namespace app\repositories\Code\dto;
 
 use app\repositories\Code\enums\CodeStatusEnum;
+use app\services\Company\dto\CompanyDto;
 
 final readonly class GroupedCodeDto
 {
@@ -14,9 +15,8 @@ final readonly class GroupedCodeDto
         public ?string $comments,
         public int $quantity,
         public int $categoryId,
-        public int $companyId,
+        public CompanyDto $company,
         public string $categoryName,
-        public string $companyName,
         public int $unpaidTotal,
     )
     {
@@ -30,9 +30,10 @@ final readonly class GroupedCodeDto
      *     comments: ?string,
      *     quantity: int,
      *     category_id: int,
-     *     company_id: int,
      *     category_name: string,
      *     company_name: string,
+     *     company_commission_strategy: string,
+     *     company_id: int,
      *     unpaid_total: int,
      *     status: string,
      *
@@ -40,6 +41,11 @@ final readonly class GroupedCodeDto
      */
     public static function fromDbRecord(array $record): GroupedCodeDto
     {
+        $company = new CompanyDto(
+            id: $record['company_id'],
+            name: $record['company_name'],
+            commissionStrategy: $record['company_commission_strategy'],
+        );
         return new self(
             id: $record['id'],
             code: $record['code'],
@@ -48,9 +54,8 @@ final readonly class GroupedCodeDto
             comments: $record['comments'],
             quantity: $record['quantity'],
             categoryId: $record['category_id'],
-            companyId: $record['company_id'],
+            company: $company,
             categoryName: $record['category_name'],
-            companyName: $record['company_name'],
             unpaidTotal: $record['unpaid_total'],
         );
     }

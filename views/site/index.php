@@ -51,7 +51,7 @@ $this->title = 'КолибриCRM';
                         'totalQuantity' => $data->getTotalQuantity(),
                         'storages' => $data->getStorages(),
                         'ids' => $data->getIds(),
-                        'totalPrice' => $data->getUnpaidTotal()
+                        'totalPrice' => $data->getCommission()
                     ]) ?>
                     <?php if (!$first): ?>
                         <tr>
@@ -68,7 +68,7 @@ $this->title = 'КолибриCRM';
                         </div>
 
                     </td>
-                    <td><?= $row->companyName ?></td>
+                    <td><?= $row->company->name ?></td>
                     <td><?= $row->quantity ?></td>
                     <td>
                         <span class="badge <?= AllCodeGridTable::mapBadge($row->status) ?>">
@@ -87,7 +87,7 @@ $this->title = 'КолибриCRM';
                     <td colspan="7" style="text-align: right; background-color: rgba(1,133,0,0.62); color: #fff;">
                         <strong>Итого к оплате:</strong></td>
                     <td style="text-align: right; background-color: rgba(1,133,0,0.62); color: #fff;">
-                        <strong><?= $data->getUnpaidTotal()  ?> рублей</strong></td>
+                        <strong><?= $data->getCommission()  ?> рублей</strong></td>
                 </tr>
                 <tr>
                     <td></td>

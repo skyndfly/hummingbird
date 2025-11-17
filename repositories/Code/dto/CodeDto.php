@@ -30,10 +30,11 @@ class CodeDto
      *     price: int,
      *     quantity: int,
      *     category_id: int,
-     *     company_id: int,
      *     user_id: int,
      *     category_name: string,
+     *     company_id: int,
      *     company_name: string,
+     *     company_commission_strategy: string,
      *     comment: ?string,
      *     created_at: string,
      *     status: string,
@@ -42,7 +43,11 @@ class CodeDto
     public static function fromDbRecord(array $record): self
     {
         $category = new CategoryDto(id: $record['category_id'],name: $record['category_name']);
-        $company = new CompanyDto(id: $record['company_id'],name: $record['company_name']);
+        $company = new CompanyDto(
+            id: $record['company_id'],
+            name: $record['company_name'],
+            commissionStrategy: $record['company_commission_strategy']
+        );
         return new self(
             code: $record['code'],
             id: $record['id'],
