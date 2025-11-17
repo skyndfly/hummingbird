@@ -9,15 +9,6 @@ class CommissionConfigRepository extends BaseRepository
 {
     public const string TABLE_NAME = 'commision_config';
 
-    public function findStrategy(string $strategy): array
-    {
-        $query = $this->getQuery()
-            ->from(self::TABLE_NAME)
-            ->where(['strategy' => $strategy]);
-
-        return $query->all();
-    }
-
     /**
      * Используется для marketplace (диапазоны)
      */

@@ -7,14 +7,13 @@ use app\services\CommissionConfig\enums\CommissionTypeEnum;
 class CommissionConfigDto
 {
     public function __construct(
-        public ?int $id = null,
         public string $strategy,
-        public ?int $fromAmount = null,
-        public ?int $toAmount = null,
         public CommissionTypeEnum $type,
         public int $value,
-    )
-    {
+        public ?int $fromAmount = null,
+        public ?int $toAmount = null,
+        public ?int $id = null,
+    ) {
     }
 
     /**
@@ -30,12 +29,12 @@ class CommissionConfigDto
     public static function fromDbRecord(array $record): self
     {
         return new self(
-            id: $record['id'],
             strategy: $record['strategy'],
-            fromAmount: $record['from_amount'],
-            toAmount: $record['to_amount'],
             type: CommissionTypeEnum::from($record['type']),
             value: $record['value'],
+            fromAmount: $record['from_amount'],
+            toAmount: $record['to_amount'],
+            id: $record['id'],
         );
     }
 }

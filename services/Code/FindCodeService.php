@@ -17,7 +17,7 @@ class FindCodeService
     }
 
     /**
-     * @return GroupedCodeList[]
+     * @return array<string, GroupedCodeList>
      */
     public function execute(CodeFilter $filter): array
     {
@@ -39,11 +39,14 @@ class FindCodeService
 
 
         }
+
         return $this->calculateCommission($grouped);
     }
 
     /**
      * Считаем комиссию после группировки - от общей суммы
+     * @param array<string, GroupedCodeList> $grouped
+     * @return array<string, GroupedCodeList>
      */
     private function calculateCommission(array $grouped): array
     {
