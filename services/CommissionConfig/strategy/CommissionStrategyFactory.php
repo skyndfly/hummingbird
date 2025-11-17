@@ -17,6 +17,7 @@ class CommissionStrategyFactory
 
         return match ($strategy) {
             'marketplace' => new MarketplaceCommissionStrategy($this->commissionConfigRepository),
+            default => new DefaultCommissionStrategy()
         };
 
     }
