@@ -12,7 +12,7 @@ class CommissionConfigRepository extends BaseRepository
     /**
      * Используется для marketplace (диапазоны)
      */
-    public function findForAmount(string $strategy, int $amount): CommissionConfigDto
+    public function findForAmount(string $strategy, int $amount): ?CommissionConfigDto
     {
         $record = $this->getQuery()
             ->from(self::TABLE_NAME)
@@ -24,7 +24,21 @@ class CommissionConfigRepository extends BaseRepository
                 ['to_amount' => null],
             ])
             ->one();
+        if ($record === false) {
+            return null;
+        }
+        return CommissionConfigDto::fromDbRecord($record);
+    }
 
+    public function findForFixed(string $strategy): ?CommissionConfigDto
+    {
+        $record = $this->getQuery()
+            ->from(self::TABLE_NAME)
+            ->where(['strategy' => $strategy])
+            ->one();
+        if ($record === false) {
+            return null;
+        }
         return CommissionConfigDto::fromDbRecord($record);
     }
 }

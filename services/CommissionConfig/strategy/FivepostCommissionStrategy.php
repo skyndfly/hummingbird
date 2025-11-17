@@ -6,9 +6,8 @@ use app\repositories\CommissionConfig\CommissionConfigRepository;
 use app\services\CommissionConfig\enums\CommissionStrategyTypeEnum;
 use app\services\CommissionConfig\enums\CommissionTypeEnum;
 
-readonly class MarketplaceCommissionStrategy implements CommissionStrategyInterface
+readonly class FivepostCommissionStrategy implements CommissionStrategyInterface
 {
-
     public function __construct(
         private CommissionConfigRepository $commissionConfigRepository
     )
@@ -16,22 +15,13 @@ readonly class MarketplaceCommissionStrategy implements CommissionStrategyInterf
     }
     public function calculate(int $amount, int $quantity): int
     {
-
-        $commission = $this->commissionConfigRepository->findForAmount(
-            strategy: CommissionStrategyTypeEnum::MARKETPLACE->value,
-            amount: $amount
-        );
+        $commission = $this->commissionConfigRepository->findForFixed(CommissionStrategyTypeEnum::FIXED_FIVEPOST->value);
         if ($commission === null) {
             return 0;
         }
-        if ($commission->type === CommissionTypeEnum::FIXED) {
-            return $commission->value;
-        }else if($commission->type === CommissionTypeEnum::PERCENT) {
-
-
-            return $amount * ($commission->value / 100);
+        if ($commission->type === CommissionTypeEnum::PER_UNIT){
+            return $quantity * $commission->value;
         }
         return 0;
-
     }
 }
