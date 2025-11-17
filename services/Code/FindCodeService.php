@@ -13,8 +13,7 @@ class FindCodeService
     public function __construct(
         private CodeRepository $codeRepository,
         private CommissionStrategyFactory $commissionStrategyFactory
-    )
-    {
+    ) {
     }
 
     /**
@@ -22,7 +21,7 @@ class FindCodeService
      */
     public function execute(CodeFilter $filter): array
     {
-        $groupedCodeDtos =  $this->codeRepository->findCodes(new CodeSearchDto(
+        $groupedCodeDtos = $this->codeRepository->findCodes(new CodeSearchDto(
             code: $filter->code,
             date: $filter->date,
             categoryId: $filter->categoryId,
@@ -38,15 +37,30 @@ class FindCodeService
             }
             $grouped[$key]->addRows($row);
 
-            //считаем комиссию
-
-            $strategy =  $this->commissionStrategyFactory->create($row->company->commissionStrategy);
-            $commission = $strategy->calculate($row->unpaidTotal, $row->quantity);
-
-            $grouped[$key]->addCommission($commission);
 
         }
+        return $this->calculateCommission($grouped);
+    }
 
+    /**
+     * Считаем комиссию после группировки - от общей суммы
+     */
+    private function calculateCommission(array $grouped): array
+    {
+        foreach ($grouped as $group) {
+            if (!empty($group->getRows())) {
+
+                $firstRow = $group->getRows()[0];
+                $totalAmount = $group->getUnpaidTotal();
+
+                $strategy = $this->commissionStrategyFactory->create($firstRow->company->commissionStrategy);
+                $commission = $strategy->calculate($totalAmount, $group->getTotalQuantity());
+
+
+                $group->setCommission($commission);
+            }
+
+        }
         return $grouped;
     }
 }

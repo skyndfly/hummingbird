@@ -34,10 +34,10 @@ class GroupedCodeList
     public function addRows(GroupedCodeDto $dto): void
     {
 
-        $this->rows[] = $dto ;
+        $this->rows[] = $dto;
         $this->unpaidTotal += $dto->unpaidTotal;
         $this->ids[] = $dto->id;
-        if($dto->status === CodeStatusEnum::NEW){
+        if ($dto->status === CodeStatusEnum::NEW) {
             $this->totalQuantity += $dto->quantity;
         }
         $this->storages[] = $dto->categoryName;
@@ -46,29 +46,33 @@ class GroupedCodeList
     /**
      * @return GroupedCodeDto[]
      */
-    public function getRows(): array{
+    public function getRows(): array
+    {
         return $this->rows;
     }
 
-    public function getUnpaidTotal():int
+    public function getUnpaidTotal(): int
     {
-        return $this->unpaidTotal / 100;
+        return $this->unpaidTotal;
     }
 
     /**
      * @return int[]
      */
-    public function getIds(): array{
+    public function getIds(): array
+    {
         return $this->ids;
     }
-    public function getTotalQuantity(): int{
+
+    public function getTotalQuantity(): int
+    {
         return $this->totalQuantity;
     }
 
     /**
      * @return string[]
      */
-    public function getStorages():array
+    public function getStorages(): array
     {
         return $this->storages;
     }
@@ -86,4 +90,10 @@ class GroupedCodeList
         $rubles = ceil($this->commission / 100); // округляем копейки в большую сторону
         return number_format($rubles, 0, '.', ' '); // 0 знаков после запятой
     }
+
+    public function setCommission(int $commission): void
+    {
+        $this->commission = $commission;
+    }
+
 }
