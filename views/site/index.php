@@ -45,13 +45,13 @@ $this->title = 'КолибриCRM';
                 <?php
                 foreach ($data->getRows() as $row): ?>
                     <?php $issuedHtml = $this->render('_issue_form', [
-                        'model' => $row,
-                        'formModel' => new IssuedCodeForm(),
-                        'codeList' => $data->getIds(),
-                        'totalQuantity' => $data->getTotalQuantity(),
-                        'storages' => $data->getStorages(),
-                        'ids' => $data->getIds(),
-                        'totalPrice' => $data->getCommission()
+                            'model' => $row,
+                            'formModel' => new IssuedCodeForm(),
+                            'codeList' => $data->getIds(),
+                            'totalQuantity' => $data->getTotalQuantity(),
+                            'storages' => $data->getStorages(),
+                            'ids' => $data->getIds(),
+                            'totalPrice' => $data->getCommission()
                     ]) ?>
                     <?php if (!$first): ?>
                         <tr>
@@ -87,21 +87,26 @@ $this->title = 'КолибриCRM';
                     <td colspan="7" style="text-align: right; background-color: rgba(1,133,0,0.62); color: #fff;">
                         <strong>Итого к оплате:</strong></td>
                     <td style="text-align: right; background-color: rgba(1,133,0,0.62); color: #fff;">
-                        <strong><?= $data->getCommission()  ?> рублей</strong></td>
+                        <strong><?= $data->getCommission() ?> рублей</strong></td>
                 </tr>
                 <tr>
                     <td></td>
                     <td colspan="7"></td>
                     <td style="text-align: ">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop-<?=$code ?>">
+                        <button type="button" <?= $data->getUnpaidTotal() === 0 ? ' disabled' : '' ?>
+                                class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#staticBackdrop-<?= $code ?>">
                             Выдать
                         </button>
-                        <div class="modal fade" id="staticBackdrop-<?=$code ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal fade" id="staticBackdrop-<?= $code ?>" data-bs-backdrop="static"
+                             data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+                             aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="staticBackdropLabel-<?=$code ?>">Выдать</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel-<?= $code ?>">Выдать</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <?= $issuedHtml; ?>

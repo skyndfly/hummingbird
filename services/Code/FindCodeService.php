@@ -52,14 +52,11 @@ class FindCodeService
     {
         foreach ($grouped as $group) {
             if (!empty($group->getRows())) {
-
                 $firstRow = $group->getRows()[0];
                 $totalAmount = $group->getUnpaidTotal();
 
                 $strategy = $this->commissionStrategyFactory->create($firstRow->company->commissionStrategy);
                 $commission = $strategy->calculate($totalAmount, $group->getTotalQuantity());
-
-
                 $group->setCommission($commission);
             }
 

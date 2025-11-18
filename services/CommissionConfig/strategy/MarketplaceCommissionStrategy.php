@@ -16,7 +16,9 @@ readonly class MarketplaceCommissionStrategy implements CommissionStrategyInterf
     }
     public function calculate(int $amount, int $quantity): int
     {
-
+        if ($amount === 0){
+            return 0;
+        }
         $commission = $this->commissionConfigRepository->findForAmount(
             strategy: CommissionStrategyTypeEnum::MARKETPLACE->value,
             amount: $amount
