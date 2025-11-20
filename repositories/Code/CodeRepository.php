@@ -84,7 +84,7 @@ class CodeRepository extends BaseRepository
                 'company.commission_strategy as company_commission_strategy',
                 new Expression('SUM(
                     CASE
-                        WHEN code.status NOT IN (\'Выдан/Наличные\', \'Выдан/Бесплатно\', \'Не найден\')
+                        WHEN code.status NOT IN (\'Выдан/Наличные\', \'Выдан/Бесплатно\', \'Не найден\', \'Выдан/Оплата картой\')
                         THEN code.price
                         ELSE 0
                     END
