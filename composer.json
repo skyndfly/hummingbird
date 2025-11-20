@@ -48,6 +48,9 @@
         "post-create-project-cmd": [
             "yii\\composer\\Installer::postCreateProject",
             "yii\\composer\\Installer::postInstall"
+        ],
+        "phpstan": [
+          "vendor/bin/phpstan analyse"
         ]
     },
     "extra": {
