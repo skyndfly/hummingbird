@@ -69,6 +69,8 @@ $config = [
                 'POST manager/code/issued' => 'code/issued',
 
                 'GET category' => 'category/index',
+                'GET category/<categoryId:\d+>/edit' => 'category/edit',
+                'POST category/update' => 'category/update',
                 'POST category/store' => 'category/store',
             ],
         ],

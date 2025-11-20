@@ -7,8 +7,7 @@ class CategoryDto
     public function __construct(
         public int $id,
         public string $name,
-    )
-    {
+    ) {
     }
 
     /**
@@ -23,5 +22,19 @@ class CategoryDto
             id: $record['id'],
             name: $record['name'],
         );
+    }
+
+    /**
+     * @return array{
+     *     id: int,
+     *     name: string
+     * }
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+        ];
     }
 }

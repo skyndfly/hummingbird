@@ -4,6 +4,7 @@ namespace app\repositories\Category;
 
 use app\repositories\BaseRepository;
 use app\repositories\Category\dto\CategoryDto;
+use app\services\Category\exceptions\CategoryNotFoundException;
 
 class CategoryRepository extends BaseRepository
 {
@@ -44,5 +45,44 @@ class CategoryRepository extends BaseRepository
             $result[$category->id] = $category->name;
         }
         return $result;
+    }
+
+    /**
+     * @throws CategoryNotFoundException
+     */
+    public function getById(int $categoryId): CategoryDto
+    {
+
+        $record = $this->getQuery()
+            ->from(self::TABLE_NAME)
+            ->where(['id' => $categoryId])
+            ->one();
+        if ($record === false) {
+            throw new CategoryNotFoundException($categoryId);
+        }
+        return CategoryDto::fromDbRecord($record);
+    }
+
+    public function isNameExist(string $name, ?int $id = null): bool
+    {
+        $query = $this->getQuery()
+            ->from(self::TABLE_NAME)
+            ->where(['LOWER(name)' => trim(mb_strtolower($name))]);
+        if ($id !== null) {
+            $query->andWhere(['!=', 'id', $id]);
+        }
+        return $query->exists();
+    }
+
+    public function updateName(string $name, int $id): void
+    {
+        $this->getCommand()
+            ->update(
+                table: self::TABLE_NAME,
+                columns: ['name' => $name],
+                condition: ['id' => $id]
+
+            )
+            ->execute();
     }
 }
