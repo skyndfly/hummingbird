@@ -44,6 +44,7 @@ class IssuedCodeForm extends Model
             CodeStatusEnum::ISSUED_FREE->value => CodeStatusEnum::ISSUED_FREE->value,
             CodeStatusEnum::ISSUED_CARD->value => CodeStatusEnum::ISSUED_CARD->value,
             CodeStatusEnum::LOST->value => CodeStatusEnum::LOST->value,
+            CodeStatusEnum::NEW->value => CodeStatusEnum::NEW->value,
         ];
     }
 
