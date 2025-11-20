@@ -140,6 +140,25 @@ class CodeRepository extends BaseRepository
             ->execute();
     }
 
+    /**
+     * @param int[] $id
+     */
+    public function changeStatus(CodeStatusEnum $status, array $id): void
+    {
+        $this->getCommand()
+            ->update(
+                table: self::TABLE_NAME,
+                columns: [
+                    'status' => $status->value,
+                    'updated_at' => $this->getCurrentDate()
+                ],
+                condition: [
+                    'id' => $id
+                ]
+            )->execute();
+    }
+
+
     //TODO вынести параметры в ДТО
     public function create(
         string $code,

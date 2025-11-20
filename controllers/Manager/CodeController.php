@@ -113,5 +113,29 @@ class CodeController extends BaseManagerController
         return $this->redirect(Yii::$app->request->getReferrer());
     }
 
+    public function actionChangeStatus(): Response
+    {
+        try {
+            $modelForm = new IssuedCodeForm();
+            $post = Yii::$app->request->post();
+
+            if ($modelForm->load($post) && $modelForm->validate()) {
+                $dto = new IssuedCodeDto(
+                    ids: $modelForm->id,
+                    status: CodeStatusEnum::from($modelForm->status)
+                );
+                $this->repository->changeStatus(
+                    status: $dto->status,
+                    id: $dto->ids
+                );
+                Yii::$app->session->setFlash('success', 'Статус изменен');
+                //TODO добавить логи кто выдал заказ
+            }
+        } catch (Exception $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(Yii::$app->request->getReferrer());
+    }
+
 
 }

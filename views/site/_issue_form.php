@@ -47,7 +47,7 @@ use yii\helpers\Html;
     <?php endforeach; ?>
     <?= $form->field($formModel, 'code')->hiddenInput(['value' => $model->code])->label(false) ?>
     <?= $form->field($formModel, 'status')->radioList(
-            $formModel->getStatusOptions(),
+            $formModel->getStatusOptionsForIssuedForm(),
             [
                     'item' => function ($index, $label, $name, $checked, $value) {
                         $id = "status-{$value}";
