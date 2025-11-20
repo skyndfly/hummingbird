@@ -124,11 +124,13 @@ class CodeRepository extends BaseRepository
      */
     public function issuedCode(CodeStatusEnum $status, array $id): void
     {
-        $columns = ['status' => $status->value];
         $this->getCommand()
             ->update(
                 table: self::TABLE_NAME,
-                columns: $columns,
+                columns: [
+                    'status' => $status->value,
+                    'updated_at' => $this->getCurrentDate()
+                ],
                 condition: [
                     'and',
                     ['id' => $id],
