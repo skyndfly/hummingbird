@@ -49,7 +49,7 @@ final readonly class GroupedCodeDto
         return new self(
             id: $record['id'],
             code: $record['code'],
-            status: CodeStatusEnum::tryFrom($record['status']),
+            status: CodeStatusEnum::from($record['status']),
             price: $record['price'],
             comments: $record['comments'],
             quantity: $record['quantity'],
