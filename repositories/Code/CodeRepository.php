@@ -110,8 +110,9 @@ class CodeRepository extends BaseRepository
             $query->andWhere(['DATE(code.created_at)' => $dto->date]);
         }
 
-        $query->groupBy(['code.code', 'code.status', 'code.price', 'category.id', 'company.id'])
-            ->orderBy(['code.code' => SORT_ASC, 'category.name' => SORT_ASC]);
+        $query->groupBy(['code.code', 'code.status', 'code.price', 'category.id', 'company.id', 'code.created_at'])
+            ->orderBy(['code.created_at' => SORT_DESC, 'code.code' => SORT_ASC, 'category.name' => SORT_ASC])
+        ->limit(20);
 
         return array_map(
             callback: fn($item) => GroupedCodeDto::fromDbRecord($item),
