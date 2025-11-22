@@ -8,6 +8,7 @@ class CompanyDto
         public int $id,
         public string $name,
         public string $commissionStrategy,
+        public ?string $key = null,
     )
     {
     }
@@ -16,7 +17,8 @@ class CompanyDto
      * @param array{
      *     id: int,
      *     name: string,
-     *     commission_strategy: string
+     *     commission_strategy: string,
+     *     key: ?string
      * } $data
      */
     public static function fromArray(array $data): self
@@ -25,6 +27,7 @@ class CompanyDto
             id: $data['id'],
             name: $data['name'],
             commissionStrategy: $data['commission_strategy'],
+            key: $data['key'],
         );
     }
 }

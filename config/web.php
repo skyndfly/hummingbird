@@ -74,6 +74,8 @@ $config = [
                 'GET category/<categoryId:\d+>/edit' => 'category/edit',
                 'POST category/update' => 'category/update',
                 'POST category/store' => 'category/store',
+
+                'GET company' => 'company/index',
             ],
         ],
 
@@ -90,6 +92,9 @@ $config = [
         ],
         'category' => [
             'class' => app\controllers\Manager\CategoryController::class,
+        ],
+        'company' => [
+            'class' => app\controllers\Manager\CompanyController::class,
         ]
     ],
     'params' => $params,
