@@ -8,6 +8,7 @@ services:
       - "8005:80"
     networks:
       - hummingbird
+      - shared-network
     depends_on:
       - php
 
@@ -19,6 +20,7 @@ services:
       - .:/var/www/html
     networks:
       - hummingbird
+      - shared-network
     depends_on:
       - postgres
 
@@ -33,11 +35,14 @@ services:
       POSTGRES_DB: ${DB_NAME}
     networks:
       - hummingbird
+      - shared-network
     expose:
       - "5432"  # доступен только в сети docker, не наружу
 
 networks:
   hummingbird:
     driver: bridge
+  shared-network:
+    external: true  # используем внешнюю сеть
 volumes:
   postgres_data:
