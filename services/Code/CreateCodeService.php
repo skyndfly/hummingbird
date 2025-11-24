@@ -21,7 +21,7 @@ class CreateCodeService
         /**
          * Проверяем был ли код в такой категории, если нет то создаем его иначе обновляем стоимость и количество
          */
-        $code = $this->repository->findCodeByIdAndCategory($modelForm->code, $modelForm->categoryId);
+        $code = $this->repository->findCodeByNameAndCategoryId($modelForm->code, $modelForm->categoryId);
 
         if ($code === null) {
             $this->repository->create(

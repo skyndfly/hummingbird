@@ -2,12 +2,14 @@
 
 namespace app\services\Company\dto;
 
+use JetBrains\PhpStorm\ArrayShape;
+
 class CompanyDto
 {
     public function __construct(
         public int $id,
-        public string $name,
-        public string $commissionStrategy,
+        public ?string $name,
+        public string $commissionStrategy = 'marketplace',
         public ?string $botKey = null,
     )
     {
@@ -29,5 +31,23 @@ class CompanyDto
             commissionStrategy: $data['commission_strategy'],
             botKey: $data['bot_key'],
         );
+    }
+
+    /**
+     * @return  array{
+     *     id: int,
+     *     name: null|string,
+     *     commissionStrategy: string,
+     *     botKey: null|string
+     * }
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'commissionStrategy' => $this->commissionStrategy,
+            'botKey' => $this->botKey,
+        ];
     }
 }

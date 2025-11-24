@@ -11,6 +11,7 @@ use app\repositories\Code\dto\GroupedCodeDto;
 use app\repositories\Code\enums\CodeStatusEnum;
 use app\repositories\Company\CompanyRepository;
 use yii\db\Expression;
+use yii\web\NotFoundHttpException;
 
 class CodeRepository extends BaseRepository
 {
@@ -112,7 +113,7 @@ class CodeRepository extends BaseRepository
 
         $query->groupBy(['code.code', 'code.status', 'code.price', 'category.id', 'company.id', 'code.created_at'])
             ->orderBy(['code.created_at' => SORT_DESC, 'code.code' => SORT_ASC, 'category.name' => SORT_ASC])
-        ->limit(20);
+            ->limit(20);
 
         return array_map(
             callback: fn($item) => GroupedCodeDto::fromDbRecord($item),
@@ -189,19 +190,11 @@ class CodeRepository extends BaseRepository
 
     }
 
-    public function findCodeByIdAndCategory(string $code, int $categoryId): ?CodeDto
+    public function findCodeByNameAndCategoryId(string $code, int $categoryId): ?CodeDto
     {
         $row = $this->getQuery()
             ->select([
-                'code.id',
-                'code.code',
-                'code.status',
-                'code.price',
-                'code.comment',
-                'code.quantity',
-                'code.user_id',
-                'code.created_at',
-                'code.updated_at',
+                'code.*',
                 'category.id as category_id',
                 'category.name as category_name',
                 'company.id as company_id',
@@ -236,14 +229,44 @@ class CodeRepository extends BaseRepository
                 'code' => $dto->code,
                 'user_id' => $dto->userId,
                 'status' => $dto->status->value,
-                'price' => $dto->price,
+                'price' => $dto->price * 100,
                 'comment' => $dto->comment,
                 'category_id' => $dto->category->id,
                 'quantity' => $dto->quantity,
                 'updated_at' => $this->getCurrentDate(),
+                'company_id' => $dto->company->id,
             ],
             condition: ['id' => $dto->id]
         )
             ->execute();
+    }
+
+    public function getById(int $codeId): CodeDto
+    {
+        $row = $this->getQuery()
+            ->select([
+                'code.*',
+                'category.id as category_id',
+                'category.name as category_name',
+                'company.id as company_id',
+                'company.name as company_name',
+                'company.commission_strategy as company_commission_strategy',
+            ])
+            ->from(self::TABLE_NAME)
+            ->where(['code.id' => $codeId])
+            ->leftJoin(
+                table: [CategoryRepository::TABLE_NAME],
+                on: 'category.id = code.category_id'
+            )
+            ->leftJoin(
+                table: [CompanyRepository::TABLE],
+                on: 'company.id = code.company_id'
+            )
+            ->one();
+
+        if ($row === false) {
+            throw new NotFoundHttpException('Код не найден');
+        }
+        return CodeDto::fromDbRecord($row);
     }
 }

@@ -5,20 +5,26 @@ namespace app\controllers\Manager;
 use app\controllers\Manager\abstracts\BaseManagerController;
 use app\filters\Code\CodeFilter;
 use app\forms\Code\CreateCodeForm;
+use app\forms\Code\EditCodeForm;
 use app\forms\Code\IssuedCodeForm;
 use app\repositories\Category\CategoryRepository;
+use app\repositories\Category\dto\CategoryDto;
 use app\repositories\Code\CodeRepository;
+use app\repositories\Code\dto\CodeDto;
 use app\repositories\Code\enums\CodeStatusEnum;
 use app\repositories\Company\CompanyRepository;
 use app\services\Code\CreateCodeService;
 use app\services\Code\dto\IssuedCodeDto;
 use app\services\Code\IssuedCodeService;
+use app\services\Company\dto\CompanyDto;
 use app\ui\gridTable\Code\AllCodeGridTable;
 use app\ui\gridTable\GridFactory;
 use Exception;
 use Throwable;
 use Yii;
+use yii\helpers\Url;
 use yii\web\Response;
+use yii\web\UrlManager;
 
 class CodeController extends BaseManagerController
 {
@@ -135,6 +141,61 @@ class CodeController extends BaseManagerController
             Yii::$app->session->setFlash('error', $e->getMessage());
         }
         return $this->redirect(Yii::$app->request->getReferrer());
+    }
+
+    public function actionEdit(int $codeId): Response|string
+    {
+        try {
+            $formModel = new EditCodeForm();
+            $dto = $this->repository->getById($codeId);
+
+            $formModel->setAttributes($dto->toArray());
+
+            return $this->render(view: 'code/edit', params: [
+                'formModel' => $formModel,
+                'companies' => $this->companyRepository->getAllAsMap(),
+                'categories' => $this->categoryRepository->getAllAsMap(),
+            ]);
+
+        } catch (Exception $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+            return $this->redirect(Yii::$app->request->getReferrer());
+        }
+
+    }
+
+    public function actionUpdate(): Response
+    {
+        try {
+            $data = Yii::$app->getRequest()->getBodyParams();
+
+            $form = new EditCodeForm();
+            if ($form->load($data) && $form->validate()) {
+                $old = $this->repository->getById((int) $form->id);
+                $dto = new CodeDto(
+                    code: $form->code,
+                    id: $old->id,
+                    price: $form->price,
+                    userId: $old->userId,
+                    quantity: $form->quantity,
+                    category: new CategoryDto(id: $form->categoryId, name: $old->category->name),
+                    company: new CompanyDto(id: $form->companyId, name: $old->company->name),
+                    comment: $form->comment,
+                    status: $old->status,
+
+                );
+                $this->repository->update($dto);
+                Yii::$app->session->setFlash('success', 'Код успешно обновлен!');
+                return $this->redirect(Url::to('/code/create?CodeFilter[code]=' . $form->code));
+            }
+
+            Yii::$app->session->setFlash('error', array_values($form->getErrors())[0]);
+            return $this->redirect(Yii::$app->request->getReferrer());
+
+        } catch (Exception $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+            return $this->redirect(Url::to('/code/create'));
+        }
     }
 
 

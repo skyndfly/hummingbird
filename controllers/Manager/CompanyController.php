@@ -26,7 +26,7 @@ class CompanyController extends BaseManagerController
         parent::__construct($id, $module, $config);
     }
 
-    public function actionIndex()
+    public function actionIndex(): Response|string
     {
         try {
             $grid = GridFactory::createGrid(
