@@ -76,6 +76,7 @@ $config = [
                 'POST category/store' => 'category/store',
 
                 'GET company' => 'company/index',
+
             ],
         ],
 
