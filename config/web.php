@@ -77,6 +77,8 @@ $config = [
 
                 'GET company' => 'company/index',
 
+                'GET issued-point' => 'issued-point/index',
+
 
                 //REST
                 'POST upload/store' => 'upload/store',
@@ -102,6 +104,9 @@ $config = [
         ],
         'upload' => [
             'class' => app\rest\UploadController::class,
+        ],
+        'issued-point' => [
+            'class' => app\controllers\Point\IssuedPointController::class,
         ]
 
     ],
