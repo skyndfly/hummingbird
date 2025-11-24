@@ -99,7 +99,11 @@ $config = [
         ],
         'company' => [
             'class' => app\controllers\Manager\CompanyController::class,
+        ],
+        'upload' => [
+            'class' => app\rest\UploadController::class,
         ]
+
     ],
     'params' => $params,
 ];
