@@ -17,7 +17,7 @@ class CompanyGridTable extends AbstractGridTable
     public string $commissionStrategy;
 
     #[GridColumn(label: 'Ключ для бота')]
-    public string $key;
+    public string $botKey;
 
     #[GridColumn('Действия', formatter: 'actionButtons')]
     public string $actions;

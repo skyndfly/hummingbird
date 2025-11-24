@@ -7,7 +7,7 @@ use app\forms\Category\CreateCategoryForm;
 ?>
 
 <section>
-    <h2>Места хранения</h2>
+    <h2>Службы доставки</h2>
     <hr>
     <h4>Добавить</h4>
     <!--    --><?php //= $this->render(view: '_create_form', params: ['formModel' => $formModel]) ?>

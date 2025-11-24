@@ -1,6 +1,7 @@
 <?php
 
 use app\auth\UserIdentity;
+use app\rest\UploadController;
 use yii\symfonymailer\Mailer;
 
 $params = require __DIR__ . '/params.php';
@@ -76,6 +77,13 @@ $config = [
                 'POST category/store' => 'category/store',
 
                 'GET company' => 'company/index',
+                'GET company/<companyId:\d+>/edit' => 'company/edit',
+                'POST company/update' => 'company/update',
+
+                //REST
+
+                'GET upload' => 'upload/index',
+                'GET upload/store' => 'upload/store',
             ],
         ],
 
@@ -95,6 +103,9 @@ $config = [
         ],
         'company' => [
             'class' => app\controllers\Manager\CompanyController::class,
+        ],
+        'upload' => [
+            'class' => UploadController::class,
         ]
     ],
     'params' => $params,

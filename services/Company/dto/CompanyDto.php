@@ -8,7 +8,7 @@ class CompanyDto
         public int $id,
         public string $name,
         public string $commissionStrategy,
-        public ?string $key = null,
+        public ?string $botKey = null,
     )
     {
     }
@@ -18,16 +18,16 @@ class CompanyDto
      *     id: int,
      *     name: string,
      *     commission_strategy: string,
-     *     key: ?string
+     *     bot_key: ?string
      * } $data
      */
-    public static function fromArray(array $data): self
+    public static function fromDbRecord(array $data): self
     {
         return new self(
             id: $data['id'],
             name: $data['name'],
             commissionStrategy: $data['commission_strategy'],
-            key: $data['key'],
+            botKey: $data['bot_key'],
         );
     }
 }
