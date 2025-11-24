@@ -77,6 +77,9 @@ $config = [
 
                 'GET company' => 'company/index',
 
+
+                //REST
+                'POST upload/store' => 'upload/store',
             ],
         ],
 
