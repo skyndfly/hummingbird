@@ -1,6 +1,7 @@
 <?php
 
 use app\auth\UserIdentity;
+use app\rest\UploadController;
 use yii\symfonymailer\Mailer;
 
 $params = require __DIR__ . '/params.php';
@@ -69,6 +70,8 @@ $config = [
                 'POST manager/add-code/store' => 'code/store',
                 'POST manager/code/issued' => 'code/issued',
                 'POST manager/code/change-status' => 'code/change-status',
+                'GET code/<codeId:\d+>/edit' => 'code/edit',
+                'POST code/update' => 'code/update',
 
                 'GET category' => 'category/index',
                 'GET category/<categoryId:\d+>/edit' => 'category/edit',
@@ -76,9 +79,10 @@ $config = [
                 'POST category/store' => 'category/store',
 
                 'GET company' => 'company/index',
+                'GET company/<companyId:\d+>/edit' => 'company/edit',
+                'POST company/update' => 'company/update',
 
                 'GET issued-point' => 'issued-point/index',
-
 
                 //REST
                 'POST upload/store' => 'upload/store',
@@ -108,7 +112,6 @@ $config = [
         'issued-point' => [
             'class' => app\controllers\Point\IssuedPointController::class,
         ]
-
     ],
     'params' => $params,
 ];

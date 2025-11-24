@@ -9,7 +9,7 @@ class m251122_192730_add_column_key_to_company_table extends Migration
     {
         $this->addColumn(
             table: self::TABLE_NAME,
-            column: 'key',
+            column: 'bot_key',
             type: $this->string()->null()
         );
     }
@@ -19,7 +19,7 @@ class m251122_192730_add_column_key_to_company_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn(self::TABLE_NAME, 'key');
+        $this->dropColumn(self::TABLE_NAME, 'bot_key');
     }
 
 }

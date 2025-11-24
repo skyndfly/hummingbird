@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка статуса кода | КолибриCRM</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #f8fafc;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --border: #e2e8f0;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 480px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: var(--secondary);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 12px;
+            background: var(--secondary);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .status-new {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-issued {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-not-found {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .code-info {
+            text-align: left;
+            margin-top: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="logo">K</div>
+        <h1>Проверка статуса кода</h1>
+        <p class="subtitle">Введите ваш код чтобы узнать текущий статус</p>
+
+        <form id="codeForm">
+            <div class="form-group">
+                <label for="codeInput">Код</label>
+                <div class="input-wrapper">
+                    <input
+                            type="text"
+                            id="codeInput"
+                            placeholder="Введите ваш код..."
+                            required
+                    >
+                </div>
+                <div class="error-message" id="errorMessage">
+                    Пожалуйста, введите корректный код
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+                Проверить статус
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="result" id="result">
+            <!-- Результат будет здесь -->
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('codeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const codeInput = document.getElementById('codeInput');
+        const errorMessage = document.getElementById('errorMessage');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const submitBtn = document.getElementById('submitBtn');
+
+        const code = codeInput.value.trim();
+
+        // Валидация
+        if (!code) {
+            errorMessage.style.display = 'block';
+            return;
+        }
+
+        errorMessage.style.display = 'none';
+        loading.style.display = 'block';
+        result.classList.remove('show');
+        submitBtn.disabled = true;
+
+        // Имитация запроса к API
+        setTimeout(() => {
+            // Здесь будет реальный AJAX запрос к вашему API
+            // const response = await fetch(`/api/check-code?code=${code}`);
+            // const data = await response.json();
+
+            // Временная имитация ответа
+            const mockResponse = getMockResponse(code);
+
+            loading.style.display = 'none';
+            displayResult(mockResponse);
+            submitBtn.disabled = false;
+        }, 1500);
+    });
+
+    function getMockResponse(code) {
+        // Имитация разных статусов для демонстрации
+        const statuses = [
+            { status: 'new', label: 'Новый', class: 'status-new' },
+            { status: 'issued', label: 'Выдан', class: 'status-issued' },
+            { status: 'pending', label: 'В обработке', class: 'status-pending' },
+            { status: 'not_found', label: 'Не найден', class: 'status-not-found' }
+        ];
+
+        const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+
+        return {
+            code: code,
+            status: randomStatus.status,
+            status_label: randomStatus.label,
+            status_class: randomStatus.class,
+            company: 'Wildberries',
+            price: '1 569.99',
+            commission: '50.00',
+            date: new Date().toLocaleDateString('ru-RU'),
+            storage: 'Полка 1'
+        };
+    }
+
+    function displayResult(data) {
+        const result = document.getElementById('result');
+        const statusClass = data.status_class || 'status-pending';
+
+        result.innerHTML = `
+                <div class="status-badge ${statusClass}">${data.status_label}</div>
+                <h3>Код: ${data.code}</h3>
+                <div class="code-info">
+                    <div class="info-row">
+                        <span>Служба доставки:</span>
+                        <strong>${data.company}</strong>
+                    </div>
+                    <div class="info-row">
+                        <span>Стоимость:</span>
+                        <strong>${data.price} руб.</strong>
+                    </div>
+                    <div class="info-row">
+                        <span>Комиссия:</span>
+                        <strong>${data.commission} руб.</strong>
+                    </div>
+                    <div class="info-row">
+                        <span>Место хранения:</span>
+                        <strong>${data.storage}</strong>
+                    </div>
+                    <div class="info-row">
+                        <span>Дата создания:</span>
+                        <strong>${data.date}</strong>
+                    </div>
+                </div>
+            `;
+
+        result.classList.add('show');
+    }
+
+    // Очистка ошибки при вводе
+    document.getElementById('codeInput').addEventListener('input', function() {
+        document.getElementById('errorMessage').style.display = 'none';
+    });
+</script>
+</body>
+</html>
