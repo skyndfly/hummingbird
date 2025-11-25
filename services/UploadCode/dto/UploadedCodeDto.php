@@ -40,4 +40,17 @@ class UploadedCodeDto
             id: $record['id'],
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'fileName' => $this->fileName,
+            'companyKey' => $this->companyKey,
+            'id' => $this->id,
+            'createdAt' => $this->createdAt,
+            'updatedAt' => $this->updatedAt,
+            'status' => $this->status->value,
+            'chatId' => $this->chatId,
+        ];
+    }
 }

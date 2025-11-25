@@ -2,6 +2,7 @@
 
 namespace app\controllers\Point\abstracts;
 
+use Throwable;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -36,5 +37,13 @@ class BasePointController extends Controller
     public function getIdentity(): IdentityInterface
     {
         return Yii::$app->user->identity;
+    }
+    public function getViewPath(): string
+    {
+        return Yii::getAlias('@app/views/point');
+    }
+    protected function renderError(Throwable $e): string
+    {
+        return $this->render('@app/views/site/error', ['message' => $e]);
     }
 }

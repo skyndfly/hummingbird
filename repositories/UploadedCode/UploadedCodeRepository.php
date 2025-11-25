@@ -4,6 +4,8 @@ namespace app\repositories\UploadedCode;
 
 use app\repositories\BaseRepository;
 use app\services\UploadCode\dto\UploadedCodeDto;
+use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
+use app\services\UploadCode\enums\UploadedCodeStatusEnum;
 
 class UploadedCodeRepository extends BaseRepository
 {
@@ -22,6 +24,36 @@ class UploadedCodeRepository extends BaseRepository
                     'created_at' => $this->getCurrentDate(),
                     'updated_at' => $this->getCurrentDate(),
                 ]
+            )
+            ->execute();
+    }
+
+    public function findAwaitCodeToday(UploadedCodeCompanyKeyEnum $companyKey): ?UploadedCodeDto
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        $record = $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['company_key' => $companyKey->value])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->andWhere(['status' => UploadedCodeStatusEnum::AWAIT->value])
+            ->one();
+        if ($record === false) {
+            return null;
+        }
+        return UploadedCodeDto::fromDbRecord($record);
+    }
+
+    public function issuedCode(int $id, UploadedCodeStatusEnum $status): void
+    {
+        $this->getCommand()
+            ->update(
+                table: self::TABLE,
+                columns: [
+                    'status' => $status->value,
+                ],
+                condition: ['id' => $id]
             )
             ->execute();
     }

@@ -82,7 +82,9 @@ $config = [
                 'GET company/<companyId:\d+>/edit' => 'company/edit',
                 'POST company/update' => 'company/update',
 
-                'GET issued-point' => 'issued-point/index',
+                'GET issued-point/wb' => 'issued-point/wb',
+                'GET issued-point/ozon' => 'issued-point/ozon',
+                'POST issued-point/issued' => 'issued-point/issued',
 
                 //REST
                 'POST upload/store' => 'upload/store',
