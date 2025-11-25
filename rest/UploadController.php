@@ -40,6 +40,7 @@ class UploadController extends Controller
                 dto: $dto,
                 file: $code,
             );
+            http_response_code(200);
             return true;
         } catch (Throwable $e) {
             http_response_code(400);
