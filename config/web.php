@@ -82,10 +82,12 @@ $config = [
                 'GET company/<companyId:\d+>/edit' => 'company/edit',
                 'POST company/update' => 'company/update',
 
-                //REST
+                'GET issued-point/wb' => 'issued-point/wb',
+                'GET issued-point/ozon' => 'issued-point/ozon',
+                'POST issued-point/issued' => 'issued-point/issued',
 
-                'GET upload' => 'upload/index',
-                'GET upload/store' => 'upload/store',
+                //REST
+                'POST upload/store' => 'upload/store',
             ],
         ],
 
@@ -107,7 +109,10 @@ $config = [
             'class' => app\controllers\Manager\CompanyController::class,
         ],
         'upload' => [
-            'class' => UploadController::class,
+            'class' => app\rest\UploadController::class,
+        ],
+        'issued-point' => [
+            'class' => app\controllers\Point\IssuedPointController::class,
         ]
     ],
     'params' => $params,
