@@ -64,8 +64,10 @@ use yii\bootstrap5\ActiveForm;
             </div>
 
         </div>
-        <div class="d-flex justify-content-center">
-            <img src="/<?= $code->fileName ?>" class="w-100">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6">
+                <img class="w-100" src="/<?= $code->fileName ?>">
+            </div>
         </div>
     <?php endif; ?>
 </section>
