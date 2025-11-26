@@ -57,6 +57,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                //OWNER
                 'GET operations-on-manager' => 'operations-on-manager/index',
                 'GET operations-on-manager/create' => 'operations-on-manager/create',
                 'GET operations-on-manager/create-point' => 'operations-on-manager/create-point',
@@ -65,6 +66,10 @@ $config = [
                 'GET users' => 'users/index',
                 'POST users/impersonate' => 'users/login-as-user',
                 'POST site/return-to-user' => 'site/return-to-user',
+
+                'GET statistics' => 'statistics/index',
+
+                //MANAGER
 
                 'GET code/create' => 'code/create',
                 'GET manager/search' => 'code/search',
@@ -82,6 +87,9 @@ $config = [
                 'GET company' => 'company/index',
                 'GET company/<companyId:\d+>/edit' => 'company/edit',
                 'POST company/update' => 'company/update',
+
+
+                //POINT
 
                 'GET issued-point/wb' => 'issued-point/wb',
                 'GET issued-point/ozon' => 'issued-point/ozon',
@@ -114,6 +122,9 @@ $config = [
         ],
         'issued-point' => [
             'class' => app\controllers\Point\IssuedPointController::class,
+        ],
+        'statistics' => [
+            'class' => app\controllers\Owner\StatisticsController::class,
         ]
     ],
     'params' => $params,

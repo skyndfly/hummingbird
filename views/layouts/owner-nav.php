@@ -13,14 +13,13 @@ use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
     </a>
 </li>
 <li class="list-group-item d-flex gap-2">
-    <a href="#" class="d-flex align-items-center gap-1">
+    <a href="/statistics" class="d-flex align-items-center gap-1">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pie-chart-fill"
              viewBox="0 0 16 16">
             <path d="M15.985 8.5H8.207l-5.5 5.5a8 8 0 0 0 13.277-5.5zM2 13.292A8 8 0 0 1 7.5.015v7.778zM8.5.015V7.5h7.485A8 8 0 0 0 8.5.015"/>
         </svg>
         Статистика
     </a>
-    <span class="text-danger ">[в разработке]</span>
 </li>
 <li class="list-group-item">
     <a href="/company" class="d-flex align-items-center gap-1">

@@ -57,4 +57,64 @@ class UploadedCodeRepository extends BaseRepository
             )
             ->execute();
     }
+
+    public function getAllCodeTodayCount(UploadedCodeCompanyKeyEnum $companyKey): int
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        return $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['company_key' => $companyKey->value])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->count();
+    }
+    public function getIssuedCodeTodayCount(UploadedCodeCompanyKeyEnum $companyKey): int
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        return $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['company_key' => $companyKey->value])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->andWhere(['status' => UploadedCodeStatusEnum::ISSUED->value])
+            ->count();
+    }
+    public function getAwaitCodeTodayCount(UploadedCodeCompanyKeyEnum $companyKey): int
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        return $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['company_key' => $companyKey->value])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->andWhere(['status' => UploadedCodeStatusEnum::AWAIT->value])
+            ->count();
+    }
+    public function getNotpaidCodeTodayCount(UploadedCodeCompanyKeyEnum $companyKey): int
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        return $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['company_key' => $companyKey->value])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->andWhere(['status' => UploadedCodeStatusEnum::NOT_PAID->value])
+            ->count();
+    }
+    public function getOutdatedCodeTodayCount(UploadedCodeCompanyKeyEnum $companyKey): int
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        return $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['company_key' => $companyKey->value])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->andWhere(['status' => UploadedCodeStatusEnum::OUTDATED->value])
+            ->count();
+    }
 }
