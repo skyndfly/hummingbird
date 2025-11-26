@@ -65,7 +65,7 @@ use yii\bootstrap5\ActiveForm;
 
         </div>
         <div class="row justify-content-center">
-            <div class="col-12 col-md-2">
+            <div class="col-12 col-md-3">
                 <img class="w-100" src="/<?= $code->fileName ?>">
             </div>
         </div>
