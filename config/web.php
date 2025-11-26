@@ -59,6 +59,7 @@ $config = [
             'rules' => [
                 'GET operations-on-manager' => 'operations-on-manager/index',
                 'GET operations-on-manager/create' => 'operations-on-manager/create',
+                'GET operations-on-manager/create-point' => 'operations-on-manager/create-point',
                 'POST operations-on-manager/create' => 'operations-on-manager/store',
 
                 'GET users' => 'users/index',

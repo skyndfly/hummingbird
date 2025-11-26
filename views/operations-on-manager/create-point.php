@@ -19,7 +19,7 @@ use yii\widgets\MaskedInput;
     <?= $form->field($formModel, 'name')->textInput() ?>
     <?= $form->field($formModel, 'last_name')->textInput() ?>
     <?= $form->field($formModel, 'birth_day')->input('date') ?>
-    <?= $form->field($formModel, 'status')->hiddenInput(['value' => 'manager'])->label(false) ?>
+    <?= $form->field($formModel, 'status')->hiddenInput(['value' => 'point'])->label(false) ?>
     <?= $form->field($formModel, 'number_phone')->widget(MaskedInput::class, [
         'mask' => '+7999-999-9999',
     ]) ?>

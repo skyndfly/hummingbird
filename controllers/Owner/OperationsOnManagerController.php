@@ -40,7 +40,7 @@ class OperationsOnManagerController extends BaseOwnerController
 
         $models = $this->userPaginateService->execute(
             new UserSearchDto(
-                type: UserTypeEnum::MANAGER,
+                type: null,
                 username: $filter->username,
                 fio: $filter->fio,
             )
@@ -59,16 +59,27 @@ class OperationsOnManagerController extends BaseOwnerController
             'formModel' => $createForm,
         ]);
     }
+    public function actionCreatePoint(): string
+    {
+        $createForm = new CreateManagerForm();
+        return $this->render('create-point', [
+            'formModel' => $createForm,
+        ]);
+    }
 
     public function actionStore(): Response
     {
         try {
             $form = new CreateManagerForm();
             $post = Yii::$app->request->post();
+
             if ($form->load($post) && $form->validate()) {
+
                 $this->userCreateService->execute($form->toDto());
+                Yii::$app->session->setFlash('success', 'Менеджер по продажам создан');
+                return $this->redirect(Yii::$app->request->getReferrer());
             }
-            Yii::$app->session->setFlash('success', 'Менеджер по продажам создан');
+            Yii::$app->getSession()->setFlash('error', array_values($form->getErrors())[0]);
         } catch (Exception $e) {
             Yii::$app->session->setFlash('error', $e->getMessage());
         }

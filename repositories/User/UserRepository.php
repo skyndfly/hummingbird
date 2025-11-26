@@ -100,9 +100,10 @@ class UserRepository extends BaseRepository
     ): array {
         $query = $this->getQuery()
             ->from(self::TABLE_NAME)
-            ->where(['!=', 'type', UserTypeEnum::OWNER->value])
-            ->andWhere(['type' => $dto->type->value]);
-
+            ->where(['!=', 'type', UserTypeEnum::OWNER->value]);
+        if ($dto->type !== null){
+            $query->andWhere(['type' => $dto->type->value]);
+        }
 
         if (!empty($dto->username)) {
             $query->andWhere(['like', 'username', $dto->username]);
@@ -112,6 +113,7 @@ class UserRepository extends BaseRepository
             $query->andWhere(['like', "LOWER(CONCAT_WS(' ', first_name, name ,last_name))", $lower]);
         }
         $all = $query->all();
+
         return array_map(
             fn($item) => $this->mapToDto($item),
             $all

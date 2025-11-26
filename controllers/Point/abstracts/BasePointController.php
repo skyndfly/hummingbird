@@ -21,7 +21,7 @@ class BasePointController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['owner'],
+                        'roles' => ['owner', 'point'],
                     ]
                 ],
                 'denyCallback' => function($rule, $action) {

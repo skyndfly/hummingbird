@@ -16,13 +16,14 @@ class CreateManagerForm extends Model
     public string $last_name = '';
     public string $birth_day = '';
     public string $number_phone = '';
-    
+    public string $status = '';
+
     public function rules(): array
     {
         return [
             [
                 [
-                    'username', 'password', 'first_name', 'name', 'last_name', 'birth_day', 'number_phone'
+                    'username', 'password', 'first_name', 'name', 'last_name', 'birth_day', 'number_phone', 'status'
                 ],
                 'required'
             ],
@@ -54,7 +55,7 @@ class CreateManagerForm extends Model
         return new UserStoreDto(
             username: $this->username,
             password: $this->password,
-            type: UserTypeEnum::MANAGER,
+            type: UserTypeEnum::from($this->status),
             userInfo: $userInfoDto                
         );
     }

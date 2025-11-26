@@ -2,11 +2,11 @@
 
 namespace app\controllers;
 
+use app\auth\dto\UserIdentityDto;
 use app\auth\UserIdentity;
 use app\filters\Code\CodeFilter;
 use app\forms\Code\CreateCodeForm;
 use app\repositories\Category\CategoryRepository;
-use app\repositories\Code\CodeRepository;
 use app\repositories\User\UserRepository;
 use app\services\Code\FindCodeService;
 use DomainException;
@@ -14,6 +14,7 @@ use Throwable;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\IdentityInterface;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
@@ -79,9 +80,14 @@ class SiteController extends Controller
     /**
      * Группированный поиск кодов
      */
-    public function actionIndex(): string
+    public function actionIndex(): Response|string
     {
         try {
+            $identity = Yii::$app->user;
+            if ($identity->can('point')){
+                return $this->redirect('/issued-point/wb');
+            }
+
             $formModel = new CreateCodeForm();
             $getParams = Yii::$app->request->getQueryParams();
             $filter = new CodeFilter();

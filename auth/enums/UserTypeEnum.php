@@ -6,4 +6,5 @@ enum UserTypeEnum: string
 {
     case OWNER = 'owner';
     case MANAGER = 'manager';
+    case POINT = 'point';
 }

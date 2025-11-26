@@ -16,6 +16,11 @@ use yii\helpers\Console;
 class RbacController extends Controller
 {
     private UserCreateService $userCreateService;
+    private const array BASE_ROLES = [
+        'owner',
+        'manager',
+        'point'
+    ];
 
     public function __construct(
         $id,
@@ -30,32 +35,40 @@ class RbacController extends Controller
     public function actionInit(): void
     {
         try {
-            $userInfo = new UserInfoDto(
-                firstName: EnvRegistry::getOwnerFirstName(),
-                name: EnvRegistry::getOwnerName(),
-                lastName: EnvRegistry::getOwnerLastName(),
-                birthDate: '27-11-1996',
-                numberPhone: EnvRegistry::getOwnerPhoneNumber()
-            );
-            $userDto = new UserStoreDto(
-                username: EnvRegistry::getOwnerLogin(),
-                password: EnvRegistry::getOwnerPassword(),
-                type: UserTypeEnum::OWNER,
-                userInfo: $userInfo
-            );
-            $user = $this->userCreateService->execute($userDto);
+
 
             $auth = Yii::$app->getAuthManager();
+            foreach (self::BASE_ROLES as $newRole) {
+                $role = $auth->getRole($newRole);
+                if ($role === null) {
+                    $role = $auth->createRole($newRole);
+                    $auth->add($role);
+                }
+            }
 
-            $owner = $auth->createRole('owner');
-            $auth->add($owner);
 
-            $manager = $auth->createRole('manager');
-            $auth->add($manager);
+            try {
+                $userInfo = new UserInfoDto(
+                    firstName: EnvRegistry::getOwnerFirstName(),
+                    name: EnvRegistry::getOwnerName(),
+                    lastName: EnvRegistry::getOwnerLastName(),
+                    birthDate: '27-11-1996',
+                    numberPhone: EnvRegistry::getOwnerPhoneNumber()
+                );
+                $userDto = new UserStoreDto(
+                    username: EnvRegistry::getOwnerLogin(),
+                    password: EnvRegistry::getOwnerPassword(),
+                    type: UserTypeEnum::OWNER,
+                    userInfo: $userInfo
+                );
+                $user = $this->userCreateService->execute($userDto);
+                $ownerRole = $auth->getRole('owner');
+                $auth->assign($ownerRole, $user->id);
+            } catch (Throwable $e) {
+                Console::error($e->getMessage());
+            }
 
-            $auth->assign($owner, $user->id);
-
-            Console::confirm('Владелец и базовые роли созданы');
+            Console::input('Владелец и базовые роли созданы');
         } catch (Throwable $e) {
             Console::error('Ошибка инициализации:');
             Console::error($e->getMessage());
