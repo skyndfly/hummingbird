@@ -23,6 +23,7 @@ class UploadedCodeRepository extends BaseRepository
                     'chat_id' => $dto->chatId,
                     'created_at' => $this->getCurrentDate(),
                     'updated_at' => $this->getCurrentDate(),
+                    'note' => $dto->note,
                 ]
             )
             ->execute();

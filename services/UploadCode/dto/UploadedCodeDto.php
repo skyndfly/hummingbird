@@ -14,6 +14,7 @@ class UploadedCodeDto
         public ?string $createdAt = null,
         public ?string $updatedAt = null,
         public ?int $id = null,
+        public ?string $note = null,
     ) {
     }
 
@@ -26,6 +27,7 @@ class UploadedCodeDto
      *     chat_id: string,
      *     created_at: string|null,
      *     updated_at: string|null,
+     *     note: string|null,
      * } $record
      */
     public static function fromDbRecord(array $record): UploadedCodeDto
@@ -38,6 +40,7 @@ class UploadedCodeDto
             createdAt: $record['created_at'],
             updatedAt: $record['updated_at'],
             id: $record['id'],
+            note: $record['id'],
         );
     }
 
@@ -51,6 +54,7 @@ class UploadedCodeDto
             'updatedAt' => $this->updatedAt,
             'status' => $this->status->value,
             'chatId' => $this->chatId,
+            'note' => $this->note,
         ];
     }
 }

@@ -45,10 +45,26 @@ use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
                 <?= UploadedCodeCompanyKeyEnum::WB->label() ?>
             </a>
         </div>
+        <div class="pt-2 ps-5 pb-2 d-flex align-items-center gap-2 list-group-item border-start-0 border-end-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+            </svg>
+            <a href="/owner-point/wb/add-code" class="d-flex align-items-center gap-1">
+                Добавить код WB
+            </a>
+        </div>
         <div class="pt-2 pb-2 d-flex align-items-center gap-2 list-group-item border-start-0 border-end-0">
             <a href="/issued-point/ozon" class="d-flex align-items-center gap-1">
                 <img style="width: 16px;" src="/img/ozon.svg" alt="">
                 <?= UploadedCodeCompanyKeyEnum::OZON->label() ?>
+            </a>
+        </div>
+        <div class="pt-2 ps-5 pb-2 d-flex align-items-center gap-2 list-group-item border-start-0 border-end-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+            </svg>
+            <a href="/owner-point/ozon/add-code" class="d-flex align-items-center gap-1">
+                Добавить код Ozon
             </a>
         </div>
     </div>

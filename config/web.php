@@ -69,6 +69,13 @@ $config = [
 
                 'GET statistics' => 'statistics/index',
 
+                'GET owner-point/wb' => 'owner-point/wb',
+                'GET owner-point/ozon' => 'owner-point/ozon',
+                'GET owner-point/wb/add-code' => 'owner-point/wb-add-code',
+                'GET owner-point/ozon/add-code' => 'owner-point/ozon-add-code',
+
+                'POST owner-point/add-code' => 'owner-point/store-code',
+
                 //MANAGER
 
                 'GET code/create' => 'code/create',
@@ -125,6 +132,9 @@ $config = [
         ],
         'statistics' => [
             'class' => app\controllers\Owner\StatisticsController::class,
+        ],
+        'owner-point' => [
+            'class' => app\controllers\Owner\PointController::class,
         ]
     ],
     'params' => $params,
