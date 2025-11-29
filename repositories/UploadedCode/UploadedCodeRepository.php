@@ -46,6 +46,25 @@ class UploadedCodeRepository extends BaseRepository
         return UploadedCodeDto::fromDbRecord($record);
     }
 
+    /**
+     * @return UploadedCodeDto[]
+     */
+    public function findAllAwaitCodeToday(): array
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        $records = $this->getQuery()
+            ->from(self::TABLE)
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->all();
+
+        return array_map(
+            callback: fn(array $record) => UploadedCodeDto::fromDbRecord($record),
+            array: $records
+        );
+    }
+
     public function issuedCode(int $id, UploadedCodeStatusEnum $status): void
     {
         $this->getCommand()
@@ -70,6 +89,7 @@ class UploadedCodeRepository extends BaseRepository
             ->andWhere(['<=', 'created_at', $todayEnd])
             ->count();
     }
+
     public function getIssuedCodeTodayCount(UploadedCodeCompanyKeyEnum $companyKey): int
     {
         $todayStart = date('Y-m-d 00:00:00');
@@ -82,6 +102,7 @@ class UploadedCodeRepository extends BaseRepository
             ->andWhere(['status' => UploadedCodeStatusEnum::ISSUED->value])
             ->count();
     }
+
     public function getAwaitCodeTodayCount(UploadedCodeCompanyKeyEnum $companyKey): int
     {
         $todayStart = date('Y-m-d 00:00:00');
@@ -94,6 +115,7 @@ class UploadedCodeRepository extends BaseRepository
             ->andWhere(['status' => UploadedCodeStatusEnum::AWAIT->value])
             ->count();
     }
+
     public function getNotpaidCodeTodayCount(UploadedCodeCompanyKeyEnum $companyKey): int
     {
         $todayStart = date('Y-m-d 00:00:00');
@@ -106,6 +128,7 @@ class UploadedCodeRepository extends BaseRepository
             ->andWhere(['status' => UploadedCodeStatusEnum::NOT_PAID->value])
             ->count();
     }
+
     public function getOutdatedCodeTodayCount(UploadedCodeCompanyKeyEnum $companyKey): int
     {
         $todayStart = date('Y-m-d 00:00:00');

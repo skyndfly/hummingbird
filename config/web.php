@@ -69,6 +69,7 @@ $config = [
 
                 'GET statistics' => 'statistics/index',
 
+                'GET owner-point' => 'owner-point/index',
                 'GET owner-point/wb' => 'owner-point/wb',
                 'GET owner-point/ozon' => 'owner-point/ozon',
                 'GET owner-point/wb/add-code' => 'owner-point/wb-add-code',
