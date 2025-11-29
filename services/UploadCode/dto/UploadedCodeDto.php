@@ -40,7 +40,7 @@ class UploadedCodeDto
             createdAt: $record['created_at'],
             updatedAt: $record['updated_at'],
             id: $record['id'],
-            note: $record['id'],
+            note: $record['note'],
         );
     }
 
