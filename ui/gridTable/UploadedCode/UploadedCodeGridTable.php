@@ -35,6 +35,7 @@ class UploadedCodeGridTable extends AbstractGridTable
             UploadedCodeStatusEnum::NOT_PAID => '<span class="badge text-bg-warning">'.$dto->status->label().'</span>',
             UploadedCodeStatusEnum::OUTDATED => '<span class="badge text-bg-danger">'.$dto->status->label().'</span>',
             UploadedCodeStatusEnum::ISSUED => '<span class="badge text-bg-primary">'.$dto->status->label().'</span>',
+            UploadedCodeStatusEnum::PENDING => '<span class="badge text-bg-dark">'.$dto->status->label().'</span>',
         };
     }
 

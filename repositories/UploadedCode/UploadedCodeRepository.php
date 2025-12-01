@@ -45,6 +45,22 @@ class UploadedCodeRepository extends BaseRepository
         }
         return UploadedCodeDto::fromDbRecord($record);
     }
+    public function findPendingCodeToday(UploadedCodeCompanyKeyEnum $companyKey): ?UploadedCodeDto
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        $record = $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['company_key' => $companyKey->value])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->andWhere(['status' => UploadedCodeStatusEnum::PENDING->value])
+            ->one();
+        if ($record === false) {
+            return null;
+        }
+        return UploadedCodeDto::fromDbRecord($record);
+    }
 
     /**
      * @return UploadedCodeDto[]
@@ -63,6 +79,18 @@ class UploadedCodeRepository extends BaseRepository
             callback: fn(array $record) => UploadedCodeDto::fromDbRecord($record),
             array: $records
         );
+    }
+    public function getPendingTodayCount(UploadedCodeCompanyKeyEnum $companyKey): int
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        return $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['company_key' => $companyKey->value])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->andWhere(['status' => UploadedCodeStatusEnum::PENDING->value])
+            ->count();
     }
 
     public function issuedCode(int $id, UploadedCodeStatusEnum $status): void

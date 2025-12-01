@@ -103,6 +103,10 @@ $config = [
                 'GET issued-point/ozon' => 'issued-point/ozon',
                 'POST issued-point/issued' => 'issued-point/issued',
 
+                'GET issued-point/wb/pending' => 'issued-point/wb-pending',
+                'GET issued-point/ozon/pending' => 'issued-point/ozon-pending',
+
+
                 //REST
                 'POST upload/store' => 'upload/store',
             ],

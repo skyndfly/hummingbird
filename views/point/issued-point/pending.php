@@ -9,28 +9,19 @@ use yii\bootstrap5\ActiveForm;
 /** @var ?UploadedCodeDto $code */
 /** @var IssuedCodeForm $formModel */
 /** @var int $pendingCount */
+/** @var UploadedCodeCompanyKeyEnum $company */
+$this->title= 'Отложенные кода ' . $company->label();
 
-$this->title = 'Пункт выдачи ' . UploadedCodeCompanyKeyEnum::WB->label();
 ?>
 
 <section>
-    <h2>Пункт выдачи товаров - <?= UploadedCodeCompanyKeyEnum::WB->label() ?></h2>
-    <hr>
-    <?php if ($pendingCount > 0): ?>
-        <p>
-            Количество отложенных кодов: <strong><?= $pendingCount ?></strong> <br>
-            <a href="/issued-point/wb/pending">Перейти к отложенным кодам</a>
-        </p>
-    <?php endif; ?>
-    <?php if ($code === null): ?>
-        <?php if ($pendingCount > 0): ?>
-            <div class="alert alert-danger">
-                Обратите внимание у вас есть отложенные кода
-            </div>
-        <?php else: ?>
-            На сегодня все коды выданы 💪
-        <?php endif; ?>
 
+    <h2>Отложенные коды - <?= $company->label() ?></h2>
+
+    <hr>
+    Количество отложенных кодов: <strong><?=$pendingCount?></strong> <br>
+    <?php if ($code === null): ?>
+        На сегодня все коды выданы 💪
     <?php else: ?>
         <div>
             Дата отправки: <strong><?= new DateTimeImmutable($code->createdAt)->format('d.m.Y H:i') ?></strong>
@@ -60,19 +51,6 @@ $this->title = 'Пункт выдачи ' . UploadedCodeCompanyKeyEnum::WB->labe
                 <?= $form->field($formModel, 'chatId')->hiddenInput()->label(false) ?>
                 <button type="submit" class="btn btn-warning">
                     <?= UploadedCodeStatusEnum::NOT_PAID->label() ?>
-                </button>
-                <?php ActiveForm::end(); ?>
-            </div>
-            <div>
-                <?php $form = ActiveForm::begin([
-                        'method' => 'post',
-                        'action' => ['/issued-point/issued'],
-                ]); ?>
-                <?= $form->field($formModel, 'id')->hiddenInput()->label(false) ?>
-                <?= $form->field($formModel, 'status')->hiddenInput(['value' => UploadedCodeStatusEnum::PENDING->value])->label(false) ?>
-                <?= $form->field($formModel, 'chatId')->hiddenInput()->label(false) ?>
-                <button type="submit" class="btn btn-dark">
-                    <?= UploadedCodeStatusEnum::PENDING->label() ?>
                 </button>
                 <?php ActiveForm::end(); ?>
             </div>
