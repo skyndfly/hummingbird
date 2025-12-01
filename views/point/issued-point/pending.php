@@ -21,7 +21,7 @@ $this->title= 'Отложенные кода ' . $company->label();
     <hr>
     Количество отложенных кодов: <strong><?=$pendingCount?></strong> <br>
     <?php if ($code === null): ?>
-        На сегодня все коды выданы 💪
+        Пока нет отложенных кодов 💪
     <?php else: ?>
         <div>
             Дата отправки: <strong><?= new DateTimeImmutable($code->createdAt)->format('d.m.Y H:i') ?></strong>
