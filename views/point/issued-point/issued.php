@@ -22,7 +22,11 @@ $this->title = 'Пункт выдачи ' . $point->label();
     <?php if ($pendingCount > 0): ?>
         <p>
             Количество отложенных кодов: <strong><?= $pendingCount ?></strong> <br>
+            <?php if ($point === UploadedCodeCompanyKeyEnum::WB):?>
+                <a href="/issued-point/wb/pending">Перейти к отложенным кодам</a>
+            <?php elseif ($point === UploadedCodeCompanyKeyEnum::OZON):?>
             <a href="/issued-point/ozon/pending">Перейти к отложенным кодам</a>
+            <?php endif; ?>
         </p>
     <?php endif; ?>
     <?php if ($code === null): ?>
