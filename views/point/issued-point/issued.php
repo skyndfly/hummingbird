@@ -9,33 +9,46 @@ use yii\bootstrap5\ActiveForm;
 /** @var ?UploadedCodeDto $code */
 /** @var IssuedCodeForm $formModel */
 /** @var int $pendingCount */
+/** @var UploadedCodeCompanyKeyEnum $point */
+/** @var int $allCount */
+/** @var int $awaitCount */
 
-$this->title = 'Пункт выдачи ' . UploadedCodeCompanyKeyEnum::WB->label();
+$this->title = 'Пункт выдачи ' . $point->label();
 ?>
 
 <section>
-    <h2>Пункт выдачи товаров - <?= UploadedCodeCompanyKeyEnum::WB->label() ?></h2>
+    <h2>Пункт выдачи товаров - <?= $point->label() ?></h2>
     <hr>
     <?php if ($pendingCount > 0): ?>
         <p>
             Количество отложенных кодов: <strong><?= $pendingCount ?></strong> <br>
-            <a href="/issued-point/wb/pending">Перейти к отложенным кодам</a>
+            <a href="/issued-point/ozon/pending">Перейти к отложенным кодам</a>
         </p>
     <?php endif; ?>
     <?php if ($code === null): ?>
         <?php if ($pendingCount > 0): ?>
             <div class="alert alert-danger">
-                Обратите внимание у вас есть отложенные кода
+                Обратите внимание у вас есть отложенные кода.
             </div>
         <?php else: ?>
             На сегодня все коды выданы 💪
         <?php endif; ?>
-
     <?php else: ?>
         <div>
-            Дата отправки: <strong><?= new DateTimeImmutable($code->createdAt)->format('d.m.Y H:i') ?></strong>
+            <div class="">
+                Дата отправки: <strong><?= new DateTimeImmutable($code->createdAt)->format('d.m.Y H:i') ?></strong>
+            </div>
+            <div class="">
+                Всего добавленных кодов <?= $point->label() ?>: <strong><?= $allCount ?></strong>
+            </div>
+            <div class="">
+                Ожидает выдачи <?= $point->label() ?>: <strong><?= $awaitCount ?></strong>
+            </div>
         </div>
-        <div class="d-flex align-items-center justify-content-around mb-3">
+
+        <div style="margin-bottom: 100px" class="d-md-none"></div>
+
+        <div class="d-flex align-items-center justify-content-around mb-3 flex-wrap">
             <div>
                 <?php $form = ActiveForm::begin([
                         'method' => 'post',

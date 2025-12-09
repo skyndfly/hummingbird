@@ -29,11 +29,16 @@ class IssuedPointController extends BasePointController
         if ($code !== null) {
             $form->setAttributes($code->toArray());
         }
-        $pendingCount =  $this->uploadedCodeRepository->getPendingTodayCount(UploadedCodeCompanyKeyEnum::WB);
-        return $this->render('issued-point/wb', [
+        $pendingCount = $this->uploadedCodeRepository->getPendingTodayCount(UploadedCodeCompanyKeyEnum::WB);
+        $allCount = $this->uploadedCodeRepository->getAllCodeTodayCount(UploadedCodeCompanyKeyEnum::WB);
+        $awaitCount = $this->uploadedCodeRepository->getAwaitCodeTodayCount(UploadedCodeCompanyKeyEnum::WB);
+        return $this->render('issued-point/issued', [
+            'point' => UploadedCodeCompanyKeyEnum::WB,
             'code' => $code,
             'formModel' => $form,
             'pendingCount' => $pendingCount,
+            'allCount' => $allCount,
+            'awaitCount' => $awaitCount
         ]);
     }
 
@@ -44,11 +49,16 @@ class IssuedPointController extends BasePointController
         if ($code !== null) {
             $form->setAttributes($code->toArray());
         }
-        $pendingCount =  $this->uploadedCodeRepository->getPendingTodayCount(UploadedCodeCompanyKeyEnum::OZON);
-        return $this->render('issued-point/ozon', [
+        $pendingCount = $this->uploadedCodeRepository->getPendingTodayCount(UploadedCodeCompanyKeyEnum::OZON);
+        $allCount = $this->uploadedCodeRepository->getAllCodeTodayCount(UploadedCodeCompanyKeyEnum::OZON);
+        $awaitCount = $this->uploadedCodeRepository->getAwaitCodeTodayCount(UploadedCodeCompanyKeyEnum::OZON);
+        return $this->render('issued-point/issued', [
+            'point' => UploadedCodeCompanyKeyEnum::OZON,
             'code' => $code,
             'formModel' => $form,
             'pendingCount' => $pendingCount,
+            'allCount' => $allCount,
+            'awaitCount' => $awaitCount
         ]);
     }
 
@@ -72,6 +82,7 @@ class IssuedPointController extends BasePointController
         }
         return $this->redirect(Yii::$app->request->referrer);
     }
+
     public function actionWbPending(): string
     {
         $code = $this->uploadedCodeRepository->findPendingCodeToday(UploadedCodeCompanyKeyEnum::WB);
@@ -79,7 +90,7 @@ class IssuedPointController extends BasePointController
         if ($code !== null) {
             $form->setAttributes($code->toArray());
         }
-        $pendingCount =  $this->uploadedCodeRepository->getPendingTodayCount(UploadedCodeCompanyKeyEnum::WB);
+        $pendingCount = $this->uploadedCodeRepository->getPendingTodayCount(UploadedCodeCompanyKeyEnum::WB);
         return $this->render('issued-point/pending', [
             'code' => $code,
             'formModel' => $form,
@@ -87,6 +98,7 @@ class IssuedPointController extends BasePointController
             'pendingCount' => $pendingCount,
         ]);
     }
+
     public function actionOzonPending(): string
     {
         $code = $this->uploadedCodeRepository->findPendingCodeToday(UploadedCodeCompanyKeyEnum::OZON);
@@ -94,7 +106,7 @@ class IssuedPointController extends BasePointController
         if ($code !== null) {
             $form->setAttributes($code->toArray());
         }
-        $pendingCount =  $this->uploadedCodeRepository->getPendingTodayCount(UploadedCodeCompanyKeyEnum::OZON);
+        $pendingCount = $this->uploadedCodeRepository->getPendingTodayCount(UploadedCodeCompanyKeyEnum::OZON);
         return $this->render('issued-point/pending', [
             'code' => $code,
             'formModel' => $form,
