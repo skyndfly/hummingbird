@@ -6,6 +6,7 @@ use app\repositories\BaseRepository;
 use app\services\UploadCode\dto\UploadedCodeDto;
 use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
 use app\services\UploadCode\enums\UploadedCodeStatusEnum;
+use DomainException;
 
 class UploadedCodeRepository extends BaseRepository
 {
@@ -45,6 +46,7 @@ class UploadedCodeRepository extends BaseRepository
         }
         return UploadedCodeDto::fromDbRecord($record);
     }
+
     public function findPendingCodeToday(UploadedCodeCompanyKeyEnum $companyKey): ?UploadedCodeDto
     {
         $todayStart = date('Y-m-d 00:00:00');
@@ -80,6 +82,7 @@ class UploadedCodeRepository extends BaseRepository
             array: $records
         );
     }
+
     public function getPendingTodayCount(UploadedCodeCompanyKeyEnum $companyKey): int
     {
         $todayStart = date('Y-m-d 00:00:00');
@@ -168,5 +171,17 @@ class UploadedCodeRepository extends BaseRepository
             ->andWhere(['<=', 'created_at', $todayEnd])
             ->andWhere(['status' => UploadedCodeStatusEnum::OUTDATED->value])
             ->count();
+    }
+
+    public function getById(int $id): UploadedCodeDto
+    {
+        $record = $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['id' => $id])
+            ->one();
+        if ($record === false) {
+            throw new DomainException('Record not found.');
+        }
+        return UploadedCodeDto::fromDbRecord($record);
     }
 }
