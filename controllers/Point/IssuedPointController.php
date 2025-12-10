@@ -5,9 +5,12 @@ namespace app\controllers\Point;
 use app\controllers\Point\abstracts\BasePointController;
 use app\forms\UploadedCode\IssuedCodeForm;
 use app\repositories\UploadedCode\UploadedCodeRepository;
+use app\services\Bot\BotApi;
 use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
 use app\services\UploadCode\enums\UploadedCodeStatusEnum;
+use DateTimeImmutable;
 use Exception;
+use Throwable;
 use Yii;
 use yii\web\Response;
 
@@ -17,6 +20,7 @@ class IssuedPointController extends BasePointController
         $id,
         $module,
         private UploadedCodeRepository $uploadedCodeRepository,
+        private BotApi $botApi,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
@@ -68,10 +72,28 @@ class IssuedPointController extends BasePointController
             $post = Yii::$app->getRequest()->getBodyParams();
             $form = new IssuedCodeForm();
             if ($form->load($post) && $form->validate()) {
+                $status = UploadedCodeStatusEnum::from($form->status);
+                $code = $this->uploadedCodeRepository->getById($form->id);
+
                 $this->uploadedCodeRepository->issuedCode(
                     id: $form->id,
-                    status: UploadedCodeStatusEnum::from($form->status),
+                    status: $status,
                 );
+                if ($status != UploadedCodeStatusEnum::PENDING) {
+                    try {
+                        $this->botApi->sendIssued(
+                            id: $form->chatId,
+                            status: $status->value,
+                            createdAt: new DateTimeImmutable($code->createdAt)
+                        );
+                    } catch (Throwable $exception) {
+                        Yii::info([
+                            'type' => 'SendBotApi',
+                            'message' => $exception->getMessage(),
+                        ]);
+                    }
+                }
+
                 Yii::$app->getSession()->setFlash('success', 'Данные сохранены');
                 return $this->redirect(Yii::$app->request->referrer);
             }
