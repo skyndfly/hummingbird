@@ -7,6 +7,7 @@ use app\services\UploadCode\dto\UploadedCodeDto;
 use app\services\UploadCode\enums\UploadedCodeStatusEnum;
 use app\ui\gridTable\AbstractGridTable;
 use app\ui\gridTable\GridColumn;
+use DateTimeImmutable;
 
 class UploadedCodeGridTable extends AbstractGridTable
 {
@@ -14,6 +15,9 @@ class UploadedCodeGridTable extends AbstractGridTable
     public string $id;
     #[GridColumn(label: 'Статус', formatter: 'statusFormater')]
     public string $status;
+
+    #[GridColumn(label: 'Дата загрузки', formatter: 'dateFormater')]
+    public string $createdAt;
 
     #[GridColumn(label: 'Служба доставки')]
     public string $companyKey;
@@ -37,6 +41,11 @@ class UploadedCodeGridTable extends AbstractGridTable
             UploadedCodeStatusEnum::ISSUED => '<span class="badge text-bg-primary">'.$dto->status->label().'</span>',
             UploadedCodeStatusEnum::PENDING => '<span class="badge text-bg-dark">'.$dto->status->label().'</span>',
         };
+    }
+
+    public static function dateFormater(UploadedCodeDto $dto): string
+    {
+        return new DateTimeImmutable($dto->createdAt)->format('d-m-Y H:i:s');
     }
 
 }
