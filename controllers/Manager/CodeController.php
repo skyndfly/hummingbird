@@ -13,12 +13,15 @@ use app\repositories\Code\CodeRepository;
 use app\repositories\Code\dto\CodeDto;
 use app\repositories\Code\enums\CodeStatusEnum;
 use app\repositories\Company\CompanyRepository;
+use app\repositories\Sale\SaleRepository;
 use app\services\Code\CreateCodeService;
 use app\services\Code\dto\IssuedCodeDto;
 use app\services\Code\IssuedCodeService;
 use app\services\Company\dto\CompanyDto;
+use app\services\Sale\dto\SaleDto;
 use app\ui\gridTable\Code\AllCodeGridTable;
 use app\ui\gridTable\GridFactory;
+use DateTimeImmutable;
 use Exception;
 use Throwable;
 use Yii;
@@ -37,6 +40,7 @@ class CodeController extends BaseManagerController
         private readonly CompanyRepository $companyRepository,
         private readonly IssuedCodeService $issuedCodeService,
         private readonly CodeRepository $repository,
+        private readonly SaleRepository $saleRepository,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
@@ -82,19 +86,37 @@ class CodeController extends BaseManagerController
      */
     public function actionIssued(): Response
     {
+        $transaction = Yii::$app->db->beginTransaction();
         try {
             $modelForm = new IssuedCodeForm();
             $post = Yii::$app->request->post();
             if ($modelForm->load($post) && $modelForm->validate()) {
+
+                $status = CodeStatusEnum::from($modelForm->status);
+
                 $dto = new IssuedCodeDto(
                     ids: $modelForm->id,
-                    status: CodeStatusEnum::from($modelForm->status)
+                    status: $status
                 );
+
                 $this->issuedCodeService->execute($dto);
+                $saleDto = new SaleDto(
+                    amount: $status === CodeStatusEnum::ISSUED_FREE ? 0 : $modelForm->amount,
+                    code: $modelForm->code,
+                    itemIds: $modelForm->id,
+                    quantity: $modelForm->quantity,
+                    userId: $this->getIdentity()->getId(),
+                    createdAt: new DateTimeImmutable(),
+                    updatedAt: new DateTimeImmutable()
+                );
+                $this->saleRepository->create($saleDto);
+
+                $transaction->commit();
                 Yii::$app->session->setFlash('success', 'Код выдан');
                 //TODO добавить логи кто выдал заказ
             }
         } catch (Exception $e) {
+            $transaction->rollBack();
             Yii::$app->session->setFlash('error', $e->getMessage());
         }
         return $this->redirect(Yii::$app->request->getReferrer());

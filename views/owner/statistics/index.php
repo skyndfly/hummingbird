@@ -9,6 +9,13 @@
 /** @var int $notPaidOzonCount */
 /** @var int $outdatedWbCount */
 /** @var int $outdatedOzonCount */
+/** @var int $totalCodes */
+/** @var int $totalAmount */
+
+/** @var StockStatisticsDto $statistics */
+
+use app\services\Code\dto\StockStatisticsDto;
+
 $this->title = 'Статистика';
 ?>
 <section>
@@ -107,5 +114,40 @@ $this->title = 'Статистика';
 
     <hr>
     <h3>Внесено в 108</h3>
-    <p class="text-danger">[В разработке]</p>
+    <div>
+        <div class="d-flex gap-2 mb-3">
+            <div class="card w-25">
+                <div class="card-body">
+                    <p class="card-text">
+                        Общее количество <strong>выданных</strong> сегодня кодов
+                    </p>
+                    <h3><?= $totalCodes ?></h3>
+                </div>
+            </div>
+            <div class="card w-25  bg-success text-white">
+                <div class="card-body">
+                    <p class="card-text">
+                        Сегодня заработано
+                    </p>
+                    <h3><?= $totalAmount / 100 ?> ₽</h3>
+                </div>
+            </div>
+            <div class="card w-25">
+                <div class="card-body">
+                    <p class="card-text">
+                        Можно заработать
+                    </p>
+                    <h3><?= $statistics->totalCommission / 100 ?> ₽</h3>
+                </div>
+            </div>
+            <div class="card w-25">
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>Не выданных кодов</strong> находится на складе
+                    </p>
+                    <h3><?= $statistics->uniqueCodeCount ?> </h3>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>

@@ -10,6 +10,7 @@ use app\repositories\Code\dto\CodeSearchDto;
 use app\repositories\Code\dto\GroupedCodeDto;
 use app\repositories\Code\enums\CodeStatusEnum;
 use app\repositories\Company\CompanyRepository;
+use app\services\Code\dto\StockStatisticsDto;
 use yii\db\Expression;
 use yii\web\NotFoundHttpException;
 
@@ -268,5 +269,80 @@ class CodeRepository extends BaseRepository
             throw new NotFoundHttpException('Код не найден');
         }
         return CodeDto::fromDbRecord($row);
+    }
+
+    /**
+     * Получить статистику по кодам на складе
+     */
+    public function findStockStatistics(?CodeSearchDto $dto = null): StockStatisticsDto
+    {
+        $query = $this->getQuery()
+            ->select([
+                'code.code',
+                'code.status',
+                'code.price',
+                'code.quantity',
+                'company.id as company_id',
+                'company.name as company_name',
+                'company.commission_strategy as company_commission_strategy',
+            ])
+            ->from([self::TABLE_NAME . ' code'])
+            ->leftJoin(
+                table: [CategoryRepository::TABLE_NAME . ' category'],
+                on: 'category.id = code.category_id'
+            )
+            ->leftJoin(
+                table: [CompanyRepository::TABLE . ' company'],
+                on: 'company.id = code.company_id'
+            )
+            // Только коды на складе (не выданные)
+            ->where(['NOT IN', 'code.status', [
+                'Выдан/Наличные',
+                'Выдан/Бесплатно',
+                'Выдан/Оплата картой'
+            ]]);
+
+        if (!empty($dto->code)) {
+            $query->andWhere(['like', 'LOWER(code.code)', mb_strtolower($dto->code)]);
+        }
+        if (!empty($dto->categoryId)) {
+            $query->andWhere(['code.category_id' => $dto->categoryId]);
+        }
+        if (!empty($dto->date)) {
+            $query->andWhere(['DATE(code.created_at)' => $dto->date]);
+        }
+
+        $codes = $query->all();
+
+        // Группируем коды так же, как в findCodes
+        $grouped = [];
+        foreach ($codes as $row) {
+            $key = $row['code'] . '_' . $row['company_id'];
+            if (!isset($grouped[$key])) {
+                $grouped[$key] = [
+                    'code' => $row['code'],
+                    'company_id' => $row['company_id'],
+                    'company_name' => $row['company_name'],
+                    'commission_strategy' => $row['company_commission_strategy'],
+                    'total_amount' => 0,
+                    'total_quantity' => 0,
+                    'rows' => []
+                ];
+            }
+            $grouped[$key]['total_amount'] += ($row['status'] !== 'Выдан' ? $row['price'] : 0);
+            $grouped[$key]['total_quantity'] += $row['quantity'];
+            $grouped[$key]['rows'][] = $row;
+        }
+
+        return new StockStatisticsDto(
+            totalCodesCount: array_sum(array_column($codes, 'quantity')),
+            totalPotentialEarnings: array_sum(array_map(
+                fn($item) => $item['total_amount'],
+                $grouped
+            )),
+            totalCommission: 0, // Рассчитаем в сервисе
+            uniqueCodeCount: count($grouped),
+            uniqueCompaniesCount: count(array_unique(array_column($grouped, 'company_id')))
+        );
     }
 }

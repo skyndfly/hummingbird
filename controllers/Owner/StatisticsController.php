@@ -2,20 +2,12 @@
 
 namespace app\controllers\Owner;
 
-use app\auth\enums\UserTypeEnum;
 use app\controllers\Owner\abstracts\BaseOwnerController;
-use app\filters\User\ManagerFilter;
-use app\forms\User\CreateManagerForm;
+use app\repositories\Sale\SaleRepository;
 use app\repositories\UploadedCode\UploadedCodeRepository;
-use app\repositories\User\dto\UserSearchDto;
+use app\services\Code\StockStatisticsService;
 use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
-use app\services\User\UserCreateService;
-use app\services\User\UserPaginateService;
-use app\ui\gridTable\GridFactory;
-use app\ui\gridTable\User\ManagerGridTable;
-use Exception;
 use Yii;
-use yii\web\Response;
 
 class StatisticsController extends BaseOwnerController
 {
@@ -24,6 +16,8 @@ class StatisticsController extends BaseOwnerController
         $id,
         $module,
         private UploadedCodeRepository $uploadedCodeRepository,
+        private SaleRepository $saleRepository,
+        private StockStatisticsService $stockStatisticsService,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
@@ -31,6 +25,17 @@ class StatisticsController extends BaseOwnerController
 
     public function actionIndex(): string
     {
+        $saleStats = $this->saleRepository->getIssuedStats();
+        if ($saleStats !== false) {
+            $totalCodes = $saleStats['total_codes'];
+            $totalAmount = $saleStats['total_amount'];
+        } else {
+            $totalCodes = 0;
+            $totalAmount = 0;
+        }
+        $statistics = $this->stockStatisticsService->getStatistics();
+
+
         return $this->render('index', [
             'allWbCount' => $this->uploadedCodeRepository->getAllCodeTodayCount(UploadedCodeCompanyKeyEnum::WB),
             'allOzonCount' => $this->uploadedCodeRepository->getAllCodeTodayCount(UploadedCodeCompanyKeyEnum::OZON),
@@ -42,6 +47,9 @@ class StatisticsController extends BaseOwnerController
             'notPaidOzonCount' => $this->uploadedCodeRepository->getNotpaidCodeTodayCount(UploadedCodeCompanyKeyEnum::OZON),
             'outdatedWbCount' => $this->uploadedCodeRepository->getOutdatedCodeTodayCount(UploadedCodeCompanyKeyEnum::WB),
             'outdatedOzonCount' => $this->uploadedCodeRepository->getOutdatedCodeTodayCount(UploadedCodeCompanyKeyEnum::OZON),
+            'totalCodes' => $totalCodes,
+            'totalAmount' => $totalAmount,
+            'statistics' => $statistics,
         ]);
     }
 

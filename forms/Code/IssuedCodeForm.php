@@ -10,11 +10,13 @@ class IssuedCodeForm extends Model
     public array $id = [];
     public string $code = '';
     public string $status = '';
+    public int $quantity = 0;
+    public int $amount = 0;
 
     public function rules(): array
     {
         return [
-            [['id', 'status', 'code'], 'required'],
+            [['id', 'status', 'code', 'quantity', 'amount'], 'required'],
             [['code'], 'string', 'max' => 255],
             [['id'], 'safe'],
             [['status'], 'in', 'range' => [
