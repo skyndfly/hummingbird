@@ -19,6 +19,7 @@ class m251106_151208_create_company_table extends Migration
                 'commission_strategy' => $this->string()->notNull(),
             ]);
     }
+
     public function safeDown()
     {
         $this->dropTable(self::TABLE_NAME);

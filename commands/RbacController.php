@@ -35,8 +35,6 @@ class RbacController extends Controller
     public function actionInit(): void
     {
         try {
-
-
             $auth = Yii::$app->getAuthManager();
             foreach (self::BASE_ROLES as $newRole) {
                 $role = $auth->getRole($newRole);
