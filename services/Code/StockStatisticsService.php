@@ -26,16 +26,7 @@ class StockStatisticsService
             categoryId: $filter->categoryId,
         ) : null;
 
-        $codes = $this->codeRepository->findCodes($searchDto);
-
-        // Фильтруем только невыданные коды
-        $stockCodes = array_filter($codes, function (GroupedCodeDto $code) {
-            return !in_array($code->status->value, [
-                'Выдан/Наличные',
-                'Выдан/Бесплатно',
-                'Выдан/Оплата картой'
-            ]);
-        });
+        $stockCodes = $this->codeRepository->findStockStatistics($searchDto);
 
         if (empty($stockCodes)) {
             return new StockStatisticsDto(
@@ -76,6 +67,7 @@ class StockStatisticsService
                     $group['total_amount'],
                     $group['total_quantity']
                 );
+
                 $totalCommission += $commission;
             }
         }

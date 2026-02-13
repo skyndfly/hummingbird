@@ -13,4 +13,9 @@ class StockStatisticsDto
     )
     {
     }
+
+    public function toArray(): array
+    {
+        return [];
+    }
 }

@@ -29,9 +29,8 @@ readonly class MarketplaceCommissionStrategy implements CommissionStrategyInterf
         if ($commission->type === CommissionTypeEnum::FIXED) {
             return $commission->value;
         }else if($commission->type === CommissionTypeEnum::PERCENT) {
-
-
-            return $amount * ($commission->value / 100);
+            // Round to the nearest kopek to avoid float precision artifacts.
+            return intdiv(($amount * $commission->value) + 50, 100);
         }
         return 0;
 

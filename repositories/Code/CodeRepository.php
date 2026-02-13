@@ -10,7 +10,6 @@ use app\repositories\Code\dto\CodeSearchDto;
 use app\repositories\Code\dto\GroupedCodeDto;
 use app\repositories\Code\enums\CodeStatusEnum;
 use app\repositories\Company\CompanyRepository;
-use app\services\Code\dto\StockStatisticsDto;
 use yii\db\Expression;
 use yii\web\NotFoundHttpException;
 
@@ -272,19 +271,26 @@ class CodeRepository extends BaseRepository
     }
 
     /**
-     * Получить статистику по кодам на складе
+     * Получить сгруппированные коды на складе (не выданные)
+     *
+     * @return GroupedCodeDto[]
      */
-    public function findStockStatistics(?CodeSearchDto $dto = null): StockStatisticsDto
+    public function findStockStatistics(?CodeSearchDto $dto = null): array
     {
         $query = $this->getQuery()
             ->select([
                 'code.code',
                 'code.status',
                 'code.price',
-                'code.quantity',
+                new Expression('STRING_AGG(DISTINCT code.comment, \', \' ORDER BY code.comment) AS comments'),
+                'SUM(code.quantity) as quantity',
+                'category.id as category_id',
+                'category.name as category_name',
                 'company.id as company_id',
                 'company.name as company_name',
                 'company.commission_strategy as company_commission_strategy',
+                new Expression('SUM(code.price) AS unpaid_total'),
+                new Expression('STRING_AGG(code.id::text, \',\') as id')
             ])
             ->from([self::TABLE_NAME . ' code'])
             ->leftJoin(
@@ -312,37 +318,12 @@ class CodeRepository extends BaseRepository
             $query->andWhere(['DATE(code.created_at)' => $dto->date]);
         }
 
-        $codes = $query->all();
+        $query->groupBy(['code.code', 'code.status', 'code.price', 'category.id', 'company.id', 'code.created_at'])
+            ->orderBy(['code.created_at' => SORT_DESC, 'code.code' => SORT_ASC, 'category.name' => SORT_ASC]);
 
-        // Группируем коды так же, как в findCodes
-        $grouped = [];
-        foreach ($codes as $row) {
-            $key = $row['code'] . '_' . $row['company_id'];
-            if (!isset($grouped[$key])) {
-                $grouped[$key] = [
-                    'code' => $row['code'],
-                    'company_id' => $row['company_id'],
-                    'company_name' => $row['company_name'],
-                    'commission_strategy' => $row['company_commission_strategy'],
-                    'total_amount' => 0,
-                    'total_quantity' => 0,
-                    'rows' => []
-                ];
-            }
-            $grouped[$key]['total_amount'] += ($row['status'] !== 'Выдан' ? $row['price'] : 0);
-            $grouped[$key]['total_quantity'] += $row['quantity'];
-            $grouped[$key]['rows'][] = $row;
-        }
-
-        return new StockStatisticsDto(
-            totalCodesCount: array_sum(array_column($codes, 'quantity')),
-            totalPotentialEarnings: array_sum(array_map(
-                fn($item) => $item['total_amount'],
-                $grouped
-            )),
-            totalCommission: 0, // Рассчитаем в сервисе
-            uniqueCodeCount: count($grouped),
-            uniqueCompaniesCount: count(array_unique(array_column($grouped, 'company_id')))
+        return array_map(
+            callback: fn($item) => GroupedCodeDto::fromDbRecord($item),
+            array: $query->all()
         );
     }
 }

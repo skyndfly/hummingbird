@@ -137,7 +137,7 @@ $this->title = 'Статистика';
                     <p class="card-text">
                         Можно заработать
                     </p>
-                    <h3><?= $statistics->totalCommission / 100 ?> ₽</h3>
+                    <h3><?= round($statistics->totalCommission / 100) ?> ₽</h3>
                 </div>
             </div>
             <div class="card w-25">
