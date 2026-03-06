@@ -19,7 +19,7 @@ class UploadedCodeGridTable extends AbstractGridTable
     #[GridColumn(label: 'Дата загрузки', formatter: 'dateFormater')]
     public string $createdAt;
 
-    #[GridColumn(label: 'Служба доставки')]
+    #[GridColumn(label: 'Служба доставки', formatter: 'companyKeyFormater')]
     public string $companyKey;
 
     #[GridColumn(label: 'ТГ чат id')]
@@ -46,6 +46,13 @@ class UploadedCodeGridTable extends AbstractGridTable
     public static function dateFormater(UploadedCodeDto $dto): string
     {
         return new DateTimeImmutable($dto->createdAt)->format('d-m-Y H:i:s');
+    }
+
+    public static function companyKeyFormater(UploadedCodeDto $dto): string
+    {
+        $company = $dto->companyKey;
+        $address = $dto->address ?? ($dto->addressId ? ('#' . $dto->addressId) : null);
+        return trim($company . ' ' . ($address ?? ''));
     }
 
 }

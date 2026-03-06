@@ -20,9 +20,11 @@ class UploadedCodeStoreService
 
     public function execute(UploadedCodeDto $dto, UploadedFile $file): void
     {
-        $dto->fileName = self::PATH . $dto->fileName;
+        $relativePath = self::PATH . $dto->fileName;
+        $dto->fileName = $relativePath;
         $this->uploadedCodeRepository->create($dto);
-        $file->saveAs($dto->fileName);
+        $absolutePath = Yii::getAlias('@webroot/' . $relativePath);
+        $file->saveAs($absolutePath);
     }
 
     private function ensureDirectoryExists(): void
@@ -30,6 +32,9 @@ class UploadedCodeStoreService
         $path = Yii::getAlias('@webroot/' . self::PATH);
         if (!file_exists($path)) {
             mkdir($path, 0777, true);
+        }
+        if (file_exists($path) && !is_writable($path)) {
+            @chmod($path, 0777);
         }
     }
 }

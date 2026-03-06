@@ -13,7 +13,7 @@ class IssuedCodeForm extends Model
     public function rules(): array
     {
         return [
-            [['id', 'status', 'chatId'], 'required'],
+            [['id', 'status'], 'required'],
         ];
     }
 }

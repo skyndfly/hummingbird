@@ -5,6 +5,8 @@ namespace app\rest;
 use app\services\UploadCode\dto\UploadedCodeDto;
 use app\services\UploadCode\enums\UploadedCodeStatusEnum;
 use app\services\UploadCode\UploadedCodeStoreService;
+use app\repositories\Address\AddressRepository;
+use app\repositories\Company\CompanyRepository;
 use LogicException;
 use Throwable;
 use Yii;
@@ -17,6 +19,8 @@ class UploadController extends Controller
         $id,
         $module,
         private UploadedCodeStoreService $storeService,
+        private AddressRepository $addressRepository,
+        private CompanyRepository $companyRepository,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
@@ -30,11 +34,48 @@ class UploadController extends Controller
             if ($code === null) {
                 throw new LogicException('Отсутствует обязательный ключ code');
             }
+            $addressId = null;
+            if (!empty($post['addressId'])) {
+                $addressId = (int) $post['addressId'];
+            } elseif (!empty($post['address']) && !empty($post['companyKey'])) {
+                $company = $this->companyRepository->getAllCompany();
+                $companyId = null;
+                foreach ($company as $item) {
+                    if ($item->botKey === $post['companyKey']) {
+                        $companyId = $item->id;
+                        break;
+                    }
+                }
+                if ($companyId !== null) {
+                    $address = $this->addressRepository->findByCompanyAndAddress($companyId, $post['address']);
+                    $addressId = $address?->id;
+                }
+            }
+            if ($addressId === null && !empty($post['companyKey'])) {
+                $priorityAddress = match ($post['companyKey']) {
+                    'wb', 'ozon' => 'Молодогвардейцев 25',
+                    default => null,
+                };
+                if ($priorityAddress !== null) {
+                    $companyId = null;
+                    foreach ($this->companyRepository->getAllCompany() as $company) {
+                        if ($company->botKey === $post['companyKey']) {
+                            $companyId = $company->id;
+                            break;
+                        }
+                    }
+                    if ($companyId !== null) {
+                        $address = $this->addressRepository->findByCompanyAndAddress($companyId, $priorityAddress);
+                        $addressId = $address?->id;
+                    }
+                }
+            }
             $dto = new UploadedCodeDto(
                 fileName: uniqid() . '.' . $code->extension,
                 companyKey: $post['companyKey'],
                 status: UploadedCodeStatusEnum::AWAIT,
-                chatId: $post['chatId'],
+                chatId: $post['chatId'] ?? null,
+                addressId: $addressId,
             );
             $this->storeService->execute(
                 dto: $dto,

@@ -25,6 +25,7 @@ class UploadedCodeRepository extends BaseRepository
                     'created_at' => $this->getCurrentDate(),
                     'updated_at' => $this->getCurrentDate(),
                     'note' => $dto->note,
+                    'address_id' => $dto->addressId,
                 ]
             )
             ->execute();
@@ -37,6 +38,23 @@ class UploadedCodeRepository extends BaseRepository
         $record = $this->getQuery()
             ->from(self::TABLE)
             ->where(['company_key' => $companyKey->value])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->andWhere(['status' => UploadedCodeStatusEnum::AWAIT->value])
+            ->one();
+        if ($record === false) {
+            return null;
+        }
+        return UploadedCodeDto::fromDbRecord($record);
+    }
+
+    public function findAwaitCodeTodayByAddress(int $addressId): ?UploadedCodeDto
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        $record = $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['address_id' => $addressId])
             ->andWhere(['>=', 'created_at', $todayStart])
             ->andWhere(['<=', 'created_at', $todayEnd])
             ->andWhere(['status' => UploadedCodeStatusEnum::AWAIT->value])
@@ -64,18 +82,43 @@ class UploadedCodeRepository extends BaseRepository
         return UploadedCodeDto::fromDbRecord($record);
     }
 
-    /**
-     * @return UploadedCodeDto[]
-     */
-    public function findAllAwaitCodeToday(): array
+    public function findPendingCodeTodayByAddress(int $addressId): ?UploadedCodeDto
     {
         $todayStart = date('Y-m-d 00:00:00');
         $todayEnd = date('Y-m-d 23:59:59');
-        $records = $this->getQuery()
+        $record = $this->getQuery()
             ->from(self::TABLE)
+            ->where(['address_id' => $addressId])
             ->andWhere(['>=', 'created_at', $todayStart])
             ->andWhere(['<=', 'created_at', $todayEnd])
-            ->all();
+            ->andWhere(['status' => UploadedCodeStatusEnum::PENDING->value])
+            ->one();
+        if ($record === false) {
+            return null;
+        }
+        return UploadedCodeDto::fromDbRecord($record);
+    }
+
+    /**
+     * @return UploadedCodeDto[]
+     */
+    public function findAllAwaitCodeToday(?int $addressId = null): array
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        $query = $this->getQuery()
+            ->from(self::TABLE . ' uc')
+            ->leftJoin('address a', 'a.id = uc.address_id')
+            ->select([
+                'uc.*',
+                'a.address as address',
+            ])
+            ->andWhere(['>=', 'uc.created_at', $todayStart])
+            ->andWhere(['<=', 'uc.created_at', $todayEnd]);
+        if ($addressId !== null) {
+            $query->andWhere(['uc.address_id' => $addressId]);
+        }
+        $records = $query->all();
 
         return array_map(
             callback: fn(array $record) => UploadedCodeDto::fromDbRecord($record),
@@ -93,6 +136,32 @@ class UploadedCodeRepository extends BaseRepository
             ->andWhere(['>=', 'created_at', $todayStart])
             ->andWhere(['<=', 'created_at', $todayEnd])
             ->andWhere(['status' => UploadedCodeStatusEnum::PENDING->value])
+            ->count();
+    }
+
+    public function getPendingTodayCountByAddress(int $addressId): int
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        return $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['address_id' => $addressId])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->andWhere(['status' => UploadedCodeStatusEnum::PENDING->value])
+            ->count();
+    }
+
+    public function getAwaitTodayCountByAddress(int $addressId): int
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        return $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['address_id' => $addressId])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->andWhere(['status' => UploadedCodeStatusEnum::AWAIT->value])
             ->count();
     }
 
@@ -121,6 +190,18 @@ class UploadedCodeRepository extends BaseRepository
             ->count();
     }
 
+    public function getAllCodeTodayCountByAddress(int $addressId): int
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        return $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['address_id' => $addressId])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->count();
+    }
+
     public function getIssuedCodeTodayCount(UploadedCodeCompanyKeyEnum $companyKey): int
     {
         $todayStart = date('Y-m-d 00:00:00');
@@ -141,6 +222,19 @@ class UploadedCodeRepository extends BaseRepository
         return $this->getQuery()
             ->from(self::TABLE)
             ->where(['company_key' => $companyKey->value])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->andWhere(['status' => UploadedCodeStatusEnum::AWAIT->value])
+            ->count();
+    }
+
+    public function getAwaitCodeTodayCountByAddress(int $addressId): int
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        return $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['address_id' => $addressId])
             ->andWhere(['>=', 'created_at', $todayStart])
             ->andWhere(['<=', 'created_at', $todayEnd])
             ->andWhere(['status' => UploadedCodeStatusEnum::AWAIT->value])

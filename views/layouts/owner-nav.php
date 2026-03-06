@@ -12,6 +12,16 @@ use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
         Менеджеры
     </a>
 </li>
+<li class="list-group-item">
+    <a href="/public-upload" class="d-flex align-items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload"
+             viewBox="0 0 16 16">
+            <path d="M.5 9.9a.5.5 0 0 1 .5.5v3.1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.1a.5.5 0 0 1 1 0v3.1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-3.1a.5.5 0 0 1 .5-.5"/>
+            <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
+        </svg>
+        Загрузка кодов
+    </a>
+</li>
 <li class="list-group-item d-flex gap-2">
     <a href="/statistics" class="d-flex align-items-center gap-1">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pie-chart-fill"
@@ -42,6 +52,11 @@ use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
     </div>
     <div class="ps-3">
         <div class="pt-2 pb-2 d-flex align-items-center gap-2 list-group-item border-start-0 border-end-0">
+            <a href="/issued-point" class="d-flex align-items-center gap-1">
+                Список пунктов (адреса)
+            </a>
+        </div>
+        <div class="pt-2 pb-2 d-flex align-items-center gap-2 list-group-item border-start-0 border-end-0">
             <img class="" style="width: 16px;" src="/img/wb.svg" alt="">
             <a href="/issued-point/wb" class="d-flex align-items-center gap-1">
                 <?= UploadedCodeCompanyKeyEnum::WB->label() ?>
@@ -71,4 +86,3 @@ use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
         </div>
     </div>
 </div>
-

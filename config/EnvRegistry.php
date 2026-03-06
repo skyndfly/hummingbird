@@ -10,7 +10,7 @@ class EnvRegistry
 
     public static function getOwnerPassword(): string
     {
-        return getenv("OWNER_LOGIN");
+        return getenv("OWNER_PASSWORD");
     }
 
     public static function getOwnerFirstName(): string

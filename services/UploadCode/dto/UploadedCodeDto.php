@@ -10,11 +10,13 @@ class UploadedCodeDto
         public string $fileName,
         public string $companyKey,
         public UploadedCodeStatusEnum $status,
-        public string $chatId,
+        public ?string $chatId,
         public ?string $createdAt = null,
         public ?string $updatedAt = null,
         public ?int $id = null,
         public ?string $note = null,
+        public ?int $addressId = null,
+        public ?string $address = null,
     ) {
     }
 
@@ -24,10 +26,12 @@ class UploadedCodeDto
      *     company_key: string,
      *     file_name: string,
      *     status: string,
-     *     chat_id: string,
+     *     chat_id: string|null,
      *     created_at: string|null,
      *     updated_at: string|null,
      *     note: string|null,
+     *     address_id: int|null,
+     *     address?: string|null,
      * } $record
      */
     public static function fromDbRecord(array $record): UploadedCodeDto
@@ -41,6 +45,8 @@ class UploadedCodeDto
             updatedAt: $record['updated_at'],
             id: $record['id'],
             note: $record['note'],
+            addressId: $record['address_id'] ?? null,
+            address: $record['address'] ?? null,
         );
     }
 
@@ -55,6 +61,8 @@ class UploadedCodeDto
             'status' => $this->status->value,
             'chatId' => $this->chatId,
             'note' => $this->note,
+            'addressId' => $this->addressId,
+            'address' => $this->address,
         ];
     }
 }

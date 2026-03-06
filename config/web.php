@@ -10,6 +10,7 @@ $db = require __DIR__ . '/db.php';
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
+    'defaultRoute' => 'public-upload/index',
     'bootstrap' => ['log'],
     'timeZone' => 'Europe/Moscow',
     'aliases' => [
@@ -105,10 +106,16 @@ $config = [
 
                 'GET issued-point/wb/pending' => 'issued-point/wb-pending',
                 'GET issued-point/ozon/pending' => 'issued-point/ozon-pending',
+                'GET issued-point' => 'issued-point/index',
+                'GET issued-point/address/<addressId:\d+>' => 'issued-point/address',
+                'GET issued-point/address/<addressId:\d+>/pending' => 'issued-point/address-pending',
 
 
                 //REST
                 'POST upload/store' => 'upload/store',
+                'GET public-upload' => 'public-upload/index',
+                'POST public-upload/store' => 'public-upload/store',
+                'GET admin' => 'admin/index',
             ],
         ],
 

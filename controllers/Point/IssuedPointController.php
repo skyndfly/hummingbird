@@ -4,6 +4,8 @@ namespace app\controllers\Point;
 
 use app\controllers\Point\abstracts\BasePointController;
 use app\forms\UploadedCode\IssuedCodeForm;
+use app\repositories\Address\AddressRepository;
+use app\repositories\Company\CompanyRepository;
 use app\repositories\UploadedCode\UploadedCodeRepository;
 use app\services\Bot\BotApi;
 use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
@@ -21,13 +23,90 @@ class IssuedPointController extends BasePointController
         $module,
         private UploadedCodeRepository $uploadedCodeRepository,
         private BotApi $botApi,
+        private AddressRepository $addressRepository,
+        private CompanyRepository $companyRepository,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
     }
 
-    public function actionWb(): string
+    private function getPriorityAddressId(string $companyKey, string $address): ?int
     {
+        $companies = $this->companyRepository->getAllCompany();
+        $companyId = null;
+        foreach ($companies as $company) {
+            if ($company->botKey === $companyKey) {
+                $companyId = $company->id;
+                break;
+            }
+        }
+        if ($companyId === null) {
+            return null;
+        }
+        $addressDto = $this->addressRepository->findByCompanyAndAddress($companyId, $address);
+        return $addressDto?->id;
+    }
+
+    public function actionIndex(): string
+    {
+        $addresses = $this->addressRepository->getAllWithCompany();
+        $counts = [];
+        foreach ($addresses as $address) {
+            $counts[$address->id] = [
+                'await' => $this->uploadedCodeRepository->getAwaitTodayCountByAddress($address->id),
+                'pending' => $this->uploadedCodeRepository->getPendingTodayCountByAddress($address->id),
+            ];
+        }
+        return $this->render('issued-point/index', [
+            'addresses' => $addresses,
+            'counts' => $counts,
+        ]);
+    }
+
+    public function actionAddress(int $addressId): string
+    {
+        $address = $this->addressRepository->getById($addressId);
+        $code = $this->uploadedCodeRepository->findAwaitCodeTodayByAddress($addressId);
+        $form = new IssuedCodeForm();
+        if ($code !== null) {
+            $form->setAttributes($code->toArray());
+        }
+        $pendingCount = $this->uploadedCodeRepository->getPendingTodayCountByAddress($addressId);
+        $allCount = $this->uploadedCodeRepository->getAllCodeTodayCountByAddress($addressId);
+        $awaitCount = $this->uploadedCodeRepository->getAwaitCodeTodayCountByAddress($addressId);
+        return $this->render('issued-point/issued-address', [
+            'address' => $address,
+            'code' => $code,
+            'formModel' => $form,
+            'pendingCount' => $pendingCount,
+            'allCount' => $allCount,
+            'awaitCount' => $awaitCount,
+        ]);
+    }
+
+    public function actionAddressPending(int $addressId): string
+    {
+        $address = $this->addressRepository->getById($addressId);
+        $code = $this->uploadedCodeRepository->findPendingCodeTodayByAddress($addressId);
+        $form = new IssuedCodeForm();
+        if ($code !== null) {
+            $form->setAttributes($code->toArray());
+        }
+        $pendingCount = $this->uploadedCodeRepository->getPendingTodayCountByAddress($addressId);
+        return $this->render('issued-point/pending-address', [
+            'address' => $address,
+            'code' => $code,
+            'formModel' => $form,
+            'pendingCount' => $pendingCount,
+        ]);
+    }
+
+    public function actionWb(): Response|string
+    {
+        $priorityAddressId = $this->getPriorityAddressId('wb', 'Молодогвардейцев 25');
+        if ($priorityAddressId !== null) {
+            return $this->redirect(['/issued-point/address/' . $priorityAddressId]);
+        }
         $code = $this->uploadedCodeRepository->findAwaitCodeToday(UploadedCodeCompanyKeyEnum::WB);
         $form = new IssuedCodeForm();
         if ($code !== null) {
@@ -46,8 +125,12 @@ class IssuedPointController extends BasePointController
         ]);
     }
 
-    public function actionOzon(): string
+    public function actionOzon(): Response|string
     {
+        $priorityAddressId = $this->getPriorityAddressId('ozon', 'Молодогвардейцев 25');
+        if ($priorityAddressId !== null) {
+            return $this->redirect(['/issued-point/address/' . $priorityAddressId]);
+        }
         $code = $this->uploadedCodeRepository->findAwaitCodeToday(UploadedCodeCompanyKeyEnum::OZON);
         $form = new IssuedCodeForm();
         if ($code !== null) {
@@ -79,7 +162,7 @@ class IssuedPointController extends BasePointController
                     id: $form->id,
                     status: $status,
                 );
-                if ($status != UploadedCodeStatusEnum::PENDING) {
+                if ($status != UploadedCodeStatusEnum::PENDING && !empty($form->chatId)) {
                     try {
                         $this->botApi->sendIssued(
                             id: $form->chatId,
@@ -105,8 +188,12 @@ class IssuedPointController extends BasePointController
         return $this->redirect(Yii::$app->request->referrer);
     }
 
-    public function actionWbPending(): string
+    public function actionWbPending(): Response|string
     {
+        $priorityAddressId = $this->getPriorityAddressId('wb', 'Молодогвардейцев 25');
+        if ($priorityAddressId !== null) {
+            return $this->redirect(['/issued-point/address/' . $priorityAddressId . '/pending']);
+        }
         $code = $this->uploadedCodeRepository->findPendingCodeToday(UploadedCodeCompanyKeyEnum::WB);
         $form = new IssuedCodeForm();
         if ($code !== null) {
@@ -121,8 +208,12 @@ class IssuedPointController extends BasePointController
         ]);
     }
 
-    public function actionOzonPending(): string
+    public function actionOzonPending(): Response|string
     {
+        $priorityAddressId = $this->getPriorityAddressId('ozon', 'Молодогвардейцев 25');
+        if ($priorityAddressId !== null) {
+            return $this->redirect(['/issued-point/address/' . $priorityAddressId . '/pending']);
+        }
         $code = $this->uploadedCodeRepository->findPendingCodeToday(UploadedCodeCompanyKeyEnum::OZON);
         $form = new IssuedCodeForm();
         if ($code !== null) {
