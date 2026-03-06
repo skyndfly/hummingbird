@@ -162,10 +162,10 @@ class IssuedPointController extends BasePointController
                     id: $form->id,
                     status: $status,
                 );
-                if ($status != UploadedCodeStatusEnum::PENDING && !empty($form->chatId)) {
+                if ($status != UploadedCodeStatusEnum::PENDING && !empty($code->chatId)) {
                     try {
                         $this->botApi->sendIssued(
-                            id: $form->chatId,
+                            id: $code->chatId,
                             status: $status->value,
                             createdAt: new DateTimeImmutable($code->createdAt)
                         );
