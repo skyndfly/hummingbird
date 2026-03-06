@@ -120,26 +120,38 @@ class m260306_000001_create_address_table_and_link_uploaded_code extends Migrati
             ],
         ];
 
-        if ($this->tableExists(self::UPLOADED_CODE_TABLE) && $this->columnExists(self::UPLOADED_CODE_TABLE, 'address_id')) {
-            $this->update(self::UPLOADED_CODE_TABLE, ['address_id' => null]);
-        }
-
         if ($this->tableExists(self::ADDRESS_TABLE)) {
             $this->truncateTable(self::ADDRESS_TABLE);
         }
 
-        $this->truncateTable(self::COMPANY_TABLE);
         $this->execute(
-            "SELECT setval(pg_get_serial_sequence('" . self::COMPANY_TABLE . "', 'id'), 0)"
+            "SELECT setval(pg_get_serial_sequence('" . self::COMPANY_TABLE . "', 'id'), COALESCE((SELECT MAX(id) FROM " . self::COMPANY_TABLE . "), 0))"
         );
 
         foreach ($companies as $botKey => $data) {
-            $this->insert(self::COMPANY_TABLE, [
-                'name' => $data['name'],
-                'commission_strategy' => $data['commission'],
-                'bot_key' => $botKey,
-            ]);
-            $companyId = (int) $this->db->getLastInsertID();
+            $companyId = (new Query())
+                ->from(self::COMPANY_TABLE)
+                ->select('id')
+                ->where(['bot_key' => $botKey])
+                ->scalar();
+
+            if ($companyId === false || $companyId === null) {
+                $this->insert(self::COMPANY_TABLE, [
+                    'name' => $data['name'],
+                    'commission_strategy' => $data['commission'],
+                    'bot_key' => $botKey,
+                ]);
+                $companyId = (int) $this->db->getLastInsertID();
+            } else {
+                $this->update(
+                    self::COMPANY_TABLE,
+                    [
+                        'name' => $data['name'],
+                        'commission_strategy' => $data['commission'],
+                    ],
+                    ['id' => $companyId]
+                );
+            }
 
             foreach ($addresses[$botKey] ?? [] as $address) {
                 $this->insert(self::ADDRESS_TABLE, [
