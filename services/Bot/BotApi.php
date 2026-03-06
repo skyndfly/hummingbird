@@ -20,12 +20,18 @@ class BotApi
 
     public function sendIssued(string $id, string $status, DateTimeImmutable $createdAt): void
     {
+        $payload = [
+            'chatId' => $id,
+            'status' => $status,
+            'createdAt' => $createdAt->format('d-m-Y H:i:s'),
+        ];
+        \Yii::info([
+            'type' => 'SendBotApi',
+            'action' => 'request',
+            'payload' => $payload,
+        ]);
         $this->client->post('/issued', [
-            'json' => [
-                'chatId' => $id,
-                'status' => $status,
-                'createdAt' => $createdAt->format('d-m-Y H:i:s'),
-            ],
+            'json' => $payload,
         ]);
     }
 }
