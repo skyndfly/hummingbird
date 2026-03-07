@@ -51,4 +51,85 @@ class BotApi
             ], 'bot');
         }
     }
+
+    /**
+     * @return array{users: array<int, array{id:int, username:string|null, phone:string|null, name:string|null}>, total:int, page:int, pageSize:int}
+     */
+    public function getUsers(?string $phone, ?string $chatId, int $page = 1, int $pageSize = 50): array
+    {
+        try {
+            $query = [];
+            if ($phone !== null && $phone !== '') {
+                $query['phone'] = $phone;
+            }
+            if ($chatId !== null && $chatId !== '') {
+                $query['chatId'] = $chatId;
+            }
+            $query['page'] = $page;
+            $query['pageSize'] = $pageSize;
+            $response = $this->client->get('/users', [
+                'query' => $query,
+            ]);
+            $payload = json_decode((string) $response->getBody(), true);
+            if (!is_array($payload) || !isset($payload['users']) || !is_array($payload['users'])) {
+                return [
+                    'users' => [],
+                    'total' => 0,
+                    'page' => $page,
+                    'pageSize' => $pageSize,
+                ];
+            }
+            return [
+                'users' => $payload['users'],
+                'total' => (int) ($payload['total'] ?? 0),
+                'page' => (int) ($payload['page'] ?? $page),
+                'pageSize' => (int) ($payload['pageSize'] ?? $pageSize),
+            ];
+        } catch (\Throwable $e) {
+            \Yii::info([
+                'type' => 'SendBotApi',
+                'action' => 'getUsers',
+                'error' => $e->getMessage(),
+            ], 'bot');
+            return [
+                'users' => [],
+                'total' => 0,
+                'page' => $page,
+                'pageSize' => $pageSize,
+            ];
+        }
+    }
+
+    public function sendMessage(string $chatId, string $text): void
+    {
+        try {
+            $this->client->post('/message', [
+                'json' => [
+                    'chatId' => $chatId,
+                    'text' => $text,
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            \Yii::info([
+                'type' => 'SendBotApi',
+                'action' => 'sendMessage',
+                'error' => $e->getMessage(),
+            ], 'bot');
+        }
+    }
+
+    public function syncUsers(): void
+    {
+        try {
+            $this->client->post('/users/sync', [
+                'json' => ['ok' => true],
+            ]);
+        } catch (\Throwable $e) {
+            \Yii::info([
+                'type' => 'SendBotApi',
+                'action' => 'syncUsers',
+                'error' => $e->getMessage(),
+            ], 'bot');
+        }
+    }
 }

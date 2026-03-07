@@ -41,6 +41,15 @@ use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
     </a>
 </li>
 <li class="list-group-item d-flex gap-2">
+    <a href="/owner-chat" class="d-flex align-items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots-fill"
+             viewBox="0 0 16 16">
+            <path d="M16 8c0 3.314-2.686 6-6 6a6.97 6.97 0 0 1-2.43-.43L3 14l.43-1.57A6.97 6.97 0 0 1 2 8c0-3.314 2.686-6 6-6s6 2.686 6 6M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0"/>
+        </svg>
+        Чат с пользователями
+    </a>
+</li>
+<li class="list-group-item d-flex gap-2">
     <a href="/owner-graphs" class="d-flex align-items-center gap-1">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill"
              viewBox="0 0 16 16">

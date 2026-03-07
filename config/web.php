@@ -79,6 +79,10 @@ $config = [
                 'GET statistics' => 'statistics/index',
                 'GET owner-graphs' => 'owner-graphs/index',
                 'GET owner-bot-settings' => 'owner-bot-settings/index',
+                'GET owner-chat' => 'owner-chat/index',
+                'GET owner-chat/<chatId:\d+>' => 'owner-chat/chat',
+                'POST owner-chat/send' => 'owner-chat/send',
+                'POST owner-chat/sync' => 'owner-chat/sync',
                 'POST owner-bot-settings/update' => 'owner-bot-settings/update',
                 'GET owner-address' => 'owner-address/index',
                 'GET owner-address/create' => 'owner-address/create',
@@ -172,6 +176,9 @@ $config = [
         ],
         'owner-bot-settings' => [
             'class' => app\controllers\Owner\BotSettingsController::class,
+        ],
+        'owner-chat' => [
+            'class' => app\controllers\Owner\BotChatController::class,
         ],
         'owner-address' => [
             'class' => app\controllers\Owner\AddressController::class,
