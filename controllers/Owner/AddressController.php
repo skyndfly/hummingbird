@@ -7,6 +7,7 @@ use app\forms\Address\CreateAddressForm;
 use app\forms\Address\EditAddressForm;
 use app\repositories\Address\AddressRepository;
 use app\repositories\Company\CompanyRepository;
+use app\services\Bot\BotApi;
 use app\ui\gridTable\Address\AddressGridTable;
 use app\ui\gridTable\GridFactory;
 use Throwable;
@@ -21,6 +22,7 @@ class AddressController extends BaseOwnerController
         $module,
         private AddressRepository $addressRepository,
         private CompanyRepository $companyRepository,
+        private BotApi $botApi,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
@@ -66,6 +68,7 @@ class AddressController extends BaseOwnerController
                     companyId: $form->companyId,
                     address: $form->address
                 );
+                $this->botApi->clearCache();
                 Yii::$app->getSession()->setFlash('success', 'Адрес создан');
             } else {
                 Yii::$app->getSession()->setFlash('error', array_values($form->getFirstErrors())[0]);
@@ -105,6 +108,7 @@ class AddressController extends BaseOwnerController
                     companyId: $form->companyId,
                     address: $form->address
                 );
+                $this->botApi->clearCache();
                 Yii::$app->getSession()->setFlash('success', 'Адрес обновлен');
             } else {
                 Yii::$app->getSession()->setFlash('error', array_values($form->getFirstErrors())[0]);
@@ -122,6 +126,7 @@ class AddressController extends BaseOwnerController
             $addressId = isset($post['addressId']) ? (int) $post['addressId'] : 0;
             if ($addressId > 0) {
                 $this->addressRepository->softDelete($addressId);
+                $this->botApi->clearCache();
                 Yii::$app->getSession()->setFlash('success', 'Адрес удален');
             }
         } catch (Throwable $e) {
@@ -137,6 +142,7 @@ class AddressController extends BaseOwnerController
             $addressId = isset($post['addressId']) ? (int) $post['addressId'] : 0;
             if ($addressId > 0) {
                 $this->addressRepository->restore($addressId);
+                $this->botApi->clearCache();
                 Yii::$app->getSession()->setFlash('success', 'Адрес восстановлен');
             }
         } catch (Throwable $e) {

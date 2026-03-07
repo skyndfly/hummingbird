@@ -5,6 +5,7 @@ namespace app\controllers\Manager;
 use app\controllers\Manager\abstracts\BaseManagerController;
 use app\forms\Company\EditCompanyForm;
 use app\repositories\Company\CompanyRepository;
+use app\services\Bot\BotApi;
 use app\ui\gridTable\Company\CompanyGridTable;
 use app\ui\gridTable\GridFactory;
 use Exception;
@@ -21,6 +22,7 @@ class CompanyController extends BaseManagerController
         $id,
         $module,
         private CompanyRepository $companyRepository,
+        private BotApi $botApi,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
@@ -77,6 +79,7 @@ class CompanyController extends BaseManagerController
             $form = new EditCompanyForm();
             if ($form->load($post) && $form->validate()) {
                 $this->companyRepository->update(name: $form->name, botKey: $form->botKey, id: $form->id);
+                $this->botApi->clearCache();
                 Yii::$app->getSession()->setFlash('success', 'Служба доставки обновлена');
             }
         } catch (Throwable $e) {

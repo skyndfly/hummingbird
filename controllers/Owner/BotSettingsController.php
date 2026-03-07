@@ -5,6 +5,7 @@ namespace app\controllers\Owner;
 use app\controllers\Owner\abstracts\BaseOwnerController;
 use app\forms\BotSettings\BotSettingsForm;
 use app\repositories\BotSettings\BotSettingsRepository;
+use app\services\Bot\BotApi;
 use Throwable;
 use Yii;
 use yii\helpers\Url;
@@ -16,6 +17,7 @@ class BotSettingsController extends BaseOwnerController
         $id,
         $module,
         private BotSettingsRepository $botSettingsRepository,
+        private BotApi $botApi,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
@@ -42,6 +44,7 @@ class BotSettingsController extends BaseOwnerController
             $form = new BotSettingsForm();
             if ($form->load($post) && $form->validate()) {
                 $this->botSettingsRepository->updateCutoffHour($form->cutoffHour);
+                $this->botApi->clearCache();
                 Yii::$app->getSession()->setFlash('success', 'Настройки сохранены');
             } else {
                 Yii::$app->getSession()->setFlash('error', array_values($form->getFirstErrors())[0]);

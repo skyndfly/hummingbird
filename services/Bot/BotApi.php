@@ -34,4 +34,19 @@ class BotApi
             'json' => $payload,
         ]);
     }
+
+    public function clearCache(): void
+    {
+        try {
+            $this->client->post('/cache/clear', [
+                'json' => ['ok' => true],
+            ]);
+        } catch (\Throwable $e) {
+            \Yii::info([
+                'type' => 'SendBotApi',
+                'action' => 'clearCache',
+                'error' => $e->getMessage(),
+            ], 'bot');
+        }
+    }
 }
