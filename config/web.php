@@ -78,6 +78,8 @@ $config = [
 
                 'GET statistics' => 'statistics/index',
                 'GET owner-graphs' => 'owner-graphs/index',
+                'GET owner-bot-settings' => 'owner-bot-settings/index',
+                'POST owner-bot-settings/update' => 'owner-bot-settings/update',
                 'GET owner-address' => 'owner-address/index',
                 'GET owner-address/create' => 'owner-address/create',
                 'POST owner-address/store' => 'owner-address/store',
@@ -130,6 +132,7 @@ $config = [
                 //REST
                 'POST upload/store' => 'upload/store',
                 'GET bot-data' => 'upload/bot-data',
+                'GET bot-settings' => 'upload/bot-settings',
                 'GET public-upload' => 'public-upload/index',
                 'POST public-upload/store' => 'public-upload/store',
                 'GET public-check' => 'public-check/index',
@@ -166,6 +169,9 @@ $config = [
         ],
         'owner-graphs' => [
             'class' => app\controllers\Owner\GraphsController::class,
+        ],
+        'owner-bot-settings' => [
+            'class' => app\controllers\Owner\BotSettingsController::class,
         ],
         'owner-address' => [
             'class' => app\controllers\Owner\AddressController::class,

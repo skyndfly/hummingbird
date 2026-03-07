@@ -5,6 +5,7 @@ namespace app\rest;
 use app\services\UploadCode\dto\UploadedCodeDto;
 use app\services\UploadCode\enums\UploadedCodeStatusEnum;
 use app\services\UploadCode\UploadedCodeStoreService;
+use app\repositories\BotSettings\BotSettingsRepository;
 use app\repositories\Address\AddressRepository;
 use app\repositories\Company\CompanyRepository;
 use LogicException;
@@ -21,6 +22,7 @@ class UploadController extends Controller
         private UploadedCodeStoreService $storeService,
         private AddressRepository $addressRepository,
         private CompanyRepository $companyRepository,
+        private BotSettingsRepository $botSettingsRepository,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
@@ -113,6 +115,13 @@ class UploadController extends Controller
         return [
             'firms' => $firms,
             'address' => $addresses,
+        ];
+    }
+
+    public function actionBotSettings(): array
+    {
+        return [
+            'cutoffHour' => $this->botSettingsRepository->getCutoffHour(),
         ];
     }
 }

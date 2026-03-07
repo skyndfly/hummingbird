@@ -32,6 +32,15 @@ use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
     </a>
 </li>
 <li class="list-group-item d-flex gap-2">
+    <a href="/owner-bot-settings" class="d-flex align-items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock-fill"
+             viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0V8a.5.5 0 0 0 .146.354l2.5 2.5a.5.5 0 0 0 .708-.708L8.5 7.793z"/>
+        </svg>
+        Время приема
+    </a>
+</li>
+<li class="list-group-item d-flex gap-2">
     <a href="/owner-graphs" class="d-flex align-items-center gap-1">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill"
              viewBox="0 0 16 16">
