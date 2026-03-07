@@ -267,6 +267,64 @@ class UploadedCodeRepository extends BaseRepository
             ->count();
     }
 
+    /**
+     * @param int[] $addressIds
+     * @return array<int, array<string, int>>
+     */
+    public function getTodayCountsByAddressIds(array $addressIds): array
+    {
+        if (empty($addressIds)) {
+            return [];
+        }
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        $rows = $this->getQuery()
+            ->from(self::TABLE)
+            ->select([
+                'address_id',
+                'status',
+                'cnt' => 'COUNT(*)',
+            ])
+            ->where(['address_id' => $addressIds])
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->groupBy(['address_id', 'status'])
+            ->all();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $addressId = (int) $row['address_id'];
+            $status = (string) $row['status'];
+            $result[$addressId][$status] = (int) $row['cnt'];
+        }
+        return $result;
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    public function getStatusCountsByAddressAndRange(int $addressId, string $startDateTime, string $endDateTime): array
+    {
+        $rows = $this->getQuery()
+            ->from(self::TABLE)
+            ->select([
+                'status',
+                'cnt' => 'COUNT(*)',
+            ])
+            ->where(['address_id' => $addressId])
+            ->andWhere(['>=', 'created_at', $startDateTime])
+            ->andWhere(['<=', 'created_at', $endDateTime])
+            ->groupBy(['status'])
+            ->all();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $status = (string) $row['status'];
+            $result[$status] = (int) $row['cnt'];
+        }
+        return $result;
+    }
+
     public function getById(int $id): UploadedCodeDto
     {
         $record = $this->getQuery()

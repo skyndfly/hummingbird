@@ -51,15 +51,22 @@ class IssuedPointController extends BasePointController
     {
         $addresses = $this->addressRepository->getAllWithCompany();
         $counts = [];
-        foreach ($addresses as $address) {
-            $counts[$address->id] = [
-                'await' => $this->uploadedCodeRepository->getAwaitTodayCountByAddress($address->id),
-                'pending' => $this->uploadedCodeRepository->getPendingTodayCountByAddress($address->id),
-            ];
+        $isOwner = Yii::$app->user->can('owner');
+        if ($isOwner) {
+            $addressIds = array_map(static fn($address) => $address->id, $addresses);
+            $counts = $this->uploadedCodeRepository->getTodayCountsByAddressIds($addressIds);
+        } else {
+            foreach ($addresses as $address) {
+                $counts[$address->id] = [
+                    'await' => $this->uploadedCodeRepository->getAwaitTodayCountByAddress($address->id),
+                    'pending' => $this->uploadedCodeRepository->getPendingTodayCountByAddress($address->id),
+                ];
+            }
         }
         return $this->render('issued-point/index', [
             'addresses' => $addresses,
             'counts' => $counts,
+            'isOwner' => $isOwner,
         ]);
     }
 

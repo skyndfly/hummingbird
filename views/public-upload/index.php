@@ -108,6 +108,7 @@ foreach ($addresses as $address) {
     .public-upload .top-actions {
         display: flex;
         justify-content: flex-end;
+        gap: 8px;
         margin-bottom: 10px;
     }
 
@@ -238,6 +239,9 @@ foreach ($addresses as $address) {
         <div class="container">
             <div class="card">
                 <div class="top-actions">
+                    <?php if (!Yii::$app->user->isGuest && Yii::$app->user->can('owner')): ?>
+                        <a class="login-link" href="/issued-point">Назад</a>
+                    <?php endif; ?>
                     <a class="login-link" href="/site/login">Войти</a>
                 </div>
                 <div class="logo">K</div>

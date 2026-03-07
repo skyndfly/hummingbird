@@ -77,6 +77,7 @@ $config = [
                 'POST site/return-to-user' => 'site/return-to-user',
 
                 'GET statistics' => 'statistics/index',
+                'GET owner-graphs' => 'owner-graphs/index',
 
                 'GET owner-point' => 'owner-point/index',
                 'GET owner-point/wb' => 'owner-point/wb',
@@ -155,6 +156,9 @@ $config = [
         ],
         'statistics' => [
             'class' => app\controllers\Owner\StatisticsController::class,
+        ],
+        'owner-graphs' => [
+            'class' => app\controllers\Owner\GraphsController::class,
         ],
         'owner-point' => [
             'class' => app\controllers\Owner\PointController::class,
