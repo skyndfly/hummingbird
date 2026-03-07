@@ -18,12 +18,14 @@ class BotApi
         ]);
     }
 
-    public function sendIssued(string $id, string $status, DateTimeImmutable $createdAt): void
+    public function sendIssued(string $id, string $status, DateTimeImmutable $createdAt, ?string $companyName = null, ?string $address = null): void
     {
         $payload = [
             'chatId' => $id,
             'status' => $status,
-            'createdAt' => $createdAt->format('d-m-Y H:i:s'),
+            'createdAt' => $createdAt->format('d-m-Y H:i'),
+            'companyName' => $companyName,
+            'address' => $address,
         ];
         \Yii::info([
             'type' => 'SendBotApi',

@@ -337,6 +337,25 @@ class UploadedCodeRepository extends BaseRepository
         return UploadedCodeDto::fromDbRecord($record);
     }
 
+    public function getByIdWithAddressCompany(int $id): UploadedCodeDto
+    {
+        $record = $this->getQuery()
+            ->from(self::TABLE . ' uc')
+            ->leftJoin('address a', 'a.id = uc.address_id')
+            ->leftJoin('company c', 'c.bot_key = uc.company_key')
+            ->select([
+                'uc.*',
+                'a.address as address',
+                'c.name as company_name',
+            ])
+            ->where(['uc.id' => $id])
+            ->one();
+        if ($record === false) {
+            throw new DomainException('Record not found.');
+        }
+        return UploadedCodeDto::fromDbRecord($record);
+    }
+
     public function findLatestByNote(string $note): ?UploadedCodeDto
     {
         $record = $this->getQuery()

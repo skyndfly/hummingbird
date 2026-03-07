@@ -163,7 +163,7 @@ class IssuedPointController extends BasePointController
             $form = new IssuedCodeForm();
             if ($form->load($post) && $form->validate()) {
                 $status = UploadedCodeStatusEnum::from($form->status);
-                $code = $this->uploadedCodeRepository->getById($form->id);
+                $code = $this->uploadedCodeRepository->getByIdWithAddressCompany($form->id);
 
                 $this->uploadedCodeRepository->issuedCode(
                     id: $form->id,
@@ -174,7 +174,9 @@ class IssuedPointController extends BasePointController
                         $this->botApi->sendIssued(
                             id: $code->chatId,
                             status: $status->value,
-                            createdAt: new DateTimeImmutable($code->createdAt)
+                            createdAt: new DateTimeImmutable($code->createdAt),
+                            companyName: $code->companyName,
+                            address: $code->address
                         );
                     } catch (Throwable $exception) {
                         Yii::info([
