@@ -6,6 +6,7 @@ use app\auth\dto\UserIdentityDto;
 use app\auth\UserIdentity;
 use app\filters\Code\CodeFilter;
 use app\forms\Code\CreateCodeForm;
+use app\forms\User\ChangeLoginForm;
 use app\repositories\Category\CategoryRepository;
 use app\repositories\User\UserRepository;
 use app\services\Code\FindCodeService;
@@ -18,6 +19,7 @@ use yii\web\IdentityInterface;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
+use app\forms\User\ChangePasswordForm;
 use app\models\ContactForm;
 
 class SiteController extends Controller
@@ -45,10 +47,10 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'index'],
+                'only' => ['logout', 'index', 'change-password', 'change-login', 'settings'],
                 'rules' => [
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['logout', 'index', 'change-password', 'change-login', 'settings'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -137,6 +139,76 @@ class SiteController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
+    }
+
+    public function actionChangePassword(): Response|string
+    {
+        $form = new ChangePasswordForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            $identity = Yii::$app->user->identity;
+            if ($identity === null) {
+                return $this->redirect(['/site/login']);
+            }
+            $user = $this->userRepository->getById($identity->getId());
+            if ($user === null) {
+                Yii::$app->session->setFlash('error', 'Пользователь не найден');
+                return $this->redirect(['/site/change-password']);
+            }
+            if (!Yii::$app->security->validatePassword($form->oldPassword, $user->password)) {
+                Yii::$app->session->setFlash('error', 'Неверный старый пароль');
+                return $this->redirect(['/site/change-password']);
+            }
+            $this->userRepository->updatePasswordById($user->id, $form->newPassword);
+            Yii::$app->user->logout();
+            Yii::$app->session->setFlash('success', 'Пароль изменен. Войдите снова.');
+            return $this->redirect(['/site/login']);
+        }
+
+        return $this->render('change-password', [
+            'model' => $form,
+        ]);
+    }
+
+    public function actionSettings(): string
+    {
+        return $this->render('settings');
+    }
+
+    public function actionChangeLogin(): Response|string
+    {
+        $form = new ChangeLoginForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            $identity = Yii::$app->user->identity;
+            if ($identity === null) {
+                return $this->redirect(['/site/login']);
+            }
+            $user = $this->userRepository->getById($identity->getId());
+            if ($user === null) {
+                Yii::$app->session->setFlash('error', 'Пользователь не найден');
+                return $this->redirect(['/site/change-login']);
+            }
+            if ($form->oldUsername !== $user->username) {
+                Yii::$app->session->setFlash('error', 'Неверный старый логин');
+                return $this->redirect(['/site/change-login']);
+            }
+            if ($form->newUsername === $user->username) {
+                Yii::$app->session->setFlash('error', 'Новый логин совпадает со старым');
+                return $this->redirect(['/site/change-login']);
+            }
+            $existing = $this->userRepository->getByUsername($form->newUsername);
+            if ($existing !== null && $existing->id !== $user->id) {
+                Yii::$app->session->setFlash('error', 'Логин уже занят');
+                return $this->redirect(['/site/change-login']);
+            }
+            $this->userRepository->updateUsernameById($user->id, $form->newUsername);
+            Yii::$app->user->logout();
+            Yii::$app->session->setFlash('success', 'Логин изменен. Войдите снова.');
+            return $this->redirect(['/site/login']);
+        }
+
+        return $this->render('change-login', [
+            'model' => $form,
+        ]);
     }
 
     public function actionContact(): Response|string

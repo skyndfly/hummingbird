@@ -133,6 +133,32 @@ class UserRepository extends BaseRepository
         );
     }
 
+    public function updatePasswordById(int $id, string $newPassword): void
+    {
+        $this->getCommand()
+            ->update(
+                self::TABLE_NAME,
+                [
+                    'password_hash' => Yii::$app->security->generatePasswordHash($newPassword),
+                    'updated_at' => $this->getCurrentDate(),
+                ],
+                ['id' => $id]
+            )->execute();
+    }
+
+    public function updateUsernameById(int $id, string $username): void
+    {
+        $this->getCommand()
+            ->update(
+                self::TABLE_NAME,
+                [
+                    'username' => $username,
+                    'updated_at' => $this->getCurrentDate(),
+                ],
+                ['id' => $id]
+            )->execute();
+    }
+
     /**
      * @param array{
      *     id: int,
