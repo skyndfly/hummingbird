@@ -51,6 +51,9 @@ class UploadedCodeStoreService
         if ($token === false || $token === '') {
             return;
         }
+        if ($dto->chatId !== null) {
+            return;
+        }
         if ($dto->addressId === null) {
             Yii::warning('Upload to Yandex Disk skipped: addressId missing', 'bot');
             return;

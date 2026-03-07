@@ -10,6 +10,7 @@ class AddressDto
         public string $address,
         public ?string $companyName = null,
         public ?string $companyBotKey = null,
+        public ?string $deletedAt = null,
     ) {
     }
 
@@ -20,6 +21,7 @@ class AddressDto
      *     address: string,
      *     company_name?: string|null,
      *     company_bot_key?: string|null,
+     *     deleted_at?: string|null,
      * } $record
      */
     public static function fromDbRecord(array $record): self
@@ -30,6 +32,7 @@ class AddressDto
             address: $record['address'],
             companyName: $record['company_name'] ?? null,
             companyBotKey: $record['company_bot_key'] ?? null,
+            deletedAt: $record['deleted_at'] ?? null,
         );
     }
 }

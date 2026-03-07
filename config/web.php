@@ -78,6 +78,13 @@ $config = [
 
                 'GET statistics' => 'statistics/index',
                 'GET owner-graphs' => 'owner-graphs/index',
+                'GET owner-address' => 'owner-address/index',
+                'GET owner-address/create' => 'owner-address/create',
+                'POST owner-address/store' => 'owner-address/store',
+                'GET owner-address/<addressId:\d+>/edit' => 'owner-address/edit',
+                'POST owner-address/update' => 'owner-address/update',
+                'POST owner-address/delete' => 'owner-address/delete',
+                'POST owner-address/restore' => 'owner-address/restore',
 
                 'GET owner-point' => 'owner-point/index',
                 'GET owner-point/wb' => 'owner-point/wb',
@@ -159,6 +166,9 @@ $config = [
         ],
         'owner-graphs' => [
             'class' => app\controllers\Owner\GraphsController::class,
+        ],
+        'owner-address' => [
+            'class' => app\controllers\Owner\AddressController::class,
         ],
         'owner-point' => [
             'class' => app\controllers\Owner\PointController::class,

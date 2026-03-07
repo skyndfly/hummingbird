@@ -49,6 +49,15 @@ use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
         Службы доставки
     </a>
 </li>
+<li class="list-group-item">
+    <a href="/owner-address" class="d-flex align-items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill"
+             viewBox="0 0 16 16">
+            <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+        </svg>
+        Адреса
+    </a>
+</li>
 <div class="list-group-item">
     <div class="text-primary mb-2">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box2-fill"
