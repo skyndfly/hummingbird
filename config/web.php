@@ -121,6 +121,7 @@ $config = [
 
                 //REST
                 'POST upload/store' => 'upload/store',
+                'GET bot-data' => 'upload/bot-data',
                 'GET public-upload' => 'public-upload/index',
                 'POST public-upload/store' => 'public-upload/store',
                 'GET public-check' => 'public-check/index',

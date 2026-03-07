@@ -88,4 +88,31 @@ class UploadController extends Controller
             return ['error' => $e->getMessage()];
         }
     }
+
+    public function actionBotData(): array
+    {
+        $firms = [];
+        foreach ($this->companyRepository->getAllCompany() as $company) {
+            if (empty($company->botKey)) {
+                continue;
+            }
+            $firms[$company->botKey] = $company->name;
+        }
+
+        $addresses = [];
+        foreach ($this->addressRepository->getAllWithCompany() as $address) {
+            if (empty($address->companyBotKey)) {
+                continue;
+            }
+            $addresses[$address->companyBotKey][] = [
+                'id' => $address->id,
+                'address' => $address->address,
+            ];
+        }
+
+        return [
+            'firms' => $firms,
+            'address' => $addresses,
+        ];
+    }
 }
