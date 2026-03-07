@@ -92,6 +92,19 @@ foreach ($addresses as $address) {
         text-align: center;
     }
 
+    .public-upload .check-link {
+        display: block;
+        text-align: center;
+        margin: 10px 0 25px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        color: var(--primary);
+        border: 2px dashed var(--primary);
+        background: #eef2ff;
+    }
+
     .public-upload .top-actions {
         display: flex;
         justify-content: flex-end;
@@ -230,6 +243,7 @@ foreach ($addresses as $address) {
                 <div class="logo">K</div>
                 <h1>Отправка кода</h1>
                 <p class="subtitle">Выберите пункт выдачи и загрузите изображение кода</p>
+                <a class="check-link" href="/public-check">Проверить статус по номеру телефона</a>
 
                 <?php if (Yii::$app->session->hasFlash('success')): ?>
                     <div class="flash flash-success">

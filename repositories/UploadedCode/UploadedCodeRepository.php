@@ -278,4 +278,52 @@ class UploadedCodeRepository extends BaseRepository
         }
         return UploadedCodeDto::fromDbRecord($record);
     }
+
+    public function findLatestByNote(string $note): ?UploadedCodeDto
+    {
+        $record = $this->getQuery()
+            ->from(self::TABLE . ' uc')
+            ->leftJoin('address a', 'a.id = uc.address_id')
+            ->leftJoin('company c', 'c.bot_key = uc.company_key')
+            ->select([
+                'uc.*',
+                'a.address as address',
+                'c.name as company_name',
+            ])
+            ->where(['uc.note' => $note])
+            ->orderBy(['uc.created_at' => SORT_DESC])
+            ->one();
+        if ($record === false) {
+            return null;
+        }
+        return UploadedCodeDto::fromDbRecord($record);
+    }
+
+    /**
+     * @return UploadedCodeDto[]
+     */
+    public function findAllTodayByNote(string $note): array
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        $records = $this->getQuery()
+            ->from(self::TABLE . ' uc')
+            ->leftJoin('address a', 'a.id = uc.address_id')
+            ->leftJoin('company c', 'c.bot_key = uc.company_key')
+            ->select([
+                'uc.*',
+                'a.address as address',
+                'c.name as company_name',
+            ])
+            ->where(['uc.note' => $note])
+            ->andWhere(['>=', 'uc.created_at', $todayStart])
+            ->andWhere(['<=', 'uc.created_at', $todayEnd])
+            ->orderBy(['uc.created_at' => SORT_DESC])
+            ->all();
+
+        return array_map(
+            callback: fn(array $record) => UploadedCodeDto::fromDbRecord($record),
+            array: $records
+        );
+    }
 }

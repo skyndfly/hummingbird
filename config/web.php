@@ -51,6 +51,14 @@ $config = [
                     'maxFileSize' => 1024 * 10, // 10 MB
                     'maxLogFiles' => 10,
                 ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
+                    'categories' => ['bot'],
+                    'logFile' => '@runtime/logs/bot.log',
+                    'maxFileSize' => 1024 * 5, // 5 MB
+                    'maxLogFiles' => 5,
+                ],
             ],
         ],
         'db' => $db,
@@ -115,6 +123,8 @@ $config = [
                 'POST upload/store' => 'upload/store',
                 'GET public-upload' => 'public-upload/index',
                 'POST public-upload/store' => 'public-upload/store',
+                'GET public-check' => 'public-check/index',
+                'POST public-check' => 'public-check/index',
                 'GET admin' => 'admin/index',
             ],
         ],

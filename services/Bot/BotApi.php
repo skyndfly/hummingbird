@@ -29,7 +29,7 @@ class BotApi
             'type' => 'SendBotApi',
             'action' => 'request',
             'payload' => $payload,
-        ]);
+        ], 'bot');
         $this->client->post('/issued', [
             'json' => $payload,
         ]);

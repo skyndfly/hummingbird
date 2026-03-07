@@ -17,6 +17,7 @@ class UploadedCodeDto
         public ?string $note = null,
         public ?int $addressId = null,
         public ?string $address = null,
+        public ?string $companyName = null,
     ) {
     }
 
@@ -32,6 +33,7 @@ class UploadedCodeDto
      *     note: string|null,
      *     address_id: int|null,
      *     address?: string|null,
+     *     company_name?: string|null,
      * } $record
      */
     public static function fromDbRecord(array $record): UploadedCodeDto
@@ -47,6 +49,7 @@ class UploadedCodeDto
             note: $record['note'],
             addressId: $record['address_id'] ?? null,
             address: $record['address'] ?? null,
+            companyName: $record['company_name'] ?? null,
         );
     }
 
@@ -63,6 +66,7 @@ class UploadedCodeDto
             'note' => $this->note,
             'addressId' => $this->addressId,
             'address' => $this->address,
+            'companyName' => $this->companyName,
         ];
     }
 }
