@@ -37,3 +37,11 @@
         Места хранения
     </a>
 </li>
+<li class="list-group-item">
+    <a href="/return-request" class="d-flex align-items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+            <path d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 1 .908-.418A4 4 0 1 0 8 4V1.5a.5.5 0 0 1 1 0V4a.5.5 0 0 1-.5.5H6a.5.5 0 0 1 0-1z"/>
+        </svg>
+        Возвраты
+    </a>
+</li>

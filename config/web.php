@@ -119,6 +119,14 @@ $config = [
                 'GET company/<companyId:\d+>/edit' => 'company/edit',
                 'POST company/update' => 'company/update',
 
+                'GET return-request' => 'return-request/index',
+                'GET return-request/create' => 'return-request/create',
+                'GET return-request/<id:\d+>' => 'return-request/view',
+                'GET return-request/<id:\d+>/edit' => 'return-request/edit',
+                'POST return-request/store' => 'return-request/store',
+                'POST return-request/<id:\d+>/update' => 'return-request/update',
+                'POST return-request/<id:\d+>/delete' => 'return-request/delete',
+
 
                 //POINT
 
@@ -131,6 +139,11 @@ $config = [
                 'GET issued-point' => 'issued-point/index',
                 'GET issued-point/address/<addressId:\d+>' => 'issued-point/address',
                 'GET issued-point/address/<addressId:\d+>/pending' => 'issued-point/address-pending',
+                'GET point-returns/wb' => 'point-returns/wb',
+                'GET point-returns/ozon' => 'point-returns/ozon',
+                'GET point-returns/<id:\d+>' => 'point-returns/view',
+                'POST point-returns/<id:\d+>/complete' => 'point-returns/complete',
+                'POST point-returns/<id:\d+>/cancel' => 'point-returns/cancel',
 
 
                 //REST
@@ -141,6 +154,9 @@ $config = [
                 'POST public-upload/store' => 'public-upload/store',
                 'GET public-check' => 'public-check/index',
                 'POST public-check' => 'public-check/index',
+                'GET public-return' => 'public-return/index',
+                'POST public-return' => 'public-return/index',
+                'POST public-return/upload' => 'public-return/upload',
                 'GET admin' => 'admin/index',
             ],
         ],
@@ -168,6 +184,9 @@ $config = [
         'issued-point' => [
             'class' => app\controllers\Point\IssuedPointController::class,
         ],
+        'point-returns' => [
+            'class' => app\controllers\Point\ReturnRequestController::class,
+        ],
         'statistics' => [
             'class' => app\controllers\Owner\StatisticsController::class,
         ],
@@ -185,7 +204,10 @@ $config = [
         ],
         'owner-point' => [
             'class' => app\controllers\Owner\PointController::class,
-        ]
+        ],
+        'return-request' => [
+            'class' => app\controllers\Manager\ReturnRequestController::class,
+        ],
     ],
     'params' => $params,
 ];

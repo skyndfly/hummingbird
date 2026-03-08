@@ -248,6 +248,7 @@ foreach ($addresses as $address) {
                 <h1>Отправка кода</h1>
                 <p class="subtitle">Выберите пункт выдачи и загрузите изображение кода</p>
                 <a class="check-link" href="/public-check">Проверить статус по номеру телефона</a>
+                <a class="check-link" href="/public-return">Проверить возврат по номеру заявки</a>
 
                 <?php if (Yii::$app->session->hasFlash('success')): ?>
                     <div class="flash flash-success">

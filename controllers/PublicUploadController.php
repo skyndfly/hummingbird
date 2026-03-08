@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\forms\PublicUploadForm;
 use app\repositories\Address\AddressRepository;
 use app\repositories\Company\CompanyRepository;
+use app\services\Phone\PhoneNormalizer;
 use app\services\UploadCode\dto\UploadedCodeDto;
 use app\services\UploadCode\enums\UploadedCodeStatusEnum;
 use app\services\UploadCode\UploadedCodeStoreService;
@@ -45,6 +46,7 @@ class PublicUploadController extends Controller
             $post = Yii::$app->getRequest()->getBodyParams();
             $form = new PublicUploadForm();
             if ($form->load($post)) {
+                $form->phone = PhoneNormalizer::normalize($form->phone);
                 $form->image = UploadedFile::getInstance($form, 'image');
                 if ($form->validate()) {
                     $company = $this->companyRepository->getById($form->companyId);

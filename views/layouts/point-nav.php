@@ -5,11 +5,6 @@ use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
 ?>
 
 <div class="list-group-item">
-    <div class="pt-2 pb-2 d-flex align-items-center gap-2 list-group-item border-start-0 border-end-0">
-        <a href="/public-upload" class="d-flex align-items-center gap-1">
-            Загрузка кодов
-        </a>
-    </div>
     <div class="text-primary mb-2">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box2-fill"
              viewBox="0 0 16 16">
@@ -21,6 +16,16 @@ use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
         <div class="pt-2 pb-2 d-flex align-items-center gap-2 list-group-item border-start-0 border-end-0">
             <a href="/issued-point" class="d-flex align-items-center gap-1">
                 Список пунктов (адреса)
+            </a>
+        </div>
+        <div class="pt-2 pb-2 d-flex align-items-center gap-2 list-group-item border-start-0 border-end-0">
+            <a href="/point-returns/wb" class="d-flex align-items-center gap-1">
+                Возвраты WB
+            </a>
+        </div>
+        <div class="pt-2 pb-2 d-flex align-items-center gap-2 list-group-item border-start-0 border-end-0">
+            <a href="/point-returns/ozon" class="d-flex align-items-center gap-1">
+                Возвраты OZON
             </a>
         </div>
         <div class="pt-2 pb-2 d-flex align-items-center gap-2 list-group-item border-start-0 border-end-0">

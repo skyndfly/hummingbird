@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\forms\PublicCheckForm;
 use app\repositories\UploadedCode\UploadedCodeRepository;
+use app\services\Phone\PhoneNormalizer;
 use Yii;
 use yii\web\Controller;
 
@@ -26,8 +27,11 @@ class PublicCheckController extends Controller
         $results = [];
 
         $post = Yii::$app->request->post();
-        if ($form->load($post) && $form->validate()) {
+        if ($form->load($post)) {
+            $form->phone = PhoneNormalizer::normalize($form->phone);
+            if ($form->validate()) {
             $results = $this->uploadedCodeRepository->findAllTodayByNote($form->phone);
+            }
         }
 
         return $this->render('index', [
