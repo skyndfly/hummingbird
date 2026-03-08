@@ -252,17 +252,33 @@ use yii\helpers\Html;
                     Возврат с таким номером не найден
                 </div>
             <?php else: ?>
-                <div class="result">
+                <div class="result" style="text-align:center;">
                     <div class="status-badge status-new">
                         <?= Html::encode($statusLabels[$request['status']] ?? $request['status']) ?>
                     </div>
-                    <div class="info-row">
-                        <span>Номер возврата:</span>
-                        <strong><?= Html::encode((string) $request['id']) ?></strong>
-                    </div>
-                    <div class="info-row">
-                        <span>Дата создания:</span>
-                        <strong><?= Html::encode((string) ($request['created_at'] ?? '')) ?></strong>
+                    <h3>Статус кода</h3>
+                    <div style="text-align:left;margin-top:15px;">
+                        <div class="info-row">
+                            <span>Номер возврата:</span>
+                            <strong><?= Html::encode((string) $request['id']) ?></strong>
+                        </div>
+                        <div class="info-row">
+                            <span>Тип возврата:</span>
+                            <strong>
+                                <?php
+                                    $typeLabel = match ((string) ($request['return_type'] ?? '')) {
+                                        'wb' => 'WB',
+                                        'ozon' => 'OZON',
+                                        default => (string) ($request['return_type'] ?? ''),
+                                    };
+                                ?>
+                                <?= Html::encode($typeLabel) ?>
+                            </strong>
+                        </div>
+                        <div class="info-row">
+                            <span>Дата создания:</span>
+                            <strong><?= Html::encode((string) (new DateTime($request['created_at'])->format('d-m-Y') ?? '')) ?></strong>
+                        </div>
                     </div>
                 </div>
 
