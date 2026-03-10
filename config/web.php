@@ -146,6 +146,7 @@ $config = [
                 'GET point-returns/<id:\d+>' => 'point-returns/view',
                 'POST point-returns/<id:\d+>/complete' => 'point-returns/complete',
                 'POST point-returns/<id:\d+>/cancel' => 'point-returns/cancel',
+                'POST point-returns/<id:\d+>/delivered' => 'point-returns/delivered',
 
 
                 //REST

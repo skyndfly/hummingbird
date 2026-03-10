@@ -78,7 +78,7 @@ class PublicReturnController extends Controller
             return $this->redirect(['/public-return']);
         }
         $status = (string) ($request['status'] ?? '');
-        if (!in_array($status, [ReturnRequestStatusEnum::ACCEPTED->value, ReturnRequestStatusEnum::CREATED->value], true)) {
+        if ($status !== ReturnRequestStatusEnum::DELIVERED->value) {
             Yii::$app->session->setFlash('error', 'Загрузка QR кода недоступна для этого статуса');
             return $this->redirect(['/public-return']);
         }

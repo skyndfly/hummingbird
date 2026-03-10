@@ -20,6 +20,8 @@ RUN groupmod -o -g 1001 www-data && \
 
 RUN git config --global --add safe.directory /var/www/html
 RUN echo "memory_limit=512M" > /usr/local/etc/php/conf.d/memory-limit.ini
+RUN echo "upload_max_filesize=20M" > /usr/local/etc/php/conf.d/upload-limit.ini
+RUN echo "post_max_size=20M" >> /usr/local/etc/php/conf.d/upload-limit.ini
 WORKDIR /var/www/html
 
 # Меняем пользователя на www-data

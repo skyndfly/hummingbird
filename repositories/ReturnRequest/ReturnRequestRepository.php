@@ -3,6 +3,7 @@
 namespace app\repositories\ReturnRequest;
 
 use app\repositories\BaseRepository;
+use yii\db\Expression;
 
 class ReturnRequestRepository extends BaseRepository
 {
@@ -49,14 +50,24 @@ class ReturnRequestRepository extends BaseRepository
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function getForPointToday(string $status, string $returnType, string $from, string $to): array
+    /**
+     * @param array<int, string> $statuses
+     * @return array<int, array<string, mixed>>
+     */
+    public function getForPointToday(array $statuses, string $returnType, string $from, string $to): array
     {
+        $qrStatus = \app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum::QR_UPLOADED->value;
+        $deliveredStatus = \app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum::DELIVERED->value;
+
         $rows = $this->getQuery()
             ->from(self::TABLE)
-            ->where(['status' => $status, 'return_type' => $returnType, 'deleted_at' => null])
+            ->where(['status' => $statuses, 'return_type' => $returnType, 'deleted_at' => null])
             ->andWhere(['>=', 'created_at', $from])
             ->andWhere(['<=', 'created_at', $to])
-            ->orderBy(['created_at' => SORT_DESC, 'id' => SORT_DESC])
+            ->orderBy(new Expression(
+                'CASE status WHEN :qr THEN 0 WHEN :delivered THEN 1 ELSE 2 END, created_at DESC, id DESC',
+                [':qr' => $qrStatus, ':delivered' => $deliveredStatus]
+            ))
             ->all();
         if ($rows === false) {
             return [];

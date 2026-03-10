@@ -7,7 +7,7 @@ $this->title = $title;
 ?>
 
 <section>
-    <h2><?= htmlspecialchars($title) ?> с QR кодом за сегодня</h2>
+    <h2><?= htmlspecialchars($title) ?> за сегодня</h2>
     <hr>
 
     <?php if (!empty($requests)): ?>
@@ -18,6 +18,7 @@ $this->title = $title;
                     <th>Номер (ID)</th>
                     <th>Телефон</th>
                     <th>Тип</th>
+                    <th>Статус</th>
                     <th>QR код</th>
                     <th>Создана</th>
                     <th></th>
@@ -29,6 +30,24 @@ $this->title = $title;
                         <td><?= htmlspecialchars((string) ($row['id'] ?? '')) ?></td>
                         <td><?= htmlspecialchars((string) ($row['phone'] ?? '')) ?></td>
                         <td><?= htmlspecialchars((string) ($row['return_type'] ?? '')) ?></td>
+                        <td>
+                            <?php
+                                $status = (string) ($row['status'] ?? '');
+                                $statusLabel = match ($status) {
+                                    'delivered' => 'Доставлен на пункт',
+                                    'qr_uploaded' => 'QR код загружен',
+                                    default => $status,
+                                };
+                                $statusClass = match ($status) {
+                                    'delivered' => 'bg-warning text-dark',
+                                    'qr_uploaded' => 'bg-success',
+                                    default => 'bg-secondary',
+                                };
+                            ?>
+                            <span class="badge <?= $statusClass ?>">
+                                <?= htmlspecialchars($statusLabel) ?>
+                            </span>
+                        </td>
                         <td>
                             <?php if (!empty($row['qr_code_file'])): ?>
                                 <a href="/<?= htmlspecialchars((string) $row['qr_code_file']) ?>" target="_blank">Открыть</a>
@@ -46,6 +65,6 @@ $this->title = $title;
             </table>
         </div>
     <?php else: ?>
-        <div class="text-muted">За сегодня возвратов с QR кодом нет.</div>
+        <div class="text-muted">За сегодня нет возвратов со статусом доставлен или QR загружен.</div>
     <?php endif; ?>
 </section>

@@ -77,9 +77,14 @@ function status_badge_class(string $status): string
                     <input type="hidden" name="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
                     <button class="btn btn-outline-success" type="submit">Выполнена</button>
                 </form>
-                <form method="post" action="/point-returns/<?= (int) $request['id'] ?>/cancel">
+                <form method="post" action="/point-returns/<?= (int) $request['id'] ?>/delivered">
                     <input type="hidden" name="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
-                    <button class="btn btn-outline-danger" type="submit" onclick="return confirm('Отменить возврат?')">Возврат не принят</button>
+                    <button class="btn btn-outline-warning" type="submit">Обновить</button>
+                </form>
+                <form method="post" action="/point-returns/<?= (int) $request['id'] ?>/cancel" class="cancel-form">
+                    <input type="hidden" name="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
+                    <input type="hidden" name="cancelReason" value="">
+                    <button class="btn btn-outline-danger" type="button" id="cancel-open-btn">Возврат не принят</button>
                 </form>
             </div>
         </div>
@@ -108,3 +113,81 @@ function status_badge_class(string $status): string
         </div>
     </div>
 </section>
+
+<script>
+    (function () {
+        const openBtn = document.getElementById('cancel-open-btn');
+        const form = document.querySelector('.cancel-form');
+
+        if (!openBtn || !form) {
+            return;
+        }
+
+        const modal = document.createElement('div');
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.style.position = 'fixed';
+        modal.style.inset = '0';
+        modal.style.background = 'rgba(0, 0, 0, 0.5)';
+        modal.style.display = 'none';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.style.zIndex = '1050';
+
+        modal.innerHTML = `
+            <div style="background:#fff;border-radius:12px;max-width:420px;width:90%;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+                <div style="font-weight:600;margin-bottom:8px;">Причина отмены</div>
+                <input type="text" id="cancel-reason-input" class="form-control" placeholder="Введите причину">
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
+                    <button type="button" class="btn btn-outline-secondary" id="cancel-close-btn">Отмена</button>
+                    <button type="button" class="btn btn-outline-danger" id="cancel-submit-btn">Подтвердить</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const closeBtn = modal.querySelector('#cancel-close-btn');
+        const submitBtn = modal.querySelector('#cancel-submit-btn');
+        const input = modal.querySelector('#cancel-reason-input');
+
+        function openModal() {
+            modal.style.display = 'flex';
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        openBtn.addEventListener('click', openModal);
+        closeBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        submitBtn.addEventListener('click', function () {
+            const reason = input && input.value ? input.value.trim() : '';
+            if (!reason) {
+                if (input) {
+                    input.focus();
+                }
+                return;
+            }
+            const hidden = form.querySelector('input[name="cancelReason"]');
+            if (hidden) {
+                hidden.value = reason;
+            }
+            form.submit();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && modal.style.display === 'flex') {
+                closeModal();
+            }
+        });
+    })();
+</script>

@@ -56,6 +56,13 @@ function status_badge_class(string $status): string
         </div>
     </div>
 
+    <?php if (!empty($request['cancel_reason'])): ?>
+        <div class="mt-3 p-3 rounded" style="background:#f8d7da;color:#842029;">
+            <strong>Причина отмены:</strong>
+            <?= htmlspecialchars((string) $request['cancel_reason']) ?>
+        </div>
+    <?php endif; ?>
+
     <div class="row g-3 mt-2">
         <div class="col-12 col-md-6">
             <div class="text-muted mb-1">Фото 1</div>
