@@ -8,6 +8,7 @@ function status_badge_class(string $status): string
 {
     return match ($status) {
         'created' => 'bg-primary',
+        'accepted' => 'bg-info',
         'qr_uploaded' => 'bg-success',
         'completed' => 'bg-success',
         'canceled' => 'bg-danger',
@@ -53,6 +54,7 @@ function status_badge_class(string $status): string
                 <?php
                     $statusLabel = match ((string) ($request['status'] ?? '')) {
                         'created' => 'создана',
+                        'accepted' => 'принято в 108к',
                         'qr_uploaded' => 'QR код загружен',
                         'completed' => 'выполнена',
                         'canceled' => 'отмена',
@@ -85,16 +87,6 @@ function status_badge_class(string $status): string
             <?php if (!empty($request['photo_one'])): ?>
                 <a href="/<?= htmlspecialchars((string) $request['photo_one']) ?>" target="_blank">
                     <img src="/<?= htmlspecialchars((string) $request['photo_one']) ?>" alt="Фото 1" style="max-width: 100%; border-radius: 8px;">
-                </a>
-            <?php else: ?>
-                <div class="text-muted">Нет</div>
-            <?php endif; ?>
-        </div>
-        <div class="col-12 col-md-4">
-            <div class="text-muted mb-1">Фото 2</div>
-            <?php if (!empty($request['photo_two'])): ?>
-                <a href="/<?= htmlspecialchars((string) $request['photo_two']) ?>" target="_blank">
-                    <img src="/<?= htmlspecialchars((string) $request['photo_two']) ?>" alt="Фото 2" style="max-width: 100%; border-radius: 8px;">
                 </a>
             <?php else: ?>
                 <div class="text-muted">Нет</div>

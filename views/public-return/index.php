@@ -282,7 +282,7 @@ use yii\helpers\Html;
                     </div>
                 </div>
 
-                <?php if (($request['status'] ?? '') === 'created'): ?>
+                <?php if (in_array((string) ($request['status'] ?? ''), ['accepted', 'created'], true)): ?>
                     <div class="result" style="margin-top: 16px;">
                         <h3 style="margin-bottom: 12px;">Загрузить QR код</h3>
                         <form method="post" action="/public-return/upload" enctype="multipart/form-data">

@@ -9,14 +9,15 @@ class EditReturnRequestForm extends Model
 {
     public string $phone = '';
     public UploadedFile|string|null $photoOne = null;
-    public UploadedFile|string|null $photoTwo = null;
+    public UploadedFile|string|null $qrCode = null;
 
     public function rules(): array
     {
         return [
             [['phone'], 'required'],
             [['phone'], 'string', 'max' => 32],
-            [['photoOne', 'photoTwo'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg, gif'],
+            [['photoOne'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg, gif, webp'],
+            [['qrCode'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg, gif, webp'],
         ];
     }
 
@@ -25,7 +26,7 @@ class EditReturnRequestForm extends Model
         return [
             'phone' => 'Телефон клиента',
             'photoOne' => 'Фото 1',
-            'photoTwo' => 'Фото 2',
+            'qrCode' => 'QR код',
         ];
     }
 }

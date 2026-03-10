@@ -11,6 +11,7 @@ function status_badge_class(string $status): string
 {
     return match ($status) {
         'created' => 'bg-primary',
+        'accepted' => 'bg-info',
         'qr_uploaded' => 'bg-success',
         default => 'bg-secondary',
     };
@@ -48,7 +49,6 @@ function status_badge_class(string $status): string
                     <th>Тип</th>
                     <th>Статус</th>
                     <th>Фото 1</th>
-                    <th>Фото 2</th>
                     <th>Создана</th>
                     <th></th>
                 </tr>
@@ -67,11 +67,6 @@ function status_badge_class(string $status): string
                         <td>
                             <?php if (!empty($row['photo_one'])): ?>
                                 <a href="/<?= htmlspecialchars((string) $row['photo_one']) ?>" target="_blank">Открыть</a>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <?php if (!empty($row['photo_two'])): ?>
-                                <a href="/<?= htmlspecialchars((string) $row['photo_two']) ?>" target="_blank">Открыть</a>
                             <?php endif; ?>
                         </td>
                         <td><?= htmlspecialchars((string) ($row['created_at'] ?? '')) ?></td>

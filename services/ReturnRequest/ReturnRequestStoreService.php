@@ -17,14 +17,11 @@ class ReturnRequestStoreService
         $this->ensureDirectoryExists();
     }
 
-    public function execute(string $phone, string $returnType, UploadedFile $photoOne, UploadedFile $photoTwo, int $createdBy): string
+    public function execute(string $phone, string $returnType, UploadedFile $photoOne, int $createdBy): string
     {
         $photoOneData = $this->storePhoto($photoOne, 'rr1_');
-        $photoTwoData = $this->storePhoto($photoTwo, 'rr2_');
         $relativePhotoOne = $photoOneData['relative'];
-        $relativePhotoTwo = $photoTwoData['relative'];
         $absolutePhotoOne = $photoOneData['absolute'];
-        $absolutePhotoTwo = $photoTwoData['absolute'];
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
@@ -33,9 +30,8 @@ class ReturnRequestStoreService
                 'number' => null,
                 'phone' => $phone,
                 'return_type' => $returnType,
-                'status' => ReturnRequestStatusEnum::CREATED->value,
+                'status' => ReturnRequestStatusEnum::ACCEPTED->value,
                 'photo_one' => $relativePhotoOne,
-                'photo_two' => $relativePhotoTwo,
                 'created_by' => $createdBy,
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -46,7 +42,6 @@ class ReturnRequestStoreService
         } catch (Exception $e) {
             $transaction->rollBack();
             @unlink($absolutePhotoOne);
-            @unlink($absolutePhotoTwo);
             throw $e;
         }
     }

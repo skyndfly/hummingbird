@@ -10,15 +10,14 @@ class CreateReturnRequestForm extends Model
     public string $phone = '';
     public string $returnType = 'wb';
     public UploadedFile|string|null $photoOne = null;
-    public UploadedFile|string|null $photoTwo = null;
 
     public function rules(): array
     {
         return [
-            [['phone', 'photoOne', 'photoTwo', 'returnType'], 'required'],
+            [['phone', 'photoOne', 'returnType'], 'required'],
             [['phone'], 'string', 'max' => 32],
             [['returnType'], 'in', 'range' => ['wb', 'ozon']],
-            [['photoOne', 'photoTwo'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png, jpg, jpeg, gif'],
+            [['photoOne'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png, jpg, jpeg, gif, webp'],
         ];
     }
 
@@ -28,7 +27,6 @@ class CreateReturnRequestForm extends Model
             'phone' => 'Телефон клиента',
             'returnType' => 'Тип возврата',
             'photoOne' => 'Фото 1',
-            'photoTwo' => 'Фото 2',
         ];
     }
 }

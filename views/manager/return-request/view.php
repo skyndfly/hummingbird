@@ -9,6 +9,7 @@ function status_badge_class(string $status): string
 {
     return match ($status) {
         'created' => 'bg-primary',
+        'accepted' => 'bg-info',
         'qr_uploaded' => 'bg-success',
         default => 'bg-secondary',
     };
@@ -47,16 +48,6 @@ function status_badge_class(string $status): string
             <?php if (!empty($request['photo_one'])): ?>
                 <a href="/<?= htmlspecialchars((string) $request['photo_one']) ?>" target="_blank">
                     <img src="/<?= htmlspecialchars((string) $request['photo_one']) ?>" alt="Фото 1" style="max-width: 100%; border-radius: 8px;">
-                </a>
-            <?php else: ?>
-                <div class="text-muted">Нет</div>
-            <?php endif; ?>
-        </div>
-        <div class="col-12 col-md-6">
-            <div class="text-muted mb-1">Фото 2</div>
-            <?php if (!empty($request['photo_two'])): ?>
-                <a href="/<?= htmlspecialchars((string) $request['photo_two']) ?>" target="_blank">
-                    <img src="/<?= htmlspecialchars((string) $request['photo_two']) ?>" alt="Фото 2" style="max-width: 100%; border-radius: 8px;">
                 </a>
             <?php else: ?>
                 <div class="text-muted">Нет</div>

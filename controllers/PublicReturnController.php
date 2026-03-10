@@ -47,6 +47,7 @@ class PublicReturnController extends Controller
             'request' => $request,
             'statusLabels' => [
                 ReturnRequestStatusEnum::CREATED->value => ReturnRequestStatusEnum::CREATED->label(),
+                ReturnRequestStatusEnum::ACCEPTED->value => ReturnRequestStatusEnum::ACCEPTED->label(),
                 ReturnRequestStatusEnum::QR_UPLOADED->value => ReturnRequestStatusEnum::QR_UPLOADED->label(),
                 ReturnRequestStatusEnum::COMPLETED->value => ReturnRequestStatusEnum::COMPLETED->label(),
                 ReturnRequestStatusEnum::CANCELED->value => ReturnRequestStatusEnum::CANCELED->label(),
@@ -74,7 +75,8 @@ class PublicReturnController extends Controller
             Yii::$app->session->setFlash('error', 'Заявка не найдена');
             return $this->redirect(['/public-return']);
         }
-        if (($request['status'] ?? '') !== ReturnRequestStatusEnum::CREATED->value) {
+        $status = (string) ($request['status'] ?? '');
+        if (!in_array($status, [ReturnRequestStatusEnum::ACCEPTED->value, ReturnRequestStatusEnum::CREATED->value], true)) {
             Yii::$app->session->setFlash('error', 'Загрузка QR кода недоступна для этого статуса');
             return $this->redirect(['/public-return']);
         }

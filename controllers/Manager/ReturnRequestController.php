@@ -93,7 +93,34 @@ class ReturnRequestController extends BaseManagerController
         if ($form->load($post)) {
             $form->phone = PhoneNormalizer::normalize($form->phone);
             $form->photoOne = UploadedFile::getInstance($form, 'photoOne');
-            $form->photoTwo = UploadedFile::getInstance($form, 'photoTwo');
+            $form->qrCode = UploadedFile::getInstance($form, 'qrCode');
+            if ($form->qrCode === null) {
+                $form->qrCode = UploadedFile::getInstanceByName($form->formName() . '[qrCode]');
+            }
+            if ($form->qrCode === null) {
+                $form->qrCode = UploadedFile::getInstanceByName('qrCode');
+            }
+            $form->qrCode = UploadedFile::getInstance($form, 'qrCode');
+            if ($form->qrCode === null) {
+                $form->qrCode = UploadedFile::getInstanceByName($form->formName() . '[qrCode]');
+            }
+            if ($form->qrCode === null) {
+                $form->qrCode = UploadedFile::getInstanceByName('qrCode');
+            }
+            if ($form->qrCode === null && !empty($_FILES)) {
+                foreach (array_keys($_FILES) as $key) {
+                    if (str_contains($key, 'qrCode')) {
+                        $form->qrCode = UploadedFile::getInstanceByName($key);
+                        if ($form->qrCode !== null) {
+                            break;
+                        }
+                    }
+                }
+            }
+            $form->qrCode = UploadedFile::getInstance($form, 'qrCode');
+            if ($form->qrCode === null) {
+                $form->qrCode = UploadedFile::getInstanceByName($form->formName() . '[qrCode]');
+            }
 
             if ($form->validate()) {
                 try {
@@ -101,7 +128,6 @@ class ReturnRequestController extends BaseManagerController
                         phone: $form->phone,
                         returnType: $form->returnType,
                         photoOne: $form->photoOne,
-                        photoTwo: $form->photoTwo,
                         createdBy: $this->getIdentity()->getId()
                     );
                     Yii::$app->session->setFlash('success', 'Заявка создана. Номер: ' . $number);
@@ -130,7 +156,13 @@ class ReturnRequestController extends BaseManagerController
         if ($form->load($post)) {
             $form->phone = PhoneNormalizer::normalize($form->phone);
             $form->photoOne = UploadedFile::getInstance($form, 'photoOne');
-            $form->photoTwo = UploadedFile::getInstance($form, 'photoTwo');
+            $form->qrCode = UploadedFile::getInstance($form, 'qrCode');
+            if ($form->qrCode === null) {
+                $form->qrCode = UploadedFile::getInstanceByName($form->formName() . '[qrCode]');
+            }
+            if ($form->qrCode === null) {
+                $form->qrCode = UploadedFile::getInstanceByName('qrCode');
+            }
 
             if ($form->validate()) {
                 try {
@@ -144,10 +176,11 @@ class ReturnRequestController extends BaseManagerController
                         $columns['photo_one'] = $photo['relative'];
                         $this->deleteOldPhoto((string) ($request['photo_one'] ?? ''));
                     }
-                    if ($form->photoTwo instanceof UploadedFile) {
-                        $photo = $this->storeService->storePhoto($form->photoTwo, 'rr2_');
-                        $columns['photo_two'] = $photo['relative'];
-                        $this->deleteOldPhoto((string) ($request['photo_two'] ?? ''));
+                    if ($form->qrCode instanceof UploadedFile) {
+                        $photo = $this->storeService->storePhoto($form->qrCode, 'qr_');
+                        $columns['qr_code_file'] = $photo['relative'];
+                        $this->deleteOldPhoto((string) ($request['qr_code_file'] ?? ''));
+                        $columns['status'] = ReturnRequestStatusEnum::QR_UPLOADED->value;
                     }
 
                     $this->repository->updateById($id, $columns);
@@ -178,6 +211,7 @@ class ReturnRequestController extends BaseManagerController
     {
         return [
             ReturnRequestStatusEnum::CREATED->value => ReturnRequestStatusEnum::CREATED->label(),
+            ReturnRequestStatusEnum::ACCEPTED->value => ReturnRequestStatusEnum::ACCEPTED->label(),
             ReturnRequestStatusEnum::QR_UPLOADED->value => ReturnRequestStatusEnum::QR_UPLOADED->label(),
             ReturnRequestStatusEnum::COMPLETED->value => ReturnRequestStatusEnum::COMPLETED->label(),
             ReturnRequestStatusEnum::CANCELED->value => ReturnRequestStatusEnum::CANCELED->label(),

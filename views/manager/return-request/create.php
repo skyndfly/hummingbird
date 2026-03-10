@@ -38,18 +38,6 @@ $this->title = 'Новая заявка на возврат';
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-4">
-            <?= $form->field($formModel, 'photoTwo')->fileInput([
-                'accept' => 'image/*',
-                'id' => 'return-photo-two',
-            ]) ?>
-            <div class="border rounded p-2 bg-light mt-2 text-center" id="return-preview-two" style="display: none;">
-                <img id="return-preview-two-img" alt="Предпросмотр фото 2" style="max-width: 100%; border-radius: 8px;">
-                <div class="mt-2">
-                    <button type="button" class="btn btn-sm btn-outline-secondary" id="return-preview-two-clear">Очистить</button>
-                </div>
-            </div>
-        </div>
     </div>
     <div class="mt-3 d-flex gap-2">
         <button class="btn btn-outline-success" type="submit">Создать заявку</button>
@@ -93,6 +81,5 @@ $this->title = 'Новая заявка на возврат';
         }
 
         bindPreview('return-photo-one', 'return-preview-one', 'return-preview-one-img', 'return-preview-one-clear');
-        bindPreview('return-photo-two', 'return-preview-two', 'return-preview-two-img', 'return-preview-two-clear');
     })();
 </script>
