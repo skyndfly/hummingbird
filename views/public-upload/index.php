@@ -101,7 +101,7 @@ foreach ($addresses as $address) {
         font-weight: 600;
         text-decoration: none;
         color: var(--primary);
-        border: 2px dashed var(--primary);
+        border: 2px solid var(--primary);
         background: #eef2ff;
     }
 
@@ -227,6 +227,7 @@ foreach ($addresses as $address) {
         color: #991b1b;
     }
 
+
     @media (max-width: 480px) {
         .public-upload .card {
             padding: 30px 20px;
@@ -238,12 +239,15 @@ foreach ($addresses as $address) {
     <div class="public-upload">
         <div class="container">
             <div class="card">
-                <div class="top-actions">
-                    <?php if (!Yii::$app->user->isGuest && Yii::$app->user->can('owner')): ?>
-                        <a class="login-link" href="/issued-point">Назад</a>
-                    <?php endif; ?>
-                    <a class="login-link" href="/site/login">Войти</a>
-                </div>
+               <div class="top-view">
+                   <p class="login-link">🏢 г. Антрацит, ул. Петровского 21, 1 этаж, 108 кабинет</p>
+                   <div class="top-actions">
+                       <?php if (!Yii::$app->user->isGuest && Yii::$app->user->can('owner')): ?>
+                           <a class="login-link" href="/issued-point">Назад</a>
+                       <?php endif; ?>
+                       <a class="login-link" href="/site/login">Войти</a>
+                   </div>
+               </div>
                 <div class="logo">K</div>
                 <h1>Отправка кода</h1>
                 <p class="subtitle">Выберите пункт выдачи и загрузите изображение кода</p>

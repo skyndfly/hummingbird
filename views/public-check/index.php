@@ -44,6 +44,17 @@ function status_class(UploadedCodeStatusEnum $status): string
             padding: 0;
             box-sizing: border-box;
         }
+        .login-link {
+            font-size: 13px;
+            color: var(--text-light);
+            text-decoration: none;
+            border: 1px solid var(--border);
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: var(--secondary);
+            text-align: left;
+            margin-bottom: 20px;
+        }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -107,7 +118,7 @@ function status_class(UploadedCodeStatusEnum $status): string
             font-weight: 600;
             text-decoration: none;
             color: var(--primary);
-            border: 2px dashed var(--primary);
+            border: 2px solid var(--primary);
             background: #eef2ff;
         }
 
@@ -234,6 +245,7 @@ function status_class(UploadedCodeStatusEnum $status): string
 <body>
 <div class="container">
     <div class="card">
+        <p class="login-link">🏢 г. Антрацит, ул. Петровского 21, 1 этаж, 108 кабинет</p>
         <div class="logo">K</div>
         <h1>Проверка кода</h1>
         <p class="subtitle">Введите номер телефона, который указывали при загрузке</p>
