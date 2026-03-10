@@ -246,7 +246,7 @@ use yii\helpers\Html;
             <div class="result status-not-found">
                 <?= Html::encode($formModel->getFirstError('returnId') ?: $formModel->getFirstError('phone')) ?>
             </div>
-        <?php elseif (Yii::$app->request->isPost): ?>
+        <?php elseif (!empty($showResult)): ?>
             <?php if (empty($request)): ?>
                 <div class="result status-not-found">
                     Возврат с таким номером не найден

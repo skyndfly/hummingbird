@@ -30,9 +30,11 @@ class PublicReturnController extends Controller
     {
         $form = new PublicReturnCheckForm();
         $request = null;
+        $showResult = false;
 
         $post = Yii::$app->request->post();
         if ($form->load($post)) {
+            $showResult = true;
             $form->phone = PhoneNormalizer::normalize($form->phone);
             if ($form->validate()) {
             $id = $this->normalizeId($form->returnId);
@@ -42,9 +44,27 @@ class PublicReturnController extends Controller
             }
         }
 
+        if (!$showResult) {
+            $returnId = Yii::$app->request->get('returnId');
+            $phone = Yii::$app->request->get('phone');
+            if (is_string($returnId) || is_string($phone)) {
+                $showResult = true;
+                $form->returnId = is_string($returnId) ? $returnId : '';
+                $form->phone = is_string($phone) ? $phone : '';
+                $form->phone = PhoneNormalizer::normalize($form->phone);
+                if ($form->validate()) {
+                    $id = $this->normalizeId($form->returnId);
+                    if ($id !== null) {
+                        $request = $this->returnRequestRepository->getByIdAndPhone($id, $form->phone);
+                    }
+                }
+            }
+        }
+
         return $this->render('index', [
             'formModel' => $form,
             'request' => $request,
+            'showResult' => $showResult,
             'statusLabels' => [
                 ReturnRequestStatusEnum::CREATED->value => ReturnRequestStatusEnum::CREATED->label(),
                 ReturnRequestStatusEnum::ACCEPTED->value => ReturnRequestStatusEnum::ACCEPTED->label(),

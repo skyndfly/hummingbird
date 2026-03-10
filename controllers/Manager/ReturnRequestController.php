@@ -249,12 +249,9 @@ class ReturnRequestController extends BaseManagerController
         if (empty($result['users'])) {
             return;
         }
-        $link = Url::to('/public-return', true);
         $id = (string) ($request['id'] ?? '');
+        $link = Url::to(['/public-return', 'returnId' => $id, 'phone' => $phone], true);
         $message = 'Возврат доставлен на пункт. Перейдите по этой ссылке и загрузите QR код: ' . $link;
-        if ($id !== '') {
-            $message .= ' Номер возврата: ' . $id;
-        }
         foreach ($result['users'] as $user) {
             $chatId = (string) ($user['id'] ?? '');
             if ($chatId === '') {

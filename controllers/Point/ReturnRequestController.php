@@ -6,6 +6,7 @@ use app\controllers\Point\abstracts\BasePointController;
 use app\repositories\ReturnRequest\ReturnRequestRepository;
 use app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum;
 use app\services\Bot\BotApi;
+use app\services\Phone\PhoneNormalizer;
 use DateTimeImmutable;
 use DateTimeZone;
 use Yii;
@@ -136,6 +137,11 @@ class ReturnRequestController extends BasePointController
             return $this->redirect(['/point-returns/' . $id]);
         }
         $this->repository->updateStatus($id, ReturnRequestStatusEnum::DELIVERED->value);
+        Yii::info([
+            'type' => 'ReturnRequest',
+            'action' => 'delivered',
+            'id' => $id,
+        ], 'bot');
         $this->notifyUpdateQr($request);
         Yii::$app->session->setFlash('success', 'Статус обновлен');
         return $this->redirectToList($request);
@@ -200,14 +206,26 @@ class ReturnRequestController extends BasePointController
     {
         $phone = (string) ($request['phone'] ?? '');
         if ($phone === '') {
+            Yii::info([
+                'type' => 'ReturnRequest',
+                'action' => 'notifyUpdateQr',
+                'error' => 'empty_phone',
+            ], 'bot');
             return;
         }
+        $phone = PhoneNormalizer::normalize($phone);
         $result = $this->botApi->getUsers($phone, null, 1, 50);
         if (empty($result['users'])) {
+            Yii::info([
+                'type' => 'ReturnRequest',
+                'action' => 'notifyUpdateQr',
+                'error' => 'no_users',
+                'phone' => $phone,
+            ], 'bot');
             return;
         }
         $id = (string) ($request['id'] ?? '');
-        $link = \yii\helpers\Url::to('/public-return', true);
+        $link = \yii\helpers\Url::to(['/public-return', 'returnId' => $id, 'phone' => $phone], true);
         $message = 'Нужно обновить код по заявке. Перейдите по ссылке: ' . $link;
         if ($id !== '') {
             $message = 'Нужно обновить код по заявке №' . $id . '. Перейдите по ссылке: ' . $link;
@@ -217,6 +235,11 @@ class ReturnRequestController extends BasePointController
             if ($chatId === '') {
                 continue;
             }
+            Yii::info([
+                'type' => 'ReturnRequest',
+                'action' => 'notifyUpdateQr',
+                'chatId' => $chatId,
+            ], 'bot');
             $this->botApi->sendMessage($chatId, $message);
         }
     }
