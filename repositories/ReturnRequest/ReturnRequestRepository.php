@@ -145,7 +145,7 @@ class ReturnRequestRepository extends BaseRepository
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function getAll(?string $number, ?string $phone): array
+    public function getAll(?string $number, ?string $phone, ?string $status = null): array
     {
         $query = $this->getQuery()
             ->from(self::TABLE)
@@ -161,6 +161,9 @@ class ReturnRequestRepository extends BaseRepository
         }
         if ($phone !== null && $phone !== '') {
             $query->andWhere(['like', 'phone', $phone]);
+        }
+        if ($status !== null && $status !== '') {
+            $query->andWhere(['status' => $status]);
         }
 
         $rows = $query->all();

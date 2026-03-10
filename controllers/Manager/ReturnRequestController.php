@@ -33,14 +33,23 @@ class ReturnRequestController extends BaseManagerController
     {
         $number = Yii::$app->request->get('number');
         $phone = Yii::$app->request->get('phone');
+        $status = Yii::$app->request->get('status');
         $normalizedPhone = null;
         if (is_string($phone)) {
             $normalizedPhone = PhoneNormalizer::normalize($phone);
         }
+        $statusFilter = null;
+        if (is_string($status) && $status !== '') {
+            $labels = $this->statusLabels();
+            if (isset($labels[$status])) {
+                $statusFilter = $status;
+            }
+        }
 
         $requests = $this->repository->getAll(
             number: is_string($number) ? $number : null,
-            phone: $normalizedPhone
+            phone: $normalizedPhone,
+            status: $statusFilter
         );
 
         return $this->render('return-request/index', [
@@ -48,6 +57,7 @@ class ReturnRequestController extends BaseManagerController
             'statusLabels' => $this->statusLabels(),
             'number' => $number,
             'phone' => $phone,
+            'status' => $statusFilter,
         ]);
     }
 

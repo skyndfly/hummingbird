@@ -4,6 +4,7 @@
 /** @var array<string, string> $statusLabels */
 /** @var string|null $number */
 /** @var string|null $phone */
+/** @var string|null $status */
 
 $this->title = 'Возвраты';
 
@@ -35,6 +36,17 @@ function status_badge_class(string $status): string
         <div class="col-12 col-md-3">
             <label class="form-label">Телефон</label>
             <input type="text" class="form-control" name="phone" value="<?= htmlspecialchars((string) $phone) ?>">
+        </div>
+        <div class="col-12 col-md-3">
+            <label class="form-label">Статус</label>
+            <select class="form-select" name="status">
+                <option value="">Все статусы</option>
+                <?php foreach ($statusLabels as $key => $label): ?>
+                    <option value="<?= htmlspecialchars((string) $key) ?>" <?= $status === $key ? 'selected' : '' ?>>
+                        <?= htmlspecialchars((string) $label) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
         </div>
         <div class="col-12 col-md-2 d-flex align-items-end">
             <button class="btn btn-outline-primary" type="submit">Найти</button>
