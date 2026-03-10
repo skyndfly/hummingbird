@@ -12,6 +12,8 @@ function status_badge_class(string $status): string
     return match ($status) {
         'created' => 'bg-primary',
         'accepted' => 'bg-info',
+        'road' => 'bg-warning',
+        'delivered' => 'bg-warning',
         'qr_uploaded' => 'bg-success',
         default => 'bg-secondary',
     };

@@ -7,12 +7,14 @@ use app\forms\ReturnRequest\CreateReturnRequestForm;
 use app\forms\ReturnRequest\EditReturnRequestForm;
 use app\repositories\ReturnRequest\ReturnRequestRepository;
 use app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum;
+use app\services\Bot\BotApi;
 use app\services\Phone\PhoneNormalizer;
 use app\services\ReturnRequest\ReturnRequestStoreService;
 use Exception;
 use Yii;
 use yii\web\Response;
 use yii\web\UploadedFile;
+use yii\helpers\Url;
 
 class ReturnRequestController extends BaseManagerController
 {
@@ -21,6 +23,7 @@ class ReturnRequestController extends BaseManagerController
         $module,
         private ReturnRequestRepository $repository,
         private ReturnRequestStoreService $storeService,
+        private BotApi $botApi,
         $config = []
     ) {
         parent::__construct($id, $module, $config);
@@ -93,34 +96,6 @@ class ReturnRequestController extends BaseManagerController
         if ($form->load($post)) {
             $form->phone = PhoneNormalizer::normalize($form->phone);
             $form->photoOne = UploadedFile::getInstance($form, 'photoOne');
-            $form->qrCode = UploadedFile::getInstance($form, 'qrCode');
-            if ($form->qrCode === null) {
-                $form->qrCode = UploadedFile::getInstanceByName($form->formName() . '[qrCode]');
-            }
-            if ($form->qrCode === null) {
-                $form->qrCode = UploadedFile::getInstanceByName('qrCode');
-            }
-            $form->qrCode = UploadedFile::getInstance($form, 'qrCode');
-            if ($form->qrCode === null) {
-                $form->qrCode = UploadedFile::getInstanceByName($form->formName() . '[qrCode]');
-            }
-            if ($form->qrCode === null) {
-                $form->qrCode = UploadedFile::getInstanceByName('qrCode');
-            }
-            if ($form->qrCode === null && !empty($_FILES)) {
-                foreach (array_keys($_FILES) as $key) {
-                    if (str_contains($key, 'qrCode')) {
-                        $form->qrCode = UploadedFile::getInstanceByName($key);
-                        if ($form->qrCode !== null) {
-                            break;
-                        }
-                    }
-                }
-            }
-            $form->qrCode = UploadedFile::getInstance($form, 'qrCode');
-            if ($form->qrCode === null) {
-                $form->qrCode = UploadedFile::getInstanceByName($form->formName() . '[qrCode]');
-            }
 
             if ($form->validate()) {
                 try {
@@ -204,6 +179,39 @@ class ReturnRequestController extends BaseManagerController
         return $this->redirect(['/return-request']);
     }
 
+    public function actionRoad(int $id): Response
+    {
+        $request = $this->repository->getById($id);
+        if ($request === null) {
+            Yii::$app->session->setFlash('error', 'Заявка не найдена');
+            return $this->redirect(['/return-request']);
+        }
+        if (($request['status'] ?? '') !== ReturnRequestStatusEnum::ACCEPTED->value) {
+            Yii::$app->session->setFlash('error', 'Нельзя изменить статус');
+            return $this->redirect(['/return-request/view', 'id' => $id]);
+        }
+        $this->repository->updateStatus($id, ReturnRequestStatusEnum::ROAD->value);
+        Yii::$app->session->setFlash('success', 'Статус обновлен');
+        return $this->redirect(['/return-request/view', 'id' => $id]);
+    }
+
+    public function actionDelivered(int $id): Response
+    {
+        $request = $this->repository->getById($id);
+        if ($request === null) {
+            Yii::$app->session->setFlash('error', 'Заявка не найдена');
+            return $this->redirect(['/return-request']);
+        }
+        if (($request['status'] ?? '') !== ReturnRequestStatusEnum::ROAD->value) {
+            Yii::$app->session->setFlash('error', 'Нельзя изменить статус');
+            return $this->redirect(['/return-request/view', 'id' => $id]);
+        }
+        $this->repository->updateStatus($id, ReturnRequestStatusEnum::DELIVERED->value);
+        $this->notifyDelivered($request);
+        Yii::$app->session->setFlash('success', 'Статус обновлен');
+        return $this->redirect(['/return-request/view', 'id' => $id]);
+    }
+
     /**
      * @return array<string, string>
      */
@@ -212,6 +220,8 @@ class ReturnRequestController extends BaseManagerController
         return [
             ReturnRequestStatusEnum::CREATED->value => ReturnRequestStatusEnum::CREATED->label(),
             ReturnRequestStatusEnum::ACCEPTED->value => ReturnRequestStatusEnum::ACCEPTED->label(),
+            ReturnRequestStatusEnum::ROAD->value => ReturnRequestStatusEnum::ROAD->label(),
+            ReturnRequestStatusEnum::DELIVERED->value => ReturnRequestStatusEnum::DELIVERED->label(),
             ReturnRequestStatusEnum::QR_UPLOADED->value => ReturnRequestStatusEnum::QR_UPLOADED->label(),
             ReturnRequestStatusEnum::COMPLETED->value => ReturnRequestStatusEnum::COMPLETED->label(),
             ReturnRequestStatusEnum::CANCELED->value => ReturnRequestStatusEnum::CANCELED->label(),
@@ -226,6 +236,31 @@ class ReturnRequestController extends BaseManagerController
         $absolute = Yii::getAlias('@webroot/' . ltrim($relativePath, '/'));
         if (file_exists($absolute)) {
             @unlink($absolute);
+        }
+    }
+
+    private function notifyDelivered(array $request): void
+    {
+        $phone = (string) ($request['phone'] ?? '');
+        if ($phone === '') {
+            return;
+        }
+        $result = $this->botApi->getUsers($phone, null, 1, 50);
+        if (empty($result['users'])) {
+            return;
+        }
+        $link = Url::to('/public-return', true);
+        $id = (string) ($request['id'] ?? '');
+        $message = 'Возврат доставлен на пункт. Перейдите по этой ссылке и загрузите QR код: ' . $link;
+        if ($id !== '') {
+            $message .= ' Номер возврата: ' . $id;
+        }
+        foreach ($result['users'] as $user) {
+            $chatId = (string) ($user['id'] ?? '');
+            if ($chatId === '') {
+                continue;
+            }
+            $this->botApi->sendMessage($chatId, $message);
         }
     }
 }

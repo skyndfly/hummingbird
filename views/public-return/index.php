@@ -282,7 +282,7 @@ use yii\helpers\Html;
                     </div>
                 </div>
 
-                <?php if (in_array((string) ($request['status'] ?? ''), ['accepted', 'created'], true)): ?>
+                <?php if (($request['status'] ?? '') === \app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum::DELIVERED->value): ?>
                     <div class="result" style="margin-top: 16px;">
                         <h3 style="margin-bottom: 12px;">Загрузить QR код</h3>
                         <form method="post" action="/public-return/upload" enctype="multipart/form-data">
@@ -299,6 +299,10 @@ use yii\helpers\Html;
                             </div>
                             <button type="submit" class="btn" id="qrUploadBtn">Загрузить QR код</button>
                         </form>
+                    </div>
+                <?php else: ?>
+                    <div class="result status-not-found" style="margin-top: 16px;">
+                        Ожидайте прибытия возврата на пункт, чтобы добавить QR код
                     </div>
                 <?php endif; ?>
             <?php endif; ?>

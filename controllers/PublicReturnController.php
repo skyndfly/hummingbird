@@ -48,6 +48,8 @@ class PublicReturnController extends Controller
             'statusLabels' => [
                 ReturnRequestStatusEnum::CREATED->value => ReturnRequestStatusEnum::CREATED->label(),
                 ReturnRequestStatusEnum::ACCEPTED->value => ReturnRequestStatusEnum::ACCEPTED->label(),
+                ReturnRequestStatusEnum::ROAD->value => ReturnRequestStatusEnum::ROAD->label(),
+                ReturnRequestStatusEnum::DELIVERED->value => ReturnRequestStatusEnum::DELIVERED->label(),
                 ReturnRequestStatusEnum::QR_UPLOADED->value => ReturnRequestStatusEnum::QR_UPLOADED->label(),
                 ReturnRequestStatusEnum::COMPLETED->value => ReturnRequestStatusEnum::COMPLETED->label(),
                 ReturnRequestStatusEnum::CANCELED->value => ReturnRequestStatusEnum::CANCELED->label(),

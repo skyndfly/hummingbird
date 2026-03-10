@@ -10,6 +10,8 @@ function status_badge_class(string $status): string
     return match ($status) {
         'created' => 'bg-primary',
         'accepted' => 'bg-info',
+        'road' => 'bg-warning',
+        'delivered' => 'bg-warning',
         'qr_uploaded' => 'bg-success',
         default => 'bg-secondary',
     };
@@ -23,6 +25,18 @@ function status_badge_class(string $status): string
     <div class="mb-3">
         <a class="btn btn-outline-secondary" href="/return-request">К списку</a>
         <a class="btn btn-outline-primary" href="/return-request/<?= (int) $request['id'] ?>/edit">Редактировать</a>
+        <?php if (($request['status'] ?? '') === \app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum::ACCEPTED->value): ?>
+            <form method="post" action="/return-request/<?= (int) $request['id'] ?>/road" class="d-inline">
+                <input type="hidden" name="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
+                <button class="btn btn-outline-warning" type="submit">Отгрузить</button>
+            </form>
+        <?php endif; ?>
+        <?php if (($request['status'] ?? '') === \app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum::ROAD->value): ?>
+            <form method="post" action="/return-request/<?= (int) $request['id'] ?>/delivered" class="d-inline">
+                <input type="hidden" name="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
+                <button class="btn btn-outline-success" type="submit">Доставлен на пункт</button>
+            </form>
+        <?php endif; ?>
     </div>
 
     <div class="row g-3">

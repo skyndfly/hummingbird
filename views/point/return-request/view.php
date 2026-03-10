@@ -9,6 +9,8 @@ function status_badge_class(string $status): string
     return match ($status) {
         'created' => 'bg-primary',
         'accepted' => 'bg-info',
+        'road' => 'bg-warning',
+        'delivered' => 'bg-warning',
         'qr_uploaded' => 'bg-success',
         'completed' => 'bg-success',
         'canceled' => 'bg-danger',
@@ -55,6 +57,8 @@ function status_badge_class(string $status): string
                     $statusLabel = match ((string) ($request['status'] ?? '')) {
                         'created' => 'создана',
                         'accepted' => 'принято в 108к',
+                        'road' => 'В пути',
+                        'delivered' => 'Доставлен на пункт',
                         'qr_uploaded' => 'QR код загружен',
                         'completed' => 'выполнена',
                         'canceled' => 'отмена',
