@@ -94,7 +94,7 @@ class ReturnRequestController extends BasePointController
             Yii::$app->session->setFlash('error', 'Нельзя изменить статус');
             return $this->redirect(['/point-returns/' . $id]);
         }
-        $this->repository->updateStatus($id, ReturnRequestStatusEnum::ACCEPTED->value);
+        $this->repository->updateStatus($id, ReturnRequestStatusEnum::COMPLETED->value);
         $this->notifyCompleted($request);
         Yii::$app->session->setFlash('success', 'Заявка выполнена');
         return $this->redirectToList($request);
@@ -121,6 +121,7 @@ class ReturnRequestController extends BasePointController
             'cancel_reason' => trim($reason),
             'updated_at' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
         ]);
+        $this->notifyCanceled($request, trim($reason));
         Yii::$app->session->setFlash('success', 'Заявка отменена');
         return $this->redirectToList($request);
     }
@@ -240,6 +241,31 @@ class ReturnRequestController extends BasePointController
                 'action' => 'notifyUpdateQr',
                 'chatId' => $chatId,
             ], 'bot');
+            $this->botApi->sendMessage($chatId, $message);
+        }
+    }
+
+    private function notifyCanceled(array $request, string $reason): void
+    {
+        $phone = (string) ($request['phone'] ?? '');
+        if ($phone === '') {
+            return;
+        }
+        $phone = PhoneNormalizer::normalize($phone);
+        $result = $this->botApi->getUsers($phone, null, 1, 50);
+        if (empty($result['users'])) {
+            return;
+        }
+        $id = (string) ($request['id'] ?? '');
+        $message = 'Заявка на возврат отменена. Причина: ' . $reason . '.';
+        if ($id !== '') {
+            $message = 'Заявка на возврат №' . $id . ' отменена. Причина: ' . $reason . '.';
+        }
+        foreach ($result['users'] as $user) {
+            $chatId = (string) ($user['id'] ?? '');
+            if ($chatId === '') {
+                continue;
+            }
             $this->botApi->sendMessage($chatId, $message);
         }
     }
