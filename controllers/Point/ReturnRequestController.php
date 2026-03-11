@@ -70,12 +70,20 @@ class ReturnRequestController extends BasePointController
         ]);
     }
 
-    public function actionView(int $id): string
+    public function actionView(int $id): string|Response
     {
         $request = $this->repository->getById($id);
         if ($request === null) {
             Yii::$app->session->setFlash('error', 'Заявка не найдена');
             return $this->redirect(['/point-returns']);
+        }
+        $status = (string) ($request['status'] ?? '');
+        if (!in_array($status, [
+            ReturnRequestStatusEnum::QR_UPLOADED->value,
+            ReturnRequestStatusEnum::DELIVERED->value,
+        ], true)) {
+            Yii::$app->session->setFlash('error', 'Доступ к заявке ограничен');
+            return $this->redirectToList($request);
         }
 
         return $this->render('return-request/view', [

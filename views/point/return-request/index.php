@@ -36,11 +36,13 @@ $this->title = $title;
                                 $statusLabel = match ($status) {
                                     'delivered' => 'Доставлен на пункт',
                                     'qr_uploaded' => 'QR код загружен',
+                                    'canceled' => 'отмена',
                                     default => $status,
                                 };
                                 $statusClass = match ($status) {
                                     'delivered' => 'bg-warning text-dark',
                                     'qr_uploaded' => 'bg-success',
+                                    'canceled' => 'bg-danger',
                                     default => 'bg-secondary',
                                 };
                             ?>

@@ -16,6 +16,10 @@ function status_badge_class(string $status): string
         'road' => 'bg-warning',
         'delivered' => 'bg-warning',
         'qr_uploaded' => 'bg-success',
+        'returning' => 'bg-warning',
+        'accepted_return' => 'bg-info',
+        'return_client' => 'bg-success',
+        'canceled' => 'bg-danger',
         default => 'bg-secondary',
     };
 }

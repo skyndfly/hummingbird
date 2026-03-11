@@ -222,6 +222,55 @@ class ReturnRequestController extends BaseManagerController
         return $this->redirect(['/return-request/view', 'id' => $id]);
     }
 
+    public function actionAccepted(int $id): Response
+    {
+        $request = $this->repository->getById($id);
+        if ($request === null) {
+            Yii::$app->session->setFlash('error', 'Заявка не найдена');
+            return $this->redirect(['/return-request']);
+        }
+        if (($request['status'] ?? '') !== ReturnRequestStatusEnum::RETURNING->value) {
+            Yii::$app->session->setFlash('error', 'Нельзя изменить статус');
+            return $this->redirect(['/return-request/view', 'id' => $id]);
+        }
+        $this->repository->updateStatus($id, ReturnRequestStatusEnum::ACCEPTED_RETURN->value);
+        Yii::$app->session->setFlash('success', 'Статус обновлен');
+        return $this->redirect(['/return-request/view', 'id' => $id]);
+    }
+
+    public function actionReturnClient(int $id): Response
+    {
+        $request = $this->repository->getById($id);
+        if ($request === null) {
+            Yii::$app->session->setFlash('error', 'Заявка не найдена');
+            return $this->redirect(['/return-request']);
+        }
+        if (($request['status'] ?? '') !== ReturnRequestStatusEnum::ACCEPTED_RETURN->value) {
+            Yii::$app->session->setFlash('error', 'Нельзя изменить статус');
+            return $this->redirect(['/return-request/view', 'id' => $id]);
+        }
+        $this->repository->updateStatus($id, ReturnRequestStatusEnum::RETURN_CLIENT->value);
+        $this->notifyReturnClient($request);
+        Yii::$app->session->setFlash('success', 'Статус обновлен');
+        return $this->redirect(['/return-request/view', 'id' => $id]);
+    }
+
+    public function actionReturning(int $id): Response
+    {
+        $request = $this->repository->getById($id);
+        if ($request === null) {
+            Yii::$app->session->setFlash('error', 'Заявка не найдена');
+            return $this->redirect(['/return-request']);
+        }
+        if (($request['status'] ?? '') !== ReturnRequestStatusEnum::CANCELED->value) {
+            Yii::$app->session->setFlash('error', 'Нельзя изменить статус');
+            return $this->redirect(['/return-request/view', 'id' => $id]);
+        }
+        $this->repository->updateStatus($id, ReturnRequestStatusEnum::RETURNING->value);
+        Yii::$app->session->setFlash('success', 'Статус обновлен');
+        return $this->redirect(['/return-request/view', 'id' => $id]);
+    }
+
     /**
      * @return array<string, string>
      */
@@ -235,6 +284,9 @@ class ReturnRequestController extends BaseManagerController
             ReturnRequestStatusEnum::QR_UPLOADED->value => ReturnRequestStatusEnum::QR_UPLOADED->label(),
             ReturnRequestStatusEnum::COMPLETED->value => ReturnRequestStatusEnum::COMPLETED->label(),
             ReturnRequestStatusEnum::CANCELED->value => ReturnRequestStatusEnum::CANCELED->label(),
+            ReturnRequestStatusEnum::RETURNING->value => ReturnRequestStatusEnum::RETURNING->label(),
+            ReturnRequestStatusEnum::ACCEPTED_RETURN->value => ReturnRequestStatusEnum::ACCEPTED_RETURN->label(),
+            ReturnRequestStatusEnum::RETURN_CLIENT->value => ReturnRequestStatusEnum::RETURN_CLIENT->label(),
         ];
     }
 
@@ -262,6 +314,31 @@ class ReturnRequestController extends BaseManagerController
         $id = (string) ($request['id'] ?? '');
         $link = Url::to(['/public-return', 'returnId' => $id, 'phone' => $phone], true);
         $message = 'Возврат доставлен на пункт. Перейдите по этой ссылке и загрузите QR код: ' . $link;
+        foreach ($result['users'] as $user) {
+            $chatId = (string) ($user['id'] ?? '');
+            if ($chatId === '') {
+                continue;
+            }
+            $this->botApi->sendMessage($chatId, $message);
+        }
+    }
+
+    private function notifyReturnClient(array $request): void
+    {
+        $phone = (string) ($request['phone'] ?? '');
+        if ($phone === '') {
+            return;
+        }
+        $phone = PhoneNormalizer::normalize($phone);
+        $result = $this->botApi->getUsers($phone, null, 1, 50);
+        if (empty($result['users'])) {
+            return;
+        }
+        $id = (string) ($request['id'] ?? '');
+        $message = 'Нужно прийти и забрать возврат.';
+        if ($id !== '') {
+            $message = 'Возврат №' . $id . ' готов. Нужно прийти и забрать возврат.';
+        }
         foreach ($result['users'] as $user) {
             $chatId = (string) ($user['id'] ?? '');
             if ($chatId === '') {

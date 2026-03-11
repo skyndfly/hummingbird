@@ -126,8 +126,11 @@ $config = [
                 'POST return-request/store' => 'return-request/store',
                 'POST return-request/<id:\d+>/update' => 'return-request/update',
                 'POST return-request/<id:\d+>/delete' => 'return-request/delete',
+                'POST return-request/<id:\d+>/accepted' => 'return-request/accepted',
+                'POST return-request/<id:\d+>/return-client' => 'return-request/return-client',
                 'POST return-request/<id:\d+>/road' => 'return-request/road',
                 'POST return-request/<id:\d+>/delivered' => 'return-request/delivered',
+                'POST return-request/<id:\d+>/returning' => 'return-request/returning',
 
 
                 //POINT

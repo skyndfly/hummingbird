@@ -73,6 +73,9 @@ class PublicReturnController extends Controller
                 ReturnRequestStatusEnum::QR_UPLOADED->value => ReturnRequestStatusEnum::QR_UPLOADED->label(),
                 ReturnRequestStatusEnum::COMPLETED->value => ReturnRequestStatusEnum::COMPLETED->label(),
                 ReturnRequestStatusEnum::CANCELED->value => ReturnRequestStatusEnum::CANCELED->label(),
+                ReturnRequestStatusEnum::RETURNING->value => ReturnRequestStatusEnum::RETURNING->label(),
+                ReturnRequestStatusEnum::ACCEPTED_RETURN->value => ReturnRequestStatusEnum::ACCEPTED_RETURN->label(),
+                ReturnRequestStatusEnum::RETURN_CLIENT->value => ReturnRequestStatusEnum::RETURN_CLIENT->label(),
             ],
         ]);
     }
