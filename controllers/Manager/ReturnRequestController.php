@@ -234,6 +234,7 @@ class ReturnRequestController extends BaseManagerController
             return $this->redirect(['/return-request/view', 'id' => $id]);
         }
         $this->repository->updateStatus($id, ReturnRequestStatusEnum::ACCEPTED_RETURN->value);
+        $this->notifyReturnClient($request);
         Yii::$app->session->setFlash('success', 'Статус обновлен');
         return $this->redirect(['/return-request/view', 'id' => $id]);
     }
@@ -250,7 +251,6 @@ class ReturnRequestController extends BaseManagerController
             return $this->redirect(['/return-request/view', 'id' => $id]);
         }
         $this->repository->updateStatus($id, ReturnRequestStatusEnum::RETURN_CLIENT->value);
-        $this->notifyReturnClient($request);
         Yii::$app->session->setFlash('success', 'Статус обновлен');
         return $this->redirect(['/return-request/view', 'id' => $id]);
     }
