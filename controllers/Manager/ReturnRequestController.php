@@ -115,6 +115,7 @@ class ReturnRequestController extends BaseManagerController
                         photoOne: $form->photoOne,
                         createdBy: $this->getIdentity()->getId()
                     );
+                    $this->notifyAccepted($form->phone, $number);
                     Yii::$app->session->setFlash('success', 'Заявка создана. Номер: ' . $number);
                     return $this->redirect(['/return-request/create']);
                 } catch (Exception $e) {
@@ -313,7 +314,7 @@ class ReturnRequestController extends BaseManagerController
         }
         $id = (string) ($request['id'] ?? '');
         $link = Url::to(['/public-return', 'returnId' => $id, 'phone' => $phone], true);
-        $message = 'Возврат доставлен на пункт. Перейдите по этой ссылке и загрузите QR код: ' . $link;
+        $message = '🟠Возврат по заявке ' . $id . ' доставлен на пункт.'. PHP_EOL . '‼️Перейдите по этой ссылке и загрузите QR код: ' . $link;
         foreach ($result['users'] as $user) {
             $chatId = (string) ($user['id'] ?? '');
             if ($chatId === '') {
@@ -337,7 +338,30 @@ class ReturnRequestController extends BaseManagerController
         $id = (string) ($request['id'] ?? '');
         $message = 'Нужно прийти и забрать возврат.';
         if ($id !== '') {
-            $message = 'Возврат №' . $id . ' готов. Нужно прийти и забрать возврат.';
+            $message = '🟣Возврат по заявке №' . $id . ' возвращён в 108к. Нужно прийти и забрать.';
+        }
+        foreach ($result['users'] as $user) {
+            $chatId = (string) ($user['id'] ?? '');
+            if ($chatId === '') {
+                continue;
+            }
+            $this->botApi->sendMessage($chatId, $message);
+        }
+    }
+
+    private function notifyAccepted(string $phone, string $id): void
+    {
+        if ($phone === '') {
+            return;
+        }
+        $phone = PhoneNormalizer::normalize($phone);
+        $result = $this->botApi->getUsers($phone, null, 1, 50);
+        if (empty($result['users'])) {
+            return;
+        }
+        $message = '🟡Возврат по заявке принят в 108к, ожидайте доставки на пункт.';
+        if ($id !== '') {
+            $message = '🟡Возврат по заявке №' . $id . ' принят в 108к, ожидайте доставки на пункт.';
         }
         foreach ($result['users'] as $user) {
             $chatId = (string) ($user['id'] ?? '');

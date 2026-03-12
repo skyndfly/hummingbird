@@ -10,6 +10,7 @@ use app\services\Phone\PhoneNormalizer;
 use DateTimeImmutable;
 use DateTimeZone;
 use Yii;
+use yii\helpers\Url;
 use yii\web\Response;
 
 class ReturnRequestController extends BasePointController
@@ -127,7 +128,7 @@ class ReturnRequestController extends BasePointController
         $this->repository->updateById($id, [
             'status' => ReturnRequestStatusEnum::CANCELED->value,
             'cancel_reason' => trim($reason),
-            'updated_at' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
+            'updated_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
         ]);
         $this->notifyCanceled($request, trim($reason));
         Yii::$app->session->setFlash('success', 'Заявка отменена');
@@ -200,7 +201,7 @@ class ReturnRequestController extends BasePointController
         $id = (string) ($request['id'] ?? '');
         $message = 'Заявка на возврат выполнена. Ожидайте поступление средств.';
         if ($id !== '') {
-            $message = 'Заявка на возврат номер ' . $id . ' выполнена. Ожидайте поступление средств.';
+            $message = '🟢Заявка на возврат номер ' . $id . ' выполнена. Ожидайте поступление средств.';
         }
         foreach ($result['users'] as $user) {
             $chatId = (string) ($user['id'] ?? '');
@@ -234,10 +235,10 @@ class ReturnRequestController extends BasePointController
             return;
         }
         $id = (string) ($request['id'] ?? '');
-        $link = \yii\helpers\Url::to(['/public-return', 'returnId' => $id, 'phone' => $phone], true);
+        $link = Url::to(['/public-return', 'returnId' => $id, 'phone' => $phone], true);
         $message = 'Нужно обновить код по заявке. Перейдите по ссылке: ' . $link;
         if ($id !== '') {
-            $message = 'Нужно обновить код по заявке №' . $id . '. Перейдите по ссылке: ' . $link;
+            $message = '🔵Нужно обновить код по заявке №' . $id. '.' . PHP_EOL .'‼️Перейдите по ссылке: ' . $link;
         }
         foreach ($result['users'] as $user) {
             $chatId = (string) ($user['id'] ?? '');
@@ -267,7 +268,7 @@ class ReturnRequestController extends BasePointController
         $id = (string) ($request['id'] ?? '');
         $message = 'Заявка на возврат отменена. Причина: ' . $reason . '.';
         if ($id !== '') {
-            $message = 'Заявка на возврат №' . $id . ' отменена. Причина: ' . $reason . '.';
+            $message = '🔴Заявка на возврат №' . $id . ' отменена. Причина: ' . $reason . '.';
         }
         foreach ($result['users'] as $user) {
             $chatId = (string) ($user['id'] ?? '');
