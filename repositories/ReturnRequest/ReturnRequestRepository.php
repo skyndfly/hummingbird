@@ -75,6 +75,72 @@ class ReturnRequestRepository extends BaseRepository
         return $rows;
     }
 
+    /**
+     * @param array<int, string> $statuses
+     * @return array<int, array<string, mixed>>
+     */
+    public function getForPoint(
+        array $statuses,
+        string $returnType,
+        int $offset,
+        int $limit,
+        ?string $status = null,
+        ?int $id = null,
+        ?string $dateFrom = null,
+        ?string $dateTo = null
+    ): array
+    {
+        $query = $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['status' => $statuses, 'return_type' => $returnType, 'deleted_at' => null])
+            ->orderBy(['created_at' => SORT_DESC, 'id' => SORT_DESC])
+            ->offset($offset)
+            ->limit($limit);
+        if ($status !== null && $status !== '') {
+            $query->andWhere(['status' => $status]);
+        }
+        if ($id !== null) {
+            $query->andWhere(['id' => $id]);
+        }
+        if ($dateFrom !== null && $dateTo !== null) {
+            $query->andWhere(['>=', 'created_at', $dateFrom])
+                ->andWhere(['<=', 'created_at', $dateTo]);
+        }
+        $rows = $query->all();
+        if ($rows === false) {
+            return [];
+        }
+        return $rows;
+    }
+
+    /**
+     * @param array<int, string> $statuses
+     */
+    public function countForPoint(
+        array $statuses,
+        string $returnType,
+        ?string $status = null,
+        ?int $id = null,
+        ?string $dateFrom = null,
+        ?string $dateTo = null
+    ): int
+    {
+        $query = $this->getQuery()
+            ->from(self::TABLE)
+            ->where(['status' => $statuses, 'return_type' => $returnType, 'deleted_at' => null]);
+        if ($status !== null && $status !== '') {
+            $query->andWhere(['status' => $status]);
+        }
+        if ($id !== null) {
+            $query->andWhere(['id' => $id]);
+        }
+        if ($dateFrom !== null && $dateTo !== null) {
+            $query->andWhere(['>=', 'created_at', $dateFrom])
+                ->andWhere(['<=', 'created_at', $dateTo]);
+        }
+        return (int) $query->count('*');
+    }
+
     public function getNextForPointToday(string $status, string $returnType, string $from, string $to, int $excludeId): ?array
     {
         $row = $this->getQuery()

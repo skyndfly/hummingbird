@@ -2,13 +2,58 @@
 
 /** @var array<int, array<string, mixed>> $requests */
 /** @var string $title */
+/** @var \yii\data\Pagination $pagination */
+/** @var string|null $status */
+/** @var int|null $id */
+/** @var string|null $date */
+/** @var array<string, string> $statusLabels */
+
+use yii\widgets\LinkPager;
 
 $this->title = $title;
 ?>
 
 <section>
-    <h2><?= htmlspecialchars($title) ?> за сегодня</h2>
+    <h2><?= htmlspecialchars($title) ?></h2>
     <hr>
+
+    <form class="row g-2 align-items-end mb-3" method="get">
+        <div class="col-sm-6 col-md-3">
+            <label class="form-label" for="id-filter">Номер (ID)</label>
+            <input
+                class="form-control"
+                id="id-filter"
+                name="id"
+                inputmode="numeric"
+                pattern="\d*"
+                value="<?= $id !== null ? htmlspecialchars((string) $id) : '' ?>"
+            >
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <label class="form-label" for="date-filter">Дата</label>
+            <input
+                class="form-control"
+                id="date-filter"
+                name="date"
+                type="date"
+                value="<?= $date !== null ? htmlspecialchars($date) : '' ?>"
+            >
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <label class="form-label" for="status-filter">Статус</label>
+            <select class="form-select" id="status-filter" name="status">
+                <option value="">Все</option>
+                <?php foreach ($statusLabels as $key => $label): ?>
+                    <option value="<?= htmlspecialchars($key) ?>" <?= $status === $key ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($label) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" type="submit">Показать</button>
+        </div>
+    </form>
 
     <?php if (!empty($requests)): ?>
         <div class="table-responsive">
@@ -67,6 +112,12 @@ $this->title = $title;
             </table>
         </div>
     <?php else: ?>
-        <div class="text-muted">За сегодня нет возвратов со статусом доставлен или QR загружен.</div>
+        <div class="text-muted">Нет возвратов для отображения.</div>
+    <?php endif; ?>
+
+    <?php if ($pagination->pageCount > 1): ?>
+        <div class="mt-3">
+            <?= LinkPager::widget(['pagination' => $pagination]) ?>
+        </div>
     <?php endif; ?>
 </section>

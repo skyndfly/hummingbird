@@ -7,10 +7,9 @@ use app\repositories\ReturnRequest\ReturnRequestRepository;
 use app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum;
 use app\services\Bot\BotApi;
 use app\services\Phone\PhoneNormalizer;
-use DateTimeImmutable;
-use DateTimeZone;
 use Yii;
 use yii\helpers\Url;
+use yii\data\Pagination;
 use yii\web\Response;
 
 class ReturnRequestController extends BasePointController
@@ -27,48 +26,159 @@ class ReturnRequestController extends BasePointController
 
     public function actionWb(): string
     {
-        $tz = new DateTimeZone(Yii::$app->timeZone ?? 'Europe/Moscow');
-        $now = new DateTimeImmutable('now', $tz);
-        $todayStart = $now->format('Y-m-d 00:00:00');
-        $todayEnd = $now->format('Y-m-d 23:59:59');
-
-        $requests = $this->repository->getForPointToday(
+        $status = Yii::$app->request->get('status');
+        $statusFilter = $this->normalizePointStatus($status);
+        $id = Yii::$app->request->get('id');
+        $idFilter = $this->normalizeId($id);
+        $date = Yii::$app->request->get('date');
+        [$dateFrom, $dateTo] = $this->normalizeDateRange($date);
+        $pageSize = 50;
+        $total = $this->repository->countForPoint(
             statuses: [
                 ReturnRequestStatusEnum::QR_UPLOADED->value,
                 ReturnRequestStatusEnum::DELIVERED->value,
             ],
             returnType: 'wb',
-            from: $todayStart,
-            to: $todayEnd
+            status: $statusFilter,
+            id: $idFilter,
+            dateFrom: $dateFrom,
+            dateTo: $dateTo
+        );
+        $pagination = new Pagination([
+            'totalCount' => $total,
+            'pageSize' => $pageSize,
+            'pageSizeParam' => false,
+            'pageParam' => 'page',
+            'params' => array_filter([
+                'status' => $statusFilter,
+                'id' => $idFilter,
+                'date' => $date instanceof \Stringable ? (string) $date : (is_string($date) ? $date : null),
+            ], static fn ($value) => $value !== null && $value !== ''),
+        ]);
+        $requests = $this->repository->getForPoint(
+            statuses: [
+                ReturnRequestStatusEnum::QR_UPLOADED->value,
+                ReturnRequestStatusEnum::DELIVERED->value,
+            ],
+            returnType: 'wb',
+            offset: $pagination->offset,
+            limit: $pagination->limit,
+            status: $statusFilter,
+            id: $idFilter,
+            dateFrom: $dateFrom,
+            dateTo: $dateTo
         );
 
         return $this->render('return-request/index', [
             'requests' => $requests,
             'title' => 'Возвраты WB',
+            'pagination' => $pagination,
+            'status' => $statusFilter,
+            'id' => $idFilter,
+            'date' => is_string($date) ? $date : null,
+            'statusLabels' => $this->pointStatusLabels(),
         ]);
     }
 
     public function actionOzon(): string
     {
-        $tz = new DateTimeZone(Yii::$app->timeZone ?? 'Europe/Moscow');
-        $now = new DateTimeImmutable('now', $tz);
-        $todayStart = $now->format('Y-m-d 00:00:00');
-        $todayEnd = $now->format('Y-m-d 23:59:59');
-
-        $requests = $this->repository->getForPointToday(
+        $status = Yii::$app->request->get('status');
+        $statusFilter = $this->normalizePointStatus($status);
+        $id = Yii::$app->request->get('id');
+        $idFilter = $this->normalizeId($id);
+        $date = Yii::$app->request->get('date');
+        [$dateFrom, $dateTo] = $this->normalizeDateRange($date);
+        $pageSize = 50;
+        $total = $this->repository->countForPoint(
             statuses: [
                 ReturnRequestStatusEnum::QR_UPLOADED->value,
                 ReturnRequestStatusEnum::DELIVERED->value,
             ],
             returnType: 'ozon',
-            from: $todayStart,
-            to: $todayEnd
+            status: $statusFilter,
+            id: $idFilter,
+            dateFrom: $dateFrom,
+            dateTo: $dateTo
+        );
+        $pagination = new Pagination([
+            'totalCount' => $total,
+            'pageSize' => $pageSize,
+            'pageSizeParam' => false,
+            'pageParam' => 'page',
+            'params' => array_filter([
+                'status' => $statusFilter,
+                'id' => $idFilter,
+                'date' => $date instanceof \Stringable ? (string) $date : (is_string($date) ? $date : null),
+            ], static fn ($value) => $value !== null && $value !== ''),
+        ]);
+        $requests = $this->repository->getForPoint(
+            statuses: [
+                ReturnRequestStatusEnum::QR_UPLOADED->value,
+                ReturnRequestStatusEnum::DELIVERED->value,
+            ],
+            returnType: 'ozon',
+            offset: $pagination->offset,
+            limit: $pagination->limit,
+            status: $statusFilter,
+            id: $idFilter,
+            dateFrom: $dateFrom,
+            dateTo: $dateTo
         );
 
         return $this->render('return-request/index', [
             'requests' => $requests,
             'title' => 'Возвраты OZON',
+            'pagination' => $pagination,
+            'status' => $statusFilter,
+            'id' => $idFilter,
+            'date' => is_string($date) ? $date : null,
+            'statusLabels' => $this->pointStatusLabels(),
         ]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function pointStatusLabels(): array
+    {
+        return [
+            ReturnRequestStatusEnum::DELIVERED->value => 'Доставлен на пункт',
+            ReturnRequestStatusEnum::QR_UPLOADED->value => 'QR код загружен',
+        ];
+    }
+
+    private function normalizePointStatus(mixed $status): ?string
+    {
+        if (!is_string($status) || $status === '') {
+            return null;
+        }
+        $labels = $this->pointStatusLabels();
+        return isset($labels[$status]) ? $status : null;
+    }
+
+    private function normalizeId(mixed $id): ?int
+    {
+        if (!is_string($id) || $id === '') {
+            return null;
+        }
+        if (!ctype_digit($id)) {
+            return null;
+        }
+        return (int) $id;
+    }
+
+    /**
+     * @return array{0: string|null, 1: string|null}
+     */
+    private function normalizeDateRange(mixed $date): array
+    {
+        if (!is_string($date) || $date === '') {
+            return [null, null];
+        }
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            return [null, null];
+        }
+        return [$date . ' 00:00:00', $date . ' 23:59:59'];
     }
 
     public function actionView(int $id): string|Response
