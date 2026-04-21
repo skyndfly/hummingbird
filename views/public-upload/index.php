@@ -6,6 +6,8 @@ use yii\helpers\Html;
 
 /** @var CompanyDto[] $companies */
 /** @var AddressDto[] $addresses */
+/** @var int $cutoffHour */
+/** @var bool $isUploadClosed */
 
 $addressMap = [];
 foreach ($addresses as $address) {
@@ -36,6 +38,12 @@ foreach ($addresses as $address) {
     }
     body{
         margin: 0;
+    }
+    .public-upload,
+    .public-upload *,
+    .public-upload *::before,
+    .public-upload *::after {
+        box-sizing: border-box;
     }
     .public-upload {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -227,6 +235,14 @@ foreach ($addresses as $address) {
         color: #991b1b;
     }
 
+    .public-upload .upload-closed-note {
+        padding: 12px 14px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        background: #ffedd5;
+        color: #9a3412;
+    }
 
     @media (max-width: 480px) {
         .public-upload .card {
@@ -265,42 +281,49 @@ foreach ($addresses as $address) {
                     </div>
                 <?php endif; ?>
 
-                <form id="publicUploadForm" action="/public-upload/store" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
-
-                    <div class="form-group">
-                        <label for="companySelect">Служба доставки</label>
-                        <select id="companySelect" name="PublicUploadForm[companyId]" required>
-                            <option value="">Выберите компанию</option>
-                            <?php foreach ($companies as $company): ?>
-                                <option value="<?= $company->id ?>"><?= Html::encode($company->name ?? '') ?></option>
-                            <?php endforeach; ?>
-                        </select>
+                <?php if ($isUploadClosed): ?>
+                    <div class="upload-closed-note">
+                        Прием кодов закрыт после <?= sprintf('%02d:00', $cutoffHour) ?>.
+                        Форма отправки снова станет доступна завтра.
                     </div>
+                <?php else: ?>
+                    <form id="publicUploadForm" action="/public-upload/store" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
 
-                    <div class="form-group">
-                        <label for="addressSelect">Адрес пункта</label>
-                        <select id="addressSelect" name="PublicUploadForm[addressId]" required disabled>
-                            <option value="">Сначала выберите компанию</option>
-                        </select>
-                    </div>
+                        <div class="form-group">
+                            <label for="companySelect">Служба доставки</label>
+                            <select id="companySelect" name="PublicUploadForm[companyId]" required>
+                                <option value="">Выберите компанию</option>
+                                <?php foreach ($companies as $company): ?>
+                                    <option value="<?= $company->id ?>"><?= Html::encode($company->name ?? '') ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
 
-                <div class="form-group">
-                    <label for="codeImage">Изображение кода</label>
-                    <input id="codeImage" name="PublicUploadForm[image]" type="file" accept="image/*" required>
-                    <div class="preview" id="imagePreview">
-                        <button class="clear-btn" type="button" id="clearImageBtn" aria-label="Сбросить изображение">×</button>
-                        <img id="previewImg" alt="Предпросмотр">
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <label for="addressSelect">Адрес пункта</label>
+                            <select id="addressSelect" name="PublicUploadForm[addressId]" required disabled>
+                                <option value="">Сначала выберите компанию</option>
+                            </select>
+                        </div>
 
-                <div class="form-group">
-                    <label for="phoneInput">Номер телефона</label>
-                    <input id="phoneInput" name="PublicUploadForm[phone]" type="text" placeholder="+7..." required>
-                </div>
+                        <div class="form-group">
+                            <label for="codeImage">Изображение кода</label>
+                            <input id="codeImage" name="PublicUploadForm[image]" type="file" accept="image/*" required>
+                            <div class="preview" id="imagePreview">
+                                <button class="clear-btn" type="button" id="clearImageBtn" aria-label="Сбросить изображение">×</button>
+                                <img id="previewImg" alt="Предпросмотр">
+                            </div>
+                        </div>
 
-                <button type="submit" class="btn">Отправить код</button>
-            </form>
+                        <div class="form-group">
+                            <label for="phoneInput">Номер телефона</label>
+                            <input id="phoneInput" name="PublicUploadForm[phone]" type="text" placeholder="+7..." required>
+                        </div>
+
+                        <button type="submit" class="btn">Отправить код</button>
+                    </form>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -319,47 +342,51 @@ foreach ($addresses as $address) {
         addressSelect.disabled = true;
     }
 
-    companySelect.addEventListener('change', function () {
-        const companyId = this.value;
-        if (!companyId || !addressMap[companyId]) {
-            resetAddresses();
-            return;
-        }
+    if (companySelect && addressSelect) {
+        companySelect.addEventListener('change', function () {
+            const companyId = this.value;
+            if (!companyId || !addressMap[companyId]) {
+                resetAddresses();
+                return;
+            }
 
-        addressSelect.disabled = false;
-        addressSelect.innerHTML = '<option value="">Выберите адрес</option>';
-        addressMap[companyId].forEach(item => {
-            const option = document.createElement('option');
-            option.value = item.id;
-            option.textContent = item.address;
-            addressSelect.appendChild(option);
+            addressSelect.disabled = false;
+            addressSelect.innerHTML = '<option value="">Выберите адрес</option>';
+            addressMap[companyId].forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.address;
+                addressSelect.appendChild(option);
+            });
         });
-    });
 
-    if (!companySelect.value) {
-        resetAddresses();
+        if (!companySelect.value) {
+            resetAddresses();
+        }
     }
 
-    codeImage.addEventListener('change', function () {
-        const file = this.files && this.files[0];
-        if (!file) {
+    if (codeImage && imagePreview && previewImg && clearImageBtn) {
+        codeImage.addEventListener('change', function () {
+            const file = this.files && this.files[0];
+            if (!file) {
+                imagePreview.style.display = 'none';
+                previewImg.src = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImg.src = e.target.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        clearImageBtn.addEventListener('click', function () {
+            codeImage.value = '';
             imagePreview.style.display = 'none';
             previewImg.src = '';
-            return;
-        }
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            previewImg.src = e.target.result;
-            imagePreview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    });
-
-    clearImageBtn.addEventListener('click', function () {
-        codeImage.value = '';
-        imagePreview.style.display = 'none';
-        previewImg.src = '';
-    });
+        });
+    }
 </script>
 </body>
 </html>

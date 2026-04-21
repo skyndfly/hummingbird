@@ -8,6 +8,7 @@ use app\repositories\Address\AddressRepository;
 use app\repositories\Company\CompanyRepository;
 use app\repositories\UploadedCode\UploadedCodeRepository;
 use app\services\Bot\BotApi;
+use app\services\Phone\PhoneNormalizer;
 use app\services\UploadCode\enums\UploadedCodeCompanyKeyEnum;
 use app\services\UploadCode\enums\UploadedCodeStatusEnum;
 use DateTimeImmutable;
@@ -169,15 +170,34 @@ class IssuedPointController extends BasePointController
                     id: $form->id,
                     status: $status,
                 );
-                if ($status != UploadedCodeStatusEnum::PENDING && !empty($code->chatId)) {
+                if ($status != UploadedCodeStatusEnum::PENDING) {
                     try {
-                        $this->botApi->sendIssued(
-                            id: $code->chatId,
-                            status: $status->value,
-                            createdAt: new DateTimeImmutable($code->createdAt),
-                            companyName: $code->companyName,
-                            address: $code->address
-                        );
+                        $chatIds = [];
+                        if (!empty($code->chatId)) {
+                            $chatIds[] = (string) $code->chatId;
+                        } elseif (!empty($code->note)) {
+                            $phone = PhoneNormalizer::normalize((string) $code->note);
+                            if ($phone !== '') {
+                                $users = $this->botApi->getUsers($phone, null, 1, 50);
+                                foreach ($users['users'] ?? [] as $user) {
+                                    $chatId = (string) ($user['id'] ?? '');
+                                    if ($chatId !== '') {
+                                        $chatIds[] = $chatId;
+                                    }
+                                }
+                            }
+                        }
+
+                        $chatIds = array_values(array_unique($chatIds));
+                        foreach ($chatIds as $chatId) {
+                            $this->botApi->sendIssued(
+                                id: $chatId,
+                                status: $status->value,
+                                createdAt: new DateTimeImmutable($code->createdAt),
+                                companyName: $code->companyName,
+                                address: $code->address
+                            );
+                        }
                     } catch (Throwable $exception) {
                         Yii::info([
                             'type' => 'SendBotApi',

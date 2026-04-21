@@ -4,11 +4,14 @@ namespace app\controllers;
 
 use app\forms\PublicUploadForm;
 use app\repositories\Address\AddressRepository;
+use app\repositories\BotSettings\BotSettingsRepository;
 use app\repositories\Company\CompanyRepository;
 use app\services\Phone\PhoneNormalizer;
 use app\services\UploadCode\dto\UploadedCodeDto;
 use app\services\UploadCode\enums\UploadedCodeStatusEnum;
 use app\services\UploadCode\UploadedCodeStoreService;
+use DateTimeImmutable;
+use DateTimeZone;
 use Exception;
 use Yii;
 use yii\web\Controller;
@@ -24,6 +27,7 @@ class PublicUploadController extends Controller
         $module,
         private CompanyRepository $companyRepository,
         private AddressRepository $addressRepository,
+        private BotSettingsRepository $botSettingsRepository,
         private UploadedCodeStoreService $uploadedCodeStoreService,
         $config = []
     ) {
@@ -34,15 +38,30 @@ class PublicUploadController extends Controller
     {
         $companies = $this->companyRepository->getAllCompany();
         $addresses = $this->addressRepository->getAll();
+        $cutoffHour = $this->botSettingsRepository->getCutoffHour();
+        $currentHour = $this->getCurrentHour();
+        $isUploadClosed = $currentHour >= $cutoffHour;
+
         return $this->render('index', [
             'companies' => $companies,
             'addresses' => $addresses,
+            'cutoffHour' => $cutoffHour,
+            'isUploadClosed' => $isUploadClosed,
         ]);
     }
 
     public function actionStore(): Response
     {
         try {
+            $cutoffHour = $this->botSettingsRepository->getCutoffHour();
+            if ($this->getCurrentHour() >= $cutoffHour) {
+                Yii::$app->getSession()->setFlash(
+                    'error',
+                    sprintf('Прием кодов закрыт после %02d:00. Попробуйте снова завтра.', $cutoffHour)
+                );
+                return $this->redirect(['/public-upload']);
+            }
+
             $post = Yii::$app->getRequest()->getBodyParams();
             $form = new PublicUploadForm();
             if ($form->load($post)) {
@@ -79,5 +98,11 @@ class PublicUploadController extends Controller
             Yii::$app->getSession()->setFlash('error', $exception->getMessage());
         }
         return $this->redirect(['/public-upload']);
+    }
+
+    private function getCurrentHour(): int
+    {
+        $timezone = new DateTimeZone(Yii::$app->timeZone);
+        return (int) (new DateTimeImmutable('now', $timezone))->format('G');
     }
 }
