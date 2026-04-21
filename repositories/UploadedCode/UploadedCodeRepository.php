@@ -267,6 +267,35 @@ class UploadedCodeRepository extends BaseRepository
             ->count();
     }
 
+    public function getTodayUploadedFromBotCount(): int
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        return (int) $this->getQuery()
+            ->from(self::TABLE)
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->andWhere(['IS NOT', 'chat_id', null])
+            ->andWhere(['<>', 'chat_id', ''])
+            ->count();
+    }
+
+    public function getTodayUploadedFromSiteCount(): int
+    {
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        return (int) $this->getQuery()
+            ->from(self::TABLE)
+            ->andWhere(['>=', 'created_at', $todayStart])
+            ->andWhere(['<=', 'created_at', $todayEnd])
+            ->andWhere([
+                'or',
+                ['chat_id' => null],
+                ['chat_id' => ''],
+            ])
+            ->count();
+    }
+
     /**
      * @param int[] $addressIds
      * @return array<int, array<string, int>>

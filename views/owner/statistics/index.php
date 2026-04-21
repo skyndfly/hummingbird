@@ -11,6 +11,8 @@
 /** @var int $outdatedOzonCount */
 /** @var int $totalCodes */
 /** @var int $totalAmount */
+/** @var int $uploadedFromBotCount */
+/** @var int $uploadedFromSiteCount */
 
 /** @var StockStatisticsDto $statistics */
 
@@ -108,6 +110,27 @@ $this->title = 'Статистика';
                     </p>
                     <h3><?= $outdatedOzonCount ?></h3>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+    <h3>Источник загрузки (сегодня)</h3>
+    <div class="d-flex gap-2 mb-3">
+        <div class="card w-25">
+            <div class="card-body">
+                <p class="card-text">
+                    Загружено через <strong>бот</strong>
+                </p>
+                <h3><?= $uploadedFromBotCount ?></h3>
+            </div>
+        </div>
+        <div class="card w-25">
+            <div class="card-body">
+                <p class="card-text">
+                    Загружено через <strong>сайт</strong>
+                </p>
+                <h3><?= $uploadedFromSiteCount ?></h3>
             </div>
         </div>
     </div>

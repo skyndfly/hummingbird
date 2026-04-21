@@ -50,6 +50,8 @@ class StatisticsController extends BaseOwnerController
             'totalCodes' => $totalCodes,
             'totalAmount' => $totalAmount,
             'statistics' => $statistics,
+            'uploadedFromBotCount' => $this->uploadedCodeRepository->getTodayUploadedFromBotCount(),
+            'uploadedFromSiteCount' => $this->uploadedCodeRepository->getTodayUploadedFromSiteCount(),
         ]);
     }
 
