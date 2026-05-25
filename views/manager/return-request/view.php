@@ -3,6 +3,8 @@
 /** @var array<string, mixed> $request */
 /** @var array<string, string> $statusLabels */
 
+use app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum;
+
 $this->title = 'Заявка на возврат';
 
 function status_badge_class(string $status): string
@@ -29,20 +31,20 @@ function status_badge_class(string $status): string
     <div class="mb-3">
         <a class="btn btn-outline-secondary" href="/return-request">К списку</a>
         <a class="btn btn-outline-primary" href="/return-request/<?= (int) $request['id'] ?>/edit">Редактировать</a>
-        <?php if (($request['status'] ?? '') === \app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum::ACCEPTED->value): ?>
+        <?php if (($request['status'] ?? '') === ReturnRequestStatusEnum::ACCEPTED->value): ?>
             <form method="post" action="/return-request/<?= (int) $request['id'] ?>/road" class="d-inline">
                 <input type="hidden" name="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
                 <button class="btn btn-outline-warning" type="submit">Отгрузить</button>
             </form>
         <?php endif; ?>
-        <?php if (($request['status'] ?? '') === \app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum::ROAD->value): ?>
+        <?php if (($request['status'] ?? '') === ReturnRequestStatusEnum::ROAD->value): ?>
             <form method="post" action="/return-request/<?= (int) $request['id'] ?>/delivered" class="d-inline">
                 <input type="hidden" name="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
                 <button class="btn btn-outline-success" type="submit">Доставлен на пункт</button>
             </form>
         <?php endif; ?>
         <?php if (
-            ($request['status'] ?? '') === \app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum::CANCELED->value
+            ($request['status'] ?? '') === ReturnRequestStatusEnum::CANCELED->value
             && (Yii::$app->user->can('owner') || Yii::$app->user->can('point'))
         ): ?>
             <form method="post" action="/return-request/<?= (int) $request['id'] ?>/returning" class="d-inline">
@@ -51,8 +53,12 @@ function status_badge_class(string $status): string
             </form>
         <?php endif; ?>
         <?php if (
-            ($request['status'] ?? '') === \app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum::RETURNING->value
-            && (Yii::$app->user->can('owner') || Yii::$app->user->can('point'))
+            ($request['status'] ?? '') === ReturnRequestStatusEnum::RETURNING->value
+            && (
+                Yii::$app->user->can('owner')
+                || Yii::$app->user->can('point')
+                || Yii::$app->user->can('manager')
+            )
         ): ?>
             <form method="post" action="/return-request/<?= (int) $request['id'] ?>/accepted" class="d-inline">
                 <input type="hidden" name="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
@@ -60,8 +66,12 @@ function status_badge_class(string $status): string
             </form>
         <?php endif; ?>
         <?php if (
-            ($request['status'] ?? '') === \app\repositories\ReturnRequest\enums\ReturnRequestStatusEnum::ACCEPTED_RETURN->value
-            && (Yii::$app->user->can('owner') || Yii::$app->user->can('point'))
+            ($request['status'] ?? '') === ReturnRequestStatusEnum::ACCEPTED_RETURN->value
+            && (
+                Yii::$app->user->can('owner')
+                || Yii::$app->user->can('point')
+                || Yii::$app->user->can('manager')
+            )
         ): ?>
             <form method="post" action="/return-request/<?= (int) $request['id'] ?>/return-client" class="d-inline">
                 <input type="hidden" name="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
