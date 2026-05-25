@@ -180,9 +180,41 @@ foreach ($addresses as $address) {
         width: 100%;
     }
 
-    .public-upload .btn:hover {
+    .public-upload .btn[disabled] {
+        opacity: 0.8;
+        cursor: not-allowed;
+    }
+
+    .public-upload .btn:not([disabled]):hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+    }
+
+    .public-upload .btn .btn-spinner {
+        display: none;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: upload-spin 0.8s linear infinite;
+    }
+
+    .public-upload .btn.is-loading {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .public-upload .btn.is-loading .btn-spinner {
+        display: inline-block;
+    }
+
+    @keyframes upload-spin {
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     .public-upload .preview {
@@ -321,7 +353,10 @@ foreach ($addresses as $address) {
                             <input id="phoneInput" name="PublicUploadForm[phone]" type="text" placeholder="+7..." required>
                         </div>
 
-                        <button type="submit" class="btn">Отправить код</button>
+                        <button type="submit" class="btn" id="publicUploadBtn">
+                            <span class="btn-label">Отправить код</span>
+                            <span class="btn-spinner" aria-hidden="true"></span>
+                        </button>
                     </form>
                 <?php endif; ?>
             </div>
@@ -336,6 +371,8 @@ foreach ($addresses as $address) {
     const imagePreview = document.getElementById('imagePreview');
     const previewImg = document.getElementById('previewImg');
     const clearImageBtn = document.getElementById('clearImageBtn');
+    const uploadForm = document.getElementById('publicUploadForm');
+    const uploadBtn = document.getElementById('publicUploadBtn');
 
     function resetAddresses() {
         addressSelect.innerHTML = '<option value="">Сначала выберите компанию</option>';
@@ -385,6 +422,24 @@ foreach ($addresses as $address) {
             codeImage.value = '';
             imagePreview.style.display = 'none';
             previewImg.src = '';
+        });
+    }
+
+    if (uploadForm && uploadBtn) {
+        uploadForm.addEventListener('submit', function (event) {
+            if (uploadForm.dataset.submitting === '1') {
+                event.preventDefault();
+                return;
+            }
+
+            uploadForm.dataset.submitting = '1';
+            uploadBtn.disabled = true;
+            uploadBtn.classList.add('is-loading');
+            uploadBtn.setAttribute('aria-busy', 'true');
+            const label = uploadBtn.querySelector('.btn-label');
+            if (label) {
+                label.textContent = 'Загрузка...';
+            }
         });
     }
 </script>
